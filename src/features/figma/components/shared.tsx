@@ -40,16 +40,16 @@ export function NoticeBar({
     <button
       type="button"
       onClick={() => { if (current) onSelect(current) }}
-      className="mb-6 flex w-full items-center gap-2.5 overflow-hidden rounded-[14px] border border-[#fad933]/15 bg-[linear-gradient(135deg,_rgba(250,217,51,0.08),_rgba(200,146,42,0.04))] px-3 py-2.5 text-left shadow-[0_4px_20px_rgba(0,0,0,0.2)] transition hover:border-[#fad933]/25"
+      className="mb-4 flex w-full items-center gap-2.5 overflow-hidden rounded-[16px] border border-black/5 bg-white px-3 py-2.5 text-left shadow-[0_8px_20px_rgba(200,164,54,0.14)] transition hover:border-[#fad933]/30"
     >
-      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#fad933]/15">
-        <svg className="h-4 w-4 text-[#fad933]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#fad933]/18">
+        <svg className="h-4 w-4 text-[#d4a32a]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
           <path d="M13.73 21a2 2 0 0 1-3.46 0" />
         </svg>
       </div>
-      <p className="min-w-0 flex-1 truncate text-[12px] font-medium text-white/75">{title}</p>
-      <svg className="h-4 w-4 shrink-0 text-white/25" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <p className="min-w-0 flex-1 truncate text-[12px] font-medium text-black/65">{title}</p>
+      <svg className="h-4 w-4 shrink-0 text-black/25" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <polyline points="9 18 15 12 9 6" />
       </svg>
     </button>
@@ -67,32 +67,32 @@ export function NoticeDetailSheet({
 }) {
   return (
     <div
-      className={`fixed inset-x-0 bottom-0 z-50 mx-auto max-w-[430px] overflow-hidden rounded-t-[22px] bg-[#151515] shadow-[0_-8px_40px_rgba(0,0,0,0.5)] transition-all duration-300 ${
+      className={`fixed inset-x-0 bottom-0 z-50 mx-auto max-w-[430px] overflow-hidden rounded-t-[22px] bg-white shadow-[0_-8px_40px_rgba(0,0,0,0.2)] transition-all duration-300 ${
         isOpen ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-full opacity-0'
       }`}
       style={{ maxHeight: '80vh' }}
     >
-      <div className="flex items-center justify-between border-b border-white/10 px-5 py-4">
+      <div className="flex items-center justify-between border-b border-black/6 px-5 py-4">
         <div className="flex min-w-0 flex-1 items-center gap-2">
           <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[#fad933]/15">
-            <svg className="h-4 w-4 text-[#fad933]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg className="h-4 w-4 text-[#d4a32a]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
               <path d="M13.73 21a2 2 0 0 1-3.46 0" />
             </svg>
           </div>
-          <span className="truncate text-[15px] font-bold text-white">{notice?.title ?? ''}</span>
+          <span className="truncate text-[15px] font-bold text-black">{notice?.title ?? ''}</span>
         </div>
         <button
           type="button"
           onClick={onClose}
-          className="ml-2 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/15 bg-white/10 text-white/60 transition hover:bg-white/20"
+          className="ml-2 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-black/10 bg-black/4 text-black/45 transition hover:bg-black/8"
         >
           <CloseIcon className="h-3.5 w-3.5" />
         </button>
       </div>
 
       <div className="overflow-y-auto overscroll-contain px-5 py-5 pb-[calc(24px+env(safe-area-inset-bottom))]" style={{ maxHeight: 'calc(80vh - 64px)' }}>
-        <p className="whitespace-pre-line text-[13px] leading-[22px] text-white/60">
+        <p className="whitespace-pre-line text-[13px] leading-[22px] text-black/60">
           {notice?.content ?? ''}
         </p>
       </div>
@@ -116,17 +116,14 @@ export function TopNavigation({
   onWalletConnect: () => void
 }) {
   return (
-    <div className="absolute inset-x-0 top-0 z-30 flex items-center justify-between px-3 py-2.5">
+    <div className="absolute inset-x-0 top-0 z-30 flex items-center justify-between border-b border-black/5 bg-white/90 px-3 py-2.5 shadow-[0_5px_5px_rgba(24,28,0,0.07)] backdrop-blur-sm">
       <div className="flex items-center gap-2">
-        <div className="relative">
-          <div className="absolute -inset-[3px] rounded-full bg-[linear-gradient(135deg,_#fad933_0%,_#c8922a_50%,_#fad933_100%)] opacity-60 blur-[3px]" />
-          <img src={brandLogoUrl} alt="logo" className="relative h-9 w-9 rounded-full object-cover ring-[1.5px] ring-[#fad933]/40" />
-        </div>
+        <img src={brandLogoUrl} alt="logo" className="h-9 w-9 rounded-xl object-cover shadow-[0_4px_10px_rgba(0,0,0,0.08)]" />
         <div className="flex flex-col">
-          <span className="bg-[linear-gradient(90deg,_#ffe88a,_#f2bf3e)] bg-clip-text text-[15px] font-extrabold leading-tight tracking-wide text-transparent">
+          <span className="text-[15px] font-extrabold leading-tight tracking-wide text-black">
             MCG
           </span>
-          <span className="text-[8px] font-medium uppercase tracking-[0.15em] text-white/30">
+          <span className="text-[8px] font-medium uppercase tracking-[0.15em] text-black/30">
             Digital Gold
           </span>
         </div>
@@ -136,7 +133,7 @@ export function TopNavigation({
         <button
           type="button"
           onClick={onWalletConnect}
-          className="relative z-30 h-9 rounded-full border border-[#b48d16] bg-[linear-gradient(180deg,_rgba(4,11,13,0.92),_rgba(3,8,8,0.92))] px-3.5 text-[12px] font-semibold text-[#fce596] shadow-[0_3px_6px_rgba(0,0,0,0.28)]"
+          className="relative z-30 h-9 rounded-full bg-black px-3.5 text-[12px] font-semibold text-[#fce596] shadow-[0_3px_6px_rgba(0,0,0,0.18)]"
         >
           {walletButtonLabel}
         </button>
@@ -144,7 +141,7 @@ export function TopNavigation({
         <button
           type="button"
           onClick={onLanguageToggle}
-          className="relative z-30 flex h-9 w-9 items-center justify-center rounded-full border border-white/35 bg-black/70 p-[2px]"
+          className="relative z-30 flex h-9 w-9 items-center justify-center rounded-full border border-black/10 bg-black/75 p-[2px]"
           aria-label={copy.languageTitle}
         >
           <img
@@ -157,13 +154,13 @@ export function TopNavigation({
         <button
           type="button"
           onClick={onMenuToggle}
-          className="relative z-30 flex h-9 w-9 items-center justify-center rounded-full bg-transparent text-white"
+          className="relative z-30 flex h-9 w-9 items-center justify-center rounded-full bg-transparent text-black"
           aria-label="打開選單"
         >
           <div className="flex flex-col gap-[4px]">
-            <span className="h-[2.5px] w-[22px] rounded-full bg-white" />
-            <span className="h-[2.5px] w-[22px] rounded-full bg-white" />
-            <span className="h-[2.5px] w-[22px] rounded-full bg-white" />
+            <span className="h-[2.5px] w-[22px] rounded-full bg-black" />
+            <span className="h-[2.5px] w-[22px] rounded-full bg-black" />
+            <span className="h-[2.5px] w-[22px] rounded-full bg-black" />
           </div>
         </button>
       </div>
