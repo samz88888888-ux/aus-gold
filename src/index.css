@@ -11,7 +11,7 @@
     "Segoe UI",
     sans-serif;
   color: #e2e8f0;
-  background-color: #020617;
+  background-color: #f8f8f5;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -30,6 +30,8 @@ body,
 
 body {
   margin: 0;
+    background-color: #f8f8f5;
+
 }
 
 button,
