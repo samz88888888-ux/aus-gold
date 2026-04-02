@@ -295,7 +295,7 @@ export function CommunityScreen({
         <footer className="mt-12 flex flex-col items-center gap-3 pb-6">
           <div className="h-px w-20 bg-linear-to-r from-transparent via-[#d8b13a]/70 to-transparent" />
           <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-black/30">
-            MCG Community · Invite on Chain
+            AUS Community · Invite on Chain
           </p>
         </footer>
       </div>

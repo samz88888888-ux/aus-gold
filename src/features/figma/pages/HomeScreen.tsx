@@ -17,7 +17,7 @@ const visionPillars = [
   {
     title: '資產自主',
     en: 'Self-custodial Assets',
-    desc: '中心化不碰錢，用戶資產（U / MCG）始終在個人錢包，平台僅做撮合與結算。',
+    desc: '中心化不碰錢，用戶資產（U / AUS）始終在個人錢包，平台僅做撮合與結算。',
   },
   {
     title: '長期生態',
@@ -51,7 +51,7 @@ const techFeatures = [
   { title: '智能合約', en: 'Smart Contracts', desc: '認購 / Swap / 銷毀等核心規則以合約鎖定，不可篡改。' },
   { title: 'DePIN 融合', en: 'DePIN Integration', desc: '算力資源轉化為鏈上可驗證憑證，真實算力可度量。' },
   { title: '多鏈兼容', en: 'Multi-chain Ready', desc: '兼容 EVM 生態，支持主流瀏覽器錢包與移動端錢包。' },
-  { title: 'DAO 治理', en: 'DAO Governance', desc: '社區投票參與關鍵決策，MCG 持有者享有治理權。' },
+  { title: 'DAO 治理', en: 'DAO Governance', desc: '社區投票參與關鍵決策，AUS 持有者享有治理權。' },
   { title: '安全審計', en: 'Security Audit', desc: '合約代碼經第三方審計，關鍵操作設置多簽與時間鎖。' },
   { title: '開放 API', en: 'Open API', desc: '面向開發者提供鏈上數據查詢與集成接口，生態可擴展。' },
 ]
@@ -87,7 +87,7 @@ const roadmapPhases = [
     phase: 'Phase 3',
     title: '算力網絡',
     period: '2026 Q4',
-    items: ['DePIN 算力驗證機制上線', '算力市場開放交易', '跨鏈資產結算協議', 'MCG Staking 模塊'],
+    items: ['DePIN 算力驗證機制上線', '算力市場開放交易', '跨鏈資產結算協議', 'AUS Staking 模塊'],
   },
   {
     phase: 'Phase 4',
@@ -183,7 +183,7 @@ export function HomeScreen({
         <footer className="mt-12 flex flex-col items-center gap-3 pb-6">
           <div className="h-px w-20 bg-linear-to-r from-transparent via-[#d8b13a]/70 to-transparent" />
           <p className="text-[11px] font-semibold uppercase tracking-[0.3em] text-black/30">
-            MCG Ecosystem · Built on Chain
+            AUS Ecosystem · Built on Chain
           </p>
         </footer>
       </div>
@@ -195,7 +195,7 @@ function BrandDivider() {
   return (
     <div className="my-8 flex items-center gap-3">
       <span className="h-px flex-1 bg-linear-to-r from-transparent to-[#d9bd57]/40" />
-      <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-black/30">MCG</span>
+      <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-black/30">AUS</span>
       <span className="h-px flex-1 bg-linear-to-l from-transparent to-[#d9bd57]/40" />
     </div>
   )
@@ -269,7 +269,7 @@ function VisionSection() {
         <p className="text-[13px] leading-[24px] text-black/60">
           在法幣無限增發、資產高度金融化的時代，真正稀缺的不是機會，
           而是<span className="font-semibold text-[#efac40]">可信任的價值錨定</span>。
-          MCG 的使命是構建一個像「黃金」一樣，稀缺、可驗證、可跨越週期的數字價值系統。
+          AUS 的使命是構建一個像「黃金」一樣，稀缺、可驗證、可跨越週期的數字價值系統。
         </p>
         <p className="mt-3 rounded-[14px] border border-[#fad933]/20 bg-[#fad933]/18 px-3 py-2 text-[12px] leading-[20px] text-[#c58720]">
           ▸ 它不是短期收益模型，而是一套長期運行的數字生產秩序。
@@ -298,7 +298,7 @@ function EcosystemSection() {
 
       <div className={`${sectionCardClass} p-4`}>
         <p className="text-center text-[12px] leading-[20px] text-black/55">
-          MCG 生態由三個核心模塊協同運轉，形成「生產 → 流通 → 銷毀」的完整閉環
+          AUS 生態由三個核心模塊協同運轉，形成「生產 → 流通 → 銷毀」的完整閉環
         </p>
 
         <div className="mt-5 space-y-3">
@@ -333,7 +333,7 @@ function EcosystemSection() {
 
         <div className="mt-5 rounded-[14px] border border-[#fad933]/20 bg-[#fad933]/20 px-3 py-2.5">
           <p className="text-center text-[11px] font-medium leading-[18px] text-[#c58620]">
-            這意味著：MCG DePIN 本身就是「新一代數字資源公鏈」
+            這意味著：AUS DePIN 本身就是「新一代數字資源公鏈」
           </p>
         </div>
       </div>
@@ -395,7 +395,7 @@ function EconomicModelSection({
       </div>
 
       <div className={`${sectionCardClass} mt-4 p-4`}>
-        <p className="text-[12px] font-bold text-black/60">MCG 的核心能力在於</p>
+        <p className="text-[12px] font-bold text-black/60">AUS 的核心能力在於</p>
         <div className="mt-3 grid grid-cols-2 gap-2.5">
           {capabilityHighlights.map((text) => (
             <InfoBox key={text} text={text} />

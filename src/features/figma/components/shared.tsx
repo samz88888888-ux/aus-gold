@@ -121,7 +121,7 @@ export function TopNavigation({
         <img src={brandLogoUrl} alt="logo" className="h-9 w-9 rounded-xl object-cover shadow-[0_4px_10px_rgba(0,0,0,0.08)]" />
         <div className="flex flex-col">
           <span className="text-[15px] font-extrabold leading-tight tracking-wide text-black">
-            MCG
+            AUS
           </span>
           <span className="text-[8px] font-medium uppercase tracking-[0.15em] text-black/30">
             Digital Gold
@@ -204,7 +204,7 @@ export function SideDrawer({
             </div>
             <div className="flex min-w-0 flex-col">
               <span className="text-[18px] font-extrabold leading-tight tracking-wide text-black">
-                MCG
+                AUS
               </span>
               <span className="text-[9px] font-medium uppercase tracking-[0.12em] text-black/32">
                 Digital Gold
@@ -283,9 +283,9 @@ export function SideDrawer({
             <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#d7ab1e]">Navigation</p>
             <p className="mt-1 text-[14px] font-bold text-black">Menu</p>
           </div>
-          <span className="rounded-full border border-black/8 bg-white px-2.5 py-1 text-[10px] font-semibold text-black/38">
+          {/* <span className="rounded-full border border-black/8 bg-white px-2.5 py-1 text-[10px] font-semibold text-black/38">
             {menuItems.length} Items
-          </span>
+          </span> */}
         </div>
 
         <ul className="space-y-3">
