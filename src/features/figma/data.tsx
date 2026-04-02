@@ -7,6 +7,7 @@ import {
   MiningIcon,
   SwapIcon,
 } from './components/icons'
+import { assetUrl } from './utils/assets'
 import type {
   AdvantageCard,
   CopyText,
@@ -17,21 +18,21 @@ import type {
   SubscriptionPlan,
 } from './types'
 
-export const brandLogoUrl = '/figma/brand-logo.webp'
-export const heroBackgroundUrl = '/figma/home-hero-bg.webp'
-export const heroMainUrl = '/figma/hero-card-aus.webp'
-export const sectionFrameUrl = '/figma/home-section-bg.svg'
-export const advantageTitleUrl = '/figma/advantage-title.webp'
-export const noticeIconUrl = '/figma/hero-card-bg.svg'
-export const noticeCloseUrl = '/figma/hero-card-dots.svg'
+export const brandLogoUrl = assetUrl('/figma/brand-logo.webp')
+export const heroBackgroundUrl = assetUrl('/figma/home-hero-bg.webp')
+export const heroMainUrl = assetUrl('/figma/hero-card-aus.webp')
+export const sectionFrameUrl = assetUrl('/figma/home-section-bg.svg')
+export const advantageTitleUrl = assetUrl('/figma/advantage-title.webp')
+export const noticeIconUrl = assetUrl('/figma/hero-card-bg.svg')
+export const noticeCloseUrl = assetUrl('/figma/hero-card-dots.svg')
 
 export const languageOptions: LanguageOption[] = [
-  { code: 'zh-TW', label: '中文（繁體）', flagUrl: '/figma/lang-zh-hk.svg' },
-  { code: 'en', label: 'English', flagUrl: '/figma/lang-en.webp' },
-  { code: 'ko', label: '한국어', flagUrl: '/figma/lang-ko.svg' },
-  { code: 'ja', label: '日本語', flagUrl: '/figma/lang-ja.svg' },
-  { code: 'th', label: 'ภาษาไทย', flagUrl: '/figma/lang-th.svg' },
-  { code: 'ms', label: 'Bahasa Melayu', flagUrl: '/figma/lang-ms.svg' },
+  { code: 'zh-TW', label: '中文（繁體）', flagUrl: assetUrl('/figma/lang-zh-hk.svg') },
+  { code: 'en', label: 'English', flagUrl: assetUrl('/figma/lang-en.webp') },
+  { code: 'ko', label: '한국어', flagUrl: assetUrl('/figma/lang-ko.svg') },
+  { code: 'ja', label: '日本語', flagUrl: assetUrl('/figma/lang-ja.svg') },
+  { code: 'th', label: 'ภาษาไทย', flagUrl: assetUrl('/figma/lang-th.svg') },
+  { code: 'ms', label: 'Bahasa Melayu', flagUrl: assetUrl('/figma/lang-ms.svg') },
 ]
 
 export const menuItems: MenuItem[] = [
@@ -49,31 +50,31 @@ export const advantages: AdvantageCard[] = [
     code: '01',
     title: '分級認購與算力',
     description: '限量角色認購、高算力加成、時間復利加成',
-    image: '/figma/advantage-1.webp',
+    image: assetUrl('/figma/advantage-1.webp'),
   },
   {
     code: '02',
     title: '收益機制',
     description: '靜態挖礦 + 動態級差獎勵 + 全球分紅分潤',
-    image: '/figma/advantage-2.webp',
+    image: assetUrl('/figma/advantage-2.webp'),
   },
   {
     code: '03',
     title: '通縮模型',
     description: '交易 / 提現 / Swap 稅費自動歸集並觸發回購銷毀',
-    image: '/figma/advantage-3.webp',
+    image: assetUrl('/figma/advantage-3.webp'),
   },
   {
     code: '04',
     title: '交易體驗',
     description: 'Swap 多終端、鏈上實時交互、無感確認更順滑',
-    image: '/figma/advantage-4.webp',
+    image: assetUrl('/figma/advantage-4.webp'),
   },
   {
     code: '05',
     title: '架構安全',
     description: '中心化只做撮合與結算，資產留在用戶個人錢包',
-    image: '/figma/advantage-5.webp',
+    image: assetUrl('/figma/advantage-5.webp'),
   },
 ]
 
@@ -93,18 +94,18 @@ export const modelItems: ModelItem[] = [
 ]
 
 export const partners = [
-  { src: '/figma/partner-1.webp', name: 'DWF Labs' },
-  { src: '/figma/partner-2.webp', name: 'PancakeSwap' },
-  { src: '/figma/partner-3.webp', name: 'Infinity Ventures Crypto' },
-  { src: '/figma/partner-4.webp', name: '7 O\'Clock Capital' },
-  { src: '/figma/partner-5.webp', name: 'Mentha Partners' },
-  { src: '/figma/partner-6.webp', name: 'SOLRDAO' },
-  { src: '/figma/partner-7.webp', name: 'Singchain' },
-  { src: '/figma/partner-8.webp', name: 'BINANCE' },
-  { src: '/figma/partner-9.webp', name: 'Bitget' },
-  { src: '/figma/partner-10.webp', name: 'BingX' },
-  { src: '/figma/partner-11.webp', name: 'WEEX' },
-  { src: '/figma/partner-12.webp', name: 'Toobit' },
+  { src: assetUrl('/figma/partner-1.webp'), name: 'DWF Labs' },
+  { src: assetUrl('/figma/partner-2.webp'), name: 'PancakeSwap' },
+  { src: assetUrl('/figma/partner-3.webp'), name: 'Infinity Ventures Crypto' },
+  { src: assetUrl('/figma/partner-4.webp'), name: '7 O\'Clock Capital' },
+  { src: assetUrl('/figma/partner-5.webp'), name: 'Mentha Partners' },
+  { src: assetUrl('/figma/partner-6.webp'), name: 'SOLRDAO' },
+  { src: assetUrl('/figma/partner-7.webp'), name: 'Singchain' },
+  { src: assetUrl('/figma/partner-8.webp'), name: 'BINANCE' },
+  { src: assetUrl('/figma/partner-9.webp'), name: 'Bitget' },
+  { src: assetUrl('/figma/partner-10.webp'), name: 'BingX' },
+  { src: assetUrl('/figma/partner-11.webp'), name: 'WEEX' },
+  { src: assetUrl('/figma/partner-12.webp'), name: 'Toobit' },
 ]
 
 export const contacts = [
@@ -120,7 +121,7 @@ export const subscriptionPlans: SubscriptionPlan[] = [
     description: '最高等級節點，全球限量33個，享受5倍算力加成與全球分紅權益',
     amount: '10,000 U',
     quantity: '33 個',
-    icon: '/figma/subscription-icon-ops.webp',
+    icon: assetUrl('/figma/subscription-icon-ops.webp'),
     power: '5× · 50,000U',
     level: 'T7',
     reinvest: '-',
@@ -133,7 +134,7 @@ export const subscriptionPlans: SubscriptionPlan[] = [
     description: '高級戰略節點，限量100個，4倍算力加成，解鎖T6核心治理權限',
     amount: '5,000 U',
     quantity: '100 個',
-    icon: '/figma/subscription-icon-super.webp',
+    icon: assetUrl('/figma/subscription-icon-super.webp'),
     power: '4× · 20,000U',
     level: 'T6',
     reinvest: '-',
@@ -146,7 +147,7 @@ export const subscriptionPlans: SubscriptionPlan[] = [
     description: '核心生態節點，限量1000個，3.5倍算力，支持復投加成與時間復利疊加',
     amount: '1,000 U',
     quantity: '1,000 個',
-    icon: '/figma/subscription-icon-normal.webp',
+    icon: assetUrl('/figma/subscription-icon-normal.webp'),
     power: '3.5× · 3,500U',
     level: 'T5',
     reinvest: '2× 每月+10%',
@@ -159,7 +160,7 @@ export const subscriptionPlans: SubscriptionPlan[] = [
     description: '生態入門節點，不限數量，3倍算力，支持復投加成與時間復利疊加',
     amount: '500 U',
     quantity: '不限',
-    icon: '/figma/subscription-icon-gold.webp',
+    icon: assetUrl('/figma/subscription-icon-gold.webp'),
     power: '3× · 1,500U',
     level: 'T4',
     reinvest: '2× 每月+10%',

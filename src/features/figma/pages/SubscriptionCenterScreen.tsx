@@ -5,12 +5,13 @@ import { getSubscriptionPlans, getOrder, getOrderList } from '../services/api'
 import type { SubscriptionPlanApi, OrderListItem } from '../services/api'
 import { TopNavigation } from '../components/shared'
 import type { CopyText, LanguageOption, SubscriptionPlan, SubscriptionPlanId } from '../types'
+import { assetUrl } from '../utils/assets'
 
 const ICON_MAP: Record<string, string> = {
-  ops: '/figma/subscription-icon-ops.webp',
-  studio: '/figma/subscription-icon-super.webp',
-  super: '/figma/subscription-icon-normal.webp',
-  normal: '/figma/subscription-icon-gold.webp',
+  ops: assetUrl('/figma/subscription-icon-ops.webp'),
+  studio: assetUrl('/figma/subscription-icon-super.webp'),
+  super: assetUrl('/figma/subscription-icon-normal.webp'),
+  normal: assetUrl('/figma/subscription-icon-gold.webp'),
 }
 
 function formatPlanAmount(price: string, priceDisplay: string): string {
@@ -38,7 +39,7 @@ function apiToLocal(p: SubscriptionPlanApi): SubscriptionPlan {
     description: p.description ?? '',
     amount: formatPlanAmount(p.price, p.price_display),
     quantity: p.quantity_display,
-    icon: ICON_MAP[p.slug] ?? '/figma/subscription-icon-gold.webp',
+    icon: ICON_MAP[p.slug] ?? assetUrl('/figma/subscription-icon-gold.webp'),
     power: p.power_display,
     level: p.level_name,
     reinvest: p.reinvest_display,
