@@ -1,14 +1,17 @@
 import { useEffect, useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
 import { PageContainer } from '../../components/PageContainer'
 import { PageNavBar } from '../../components/PageNavBar'
 import { AgreementPopup } from '../../components/AgreementPopup'
 import { fetchProductDetail } from '../../services/api'
 import type { GoldProductDetail } from '../../services/types'
+import type { AppPage, PageParams } from '../../../figma/types'
 
-export function ShopDetailPage() {
-  const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
+type ShopDetailPageProps = {
+  productId: string | number
+  onNavigate: (page: AppPage, params?: PageParams) => void
+}
+
+export function ShopDetailPage({ productId, onNavigate }: ShopDetailPageProps) {
   const [product, setProduct] = useState<GoldProductDetail | null>(null)
   const [quantity, setQuantity] = useState(1)
   const [showAgreement, setShowAgreement] = useState(false)
@@ -18,30 +21,30 @@ export function ShopDetailPage() {
     (async () => {
       setLoading(true)
       try {
-        const data = await fetchProductDetail({ id: Number(id) })
+        const data = await fetchProductDetail({ id: Number(productId) })
         setProduct(data)
       } finally { setLoading(false) }
     })()
-  }, [id])
+  }, [productId])
 
   const handleBuy = () => {
     if (!product) return
     if (!product.is_purchased) {
       setShowAgreement(true)
     } else {
-      navigate('/shop/orderConfirm', { state: { product, quantity } })
+      onNavigate('shopOrderConfirm', { state: { product, quantity } })
     }
   }
 
   const handleAgree = () => {
     setShowAgreement(false)
-    navigate('/shop/orderConfirm', { state: { product, quantity } })
+    onNavigate('shopOrderConfirm', { state: { product, quantity } })
   }
 
   if (loading || !product) {
     return (
       <PageContainer>
-        <PageNavBar title="商品详情" />
+        <PageNavBar title="商品详情" onBack={() => onNavigate('shop')} />
         <div className="flex flex-col items-center py-32">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-yellow-400/20 border-t-yellow-400" />
           <span className="mt-3 text-sm text-white/60">加载中...</span>
@@ -56,7 +59,7 @@ export function ShopDetailPage() {
 
   return (
     <PageContainer>
-      <PageNavBar title="商品详情" />
+      <PageNavBar title="商品详情" onBack={() => onNavigate('shop')} />
       <GallerySection images={product.images} name={product.name} />
       <InfoSection product={product} />
       <SpecsSection specs={product.specs} />

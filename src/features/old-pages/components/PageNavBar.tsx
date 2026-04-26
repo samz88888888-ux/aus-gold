@@ -1,5 +1,3 @@
-import { useNavigate } from 'react-router-dom'
-
 type PageNavBarProps = {
   title: string
   onBack?: () => void
@@ -7,8 +5,7 @@ type PageNavBarProps = {
 }
 
 export function PageNavBar({ title, onBack, rightContent }: PageNavBarProps) {
-  const navigate = useNavigate()
-  const handleBack = onBack ?? (() => navigate(-1))
+  const handleBack = onBack ?? (() => { window.history.back() })
 
   return (
     <div className="sticky top-0 z-30 flex h-11 items-center bg-black/90 px-4 backdrop-blur">

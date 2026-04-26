@@ -1,45 +1,46 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, useLocation, useSearchParams } from 'react-router-dom'
 import { PageContainer } from '../../components/PageContainer'
 import { PageNavBar } from '../../components/PageNavBar'
 import { fetchAddressList } from '../../services/api'
 import type { GoldProductDetail, AddressItem } from '../../services/types'
+import type { AppPage, PageParams } from '../../../figma/types'
 
 type LocationState = { product: GoldProductDetail; quantity: number }
 
-export function ShopOrderConfirmPage() {
-  const navigate = useNavigate()
-  const location = useLocation()
-  const state = location.state as LocationState | null
-  const product = state?.product
-  const initQty = state?.quantity ?? 1
+type ShopOrderConfirmPageProps = {
+  pageState?: LocationState | null
+  addressId?: string
+  onNavigate: (page: AppPage, params?: PageParams) => void
+}
+
+export function ShopOrderConfirmPage({ pageState, addressId, onNavigate }: ShopOrderConfirmPageProps) {
+  const product = pageState?.product
+  const initQty = pageState?.quantity ?? 1
 
   const [quantity, setQuantity] = useState(initQty)
   const [needDelivery, setNeedDelivery] = useState(true)
   const [remark, setRemark] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [selectedAddress, setSelectedAddress] = useState<AddressItem | null>(null)
-  const [searchParams] = useSearchParams()
 
   useEffect(() => {
     fetchAddressList().then(list => {
-      const addrId = searchParams.get('address_id')
-      if (addrId) {
-        const found = list.find(a => a.id === Number(addrId))
+      if (addressId) {
+        const found = list.find(a => a.id === Number(addressId))
         if (found) { setSelectedAddress(found); return }
       }
       const def = list.find(a => a.is_default === 1) ?? list[0] ?? null
       setSelectedAddress(def)
     })
-  }, [searchParams])
+  }, [addressId])
 
   if (!product) {
     return (
       <PageContainer>
-        <PageNavBar title="确认订单" />
+        <PageNavBar title="确认订单" onBack={() => onNavigate('shop')} />
         <div className="flex flex-col items-center py-32 text-white/60">
           <span>订单数据不存在</span>
-          <button type="button" onClick={() => navigate('/shop')} className="mt-4 rounded-lg bg-yellow-400/20 px-6 py-2 text-sm text-yellow-400">返回商城</button>
+          <button type="button" onClick={() => onNavigate('shop')} className="mt-4 rounded-lg bg-yellow-400/20 px-6 py-2 text-sm text-yellow-400">返回商城</button>
         </div>
       </PageContainer>
     )
@@ -53,15 +54,15 @@ export function ShopOrderConfirmPage() {
     setSubmitting(true)
     await new Promise(r => setTimeout(r, 800))
     setSubmitting(false)
-    navigate('/orders')
+    onNavigate('orders')
   }
 
   return (
     <PageContainer>
-      <PageNavBar title="确认订单" />
+      <PageNavBar title="确认订单" onBack={() => onNavigate('shop')} />
       <div className="px-4 pb-40 pt-4">
         <DeliveryToggle active={needDelivery} onChange={setNeedDelivery} />
-        {needDelivery && <AddressCard address={selectedAddress} onSelect={() => navigate('/address?from=shop/orderConfirm')} />}
+        {needDelivery && <AddressCard address={selectedAddress} onSelect={() => onNavigate('address', { from: 'shopOrderConfirm' })} />}
         <ProductCard product={product} quantity={quantity} setQuantity={setQuantity} />
         <RemarkSection value={remark} onChange={setRemark} />
       </div>

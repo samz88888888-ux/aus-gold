@@ -3,6 +3,7 @@ import { PageContainer } from '../../components/PageContainer'
 import { PageNavBar } from '../../components/PageNavBar'
 import { fetchMachineList } from '../../services/api'
 import type { MachineItem } from '../../services/types'
+import type { AppPage, PageParams } from '../../../figma/types'
 
 const TAB_LIST = [
   { text: '激活设备', type: 1 },
@@ -11,7 +12,11 @@ const TAB_LIST = [
   { text: '节点矿机', type: 3 },
 ]
 
-export function DestoryListPage() {
+type DestoryListPageProps = {
+  onNavigate: (page: AppPage, params?: PageParams) => void
+}
+
+export function DestoryListPage({ onNavigate }: DestoryListPageProps) {
   const [activeTab, setActiveTab] = useState(2)
   const [list, setList] = useState<MachineItem[]>([])
   const [loading, setLoading] = useState(false)
@@ -27,7 +32,7 @@ export function DestoryListPage() {
 
   return (
     <PageContainer bgClass="bg-[#050510]">
-      <PageNavBar title="我的矿机" />
+      <PageNavBar title="我的矿机" onBack={() => onNavigate('ming')} />
 
       <div className="min-h-screen px-4 pt-4"
         style={{ backgroundImage: "url('/old-pages/ming/ming-list-bg.png')", backgroundSize: '100% 100%', backgroundRepeat: 'no-repeat' }}>

@@ -1,15 +1,17 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
 import { PageContainer } from '../../components/PageContainer'
 import { PageNavBar } from '../../components/PageNavBar'
 import { ConfirmPopup } from '../../components/ConfirmPopup'
 import { fetchAddressList, deleteAddress, setDefaultAddress } from '../../services/api'
 import type { AddressItem } from '../../services/types'
+import type { AppPage, PageParams } from '../../../figma/types'
 
-export function AddressListPage() {
-  const navigate = useNavigate()
-  const [searchParams] = useSearchParams()
-  const from = searchParams.get('from') || ''
+type AddressListPageProps = {
+  from?: string
+  onNavigate: (page: AppPage, params?: PageParams) => void
+}
+
+export function AddressListPage({ from, onNavigate }: AddressListPageProps) {
   const [list, setList] = useState<AddressItem[]>([])
   const [loading, setLoading] = useState(true)
   const [deleteTarget, setDeleteTarget] = useState<number | null>(null)
@@ -34,14 +36,14 @@ export function AddressListPage() {
   }
 
   const handleSelect = (item: AddressItem) => {
-    if (from) {
-      navigate(`/${from}?address_id=${item.id}`, { replace: true })
+    if (from === 'shopOrderConfirm') {
+      onNavigate('shopOrderConfirm', { address_id: String(item.id) })
     }
   }
 
   return (
     <PageContainer>
-      <PageNavBar title="收货地址" />
+      <PageNavBar title="收货地址" onBack={() => onNavigate('shop')} />
       <div className="px-4 py-4">
         {loading ? (
           <p className="py-20 text-center text-sm text-white/40">加载中...</p>
@@ -72,7 +74,7 @@ export function AddressListPage() {
                     设为默认
                   </button>
                   <div className="flex gap-3">
-                    <button type="button" onClick={(e) => { e.stopPropagation(); navigate(`/address/edit/${item.id}`) }}
+                    <button type="button" onClick={(e) => { e.stopPropagation(); onNavigate('addressEdit', { id: item.id }) }}
                       className="text-xs text-white/50 hover:text-white">编辑</button>
                     <button type="button" onClick={(e) => { e.stopPropagation(); setDeleteTarget(item.id) }}
                       className="text-xs text-red-400/70 hover:text-red-400">删除</button>
@@ -85,7 +87,7 @@ export function AddressListPage() {
       </div>
 
       <div className="fixed bottom-0 left-1/2 w-full max-w-[430px] -translate-x-1/2 border-t border-white/10 bg-[#0a0a1a]/95 px-4 py-3 backdrop-blur">
-        <button type="button" onClick={() => navigate('/address/add')}
+        <button type="button" onClick={() => onNavigate('addressAdd')}
           className="w-full rounded-xl bg-gradient-to-r from-yellow-300 to-amber-500 py-3 text-sm font-bold text-black">
           新增收货地址
         </button>

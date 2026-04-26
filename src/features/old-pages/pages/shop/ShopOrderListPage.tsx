@@ -3,6 +3,7 @@ import { PageContainer } from '../../components/PageContainer'
 import { PageNavBar } from '../../components/PageNavBar'
 import { fetchGoldOrderList, fetchGoldProductConfirm } from '../../services/api'
 import type { GoldOrderItem } from '../../services/types'
+import type { AppPage, PageParams } from '../../../figma/types'
 
 const statusColor: Record<number, string> = {
   1: 'bg-yellow-500/20 text-yellow-300',
@@ -10,7 +11,11 @@ const statusColor: Record<number, string> = {
   3: 'bg-green-500/20 text-green-300',
 }
 
-export function ShopOrderListPage() {
+type ShopOrderListPageProps = {
+  onNavigate: (page: AppPage, params?: PageParams) => void
+}
+
+export function ShopOrderListPage({ onNavigate }: ShopOrderListPageProps) {
   const [orders, setOrders] = useState<GoldOrderItem[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -25,7 +30,7 @@ export function ShopOrderListPage() {
 
   return (
     <PageContainer>
-      <PageNavBar title="我的订单" />
+      <PageNavBar title="我的订单" onBack={() => onNavigate('shop')} />
       <div className="space-y-3 px-4 py-4">
         {loading ? (
           <p className="py-20 text-center text-sm text-white/40">加载中...</p>

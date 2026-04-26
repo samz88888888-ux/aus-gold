@@ -3,6 +3,7 @@ import { PageContainer } from '../../components/PageContainer'
 import { PageNavBar } from '../../components/PageNavBar'
 import { fetchMiningLog } from '../../services/api'
 import type { MiningLogItem } from '../../services/types'
+import type { AppPage, PageParams } from '../../../figma/types'
 
 const TYPE_OPTIONS = [
   { text: '全部', value: 0 },
@@ -14,7 +15,11 @@ const TYPE_OPTIONS = [
   { text: '转移算力', value: 6 },
 ]
 
-export function MingLogPage() {
+type MingLogPageProps = {
+  onNavigate: (page: AppPage, params?: PageParams) => void
+}
+
+export function MingLogPage({ onNavigate }: MingLogPageProps) {
   const [list, setList] = useState<MiningLogItem[]>([])
   const [selectedType, setSelectedType] = useState(0)
   const [showSelector, setShowSelector] = useState(false)
@@ -38,7 +43,7 @@ export function MingLogPage() {
 
   return (
     <PageContainer bgClass="bg-[#050510]">
-      <PageNavBar title="算力日志" />
+      <PageNavBar title="算力日志" onBack={() => onNavigate('ming')} />
 
       <div className="min-h-screen px-4 pt-5"
         style={{ backgroundImage: "url('/old-pages/ming/ming-list-bg.png')", backgroundSize: '100% 100%', backgroundRepeat: 'no-repeat' }}>

@@ -1,13 +1,16 @@
 import { useEffect, useState, useCallback } from 'react'
-import { useSearchParams } from 'react-router-dom'
 import { PageContainer } from '../../components/PageContainer'
 import { PageNavBar } from '../../components/PageNavBar'
 import { fetchOrderReleaseList } from '../../services/api'
 import type { OrderReleaseItem } from '../../services/types'
+import type { AppPage, PageParams } from '../../../figma/types'
 
-export function ShopOrderReleasePage() {
-  const [searchParams] = useSearchParams()
-  const groupId = searchParams.get('group_id')
+type ShopOrderReleasePageProps = {
+  groupId?: string
+  onNavigate: (page: AppPage, params?: PageParams) => void
+}
+
+export function ShopOrderReleasePage({ groupId, onNavigate }: ShopOrderReleasePageProps) {
   const [records, setRecords] = useState<OrderReleaseItem[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -25,7 +28,7 @@ export function ShopOrderReleasePage() {
 
   return (
     <PageContainer>
-      <PageNavBar title="待释放记录" />
+      <PageNavBar title="待释放记录" onBack={() => onNavigate('shop')} />
       <div className="px-4 pb-20 pt-4">
         {loading ? (
           <div className="flex flex-col items-center py-20">

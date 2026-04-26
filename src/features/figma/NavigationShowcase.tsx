@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 
 import { copyByLanguage, languageOptions, menuItems } from './data'
 import {
@@ -13,6 +12,19 @@ import {
 import { HomeScreen } from './pages/HomeScreen'
 import { SubscriptionCenterScreen } from './pages/SubscriptionCenterScreen'
 import { CommunityScreen } from './pages/CommunityScreen'
+import { MingPage } from '../old-pages/pages/ming/MingPage'
+import { MingLogPage } from '../old-pages/pages/ming/MingLogPage'
+import { DestoryListPage } from '../old-pages/pages/ming/DestoryListPage'
+import { ShopPage } from '../old-pages/pages/shop/ShopPage'
+import { ShopDetailPage } from '../old-pages/pages/shop/ShopDetailPage'
+import { ShopOrderListPage } from '../old-pages/pages/shop/ShopOrderListPage'
+import { ShopOrderReleasePage } from '../old-pages/pages/shop/ShopOrderReleasePage'
+import { ShopOrderConfirmPage } from '../old-pages/pages/shop/ShopOrderConfirmPage'
+import { OrdersPage } from '../old-pages/pages/order/OrdersPage'
+import { UserPage } from '../old-pages/pages/user/UserPage'
+import { AddressListPage } from '../old-pages/pages/address/AddressListPage'
+import { AddressAddPage } from '../old-pages/pages/address/AddressAddPage'
+import { AddressEditPage } from '../old-pages/pages/address/AddressEditPage'
 import {
   BSC_CHAIN_ID,
   clearAuth,
@@ -27,10 +39,9 @@ import {
 } from './services/auth'
 import { getMarquee } from './services/api'
 import type { NoticeItem } from './services/api'
-import type { AppPage, LanguageCode, SubscriptionPlanId } from './types'
+import type { AppPage, LanguageCode, PageParams, SubscriptionPlanId } from './types'
 
 export function NavigationShowcase() {
-  const routerNavigate = useNavigate()
   const heroSectionRef = useRef<HTMLElement | null>(null)
   const advantagesSectionRef = useRef<HTMLElement | null>(null)
   const modelSectionRef = useRef<HTMLElement | null>(null)
@@ -41,6 +52,7 @@ export function NavigationShowcase() {
   const [isWalletSheetOpen, setIsWalletSheetOpen] = useState(false)
   const [isNoticeDetailOpen, setIsNoticeDetailOpen] = useState(false)
   const [currentPage, setCurrentPage] = useState<AppPage>('home')
+  const [pageParams, setPageParams] = useState<PageParams>({})
   const [activeMenu, setActiveMenu] = useState(menuItems[0].label)
   const [activeSubscriptionPlan, setActiveSubscriptionPlan] = useState<SubscriptionPlanId>('ops')
   const [selectedLanguageCode] = useState<LanguageCode>(() => {
@@ -287,14 +299,21 @@ export function NavigationShowcase() {
   const isCurrentChainBsc = currentChainId?.toLowerCase() === BSC_CHAIN_ID
 
 
-  const navigateToPage = (page: AppPage) => {
+  const navigateToPage = (page: AppPage, params?: PageParams) => {
     setCurrentPage(page)
-    const menuMap: Record<AppPage, string> = {
+    setPageParams(params ?? {})
+    const menuMap: Partial<Record<AppPage, string>> = {
       home: '首頁',
       subscription: '認購中心',
       community: '我的社區',
+      ming: '算力挖礦',
+      shop: '黃金商城',
+      orders: '待支付訂單',
+      user: '邀請中心',
     }
-    setActiveMenu(menuMap[page])
+    if (menuMap[page]) {
+      setActiveMenu(menuMap[page]!)
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
@@ -350,7 +369,7 @@ export function NavigationShowcase() {
               }}
               onFeedback={setFeedbackMessage}
             />
-          ) : (
+          ) : currentPage === 'community' ? (
             <CommunityScreen
               copy={copy}
               currentLanguage={selectedLanguage}
@@ -361,7 +380,33 @@ export function NavigationShowcase() {
               onWalletConnect={handleWalletConnect}
               onFeedback={setFeedbackMessage}
             />
-          )}
+          ) : currentPage === 'ming' ? (
+            <MingPage onNavigate={navigateToPage} />
+          ) : currentPage === 'mingLog' ? (
+            <MingLogPage onNavigate={navigateToPage} />
+          ) : currentPage === 'destoryList' ? (
+            <DestoryListPage onNavigate={navigateToPage} />
+          ) : currentPage === 'shop' ? (
+            <ShopPage onNavigate={navigateToPage} />
+          ) : currentPage === 'shopDetail' ? (
+            <ShopDetailPage productId={pageParams.id ?? ''} onNavigate={navigateToPage} />
+          ) : currentPage === 'shopOrderList' ? (
+            <ShopOrderListPage onNavigate={navigateToPage} />
+          ) : currentPage === 'shopOrderRelease' ? (
+            <ShopOrderReleasePage groupId={pageParams.group_id} onNavigate={navigateToPage} />
+          ) : currentPage === 'shopOrderConfirm' ? (
+            <ShopOrderConfirmPage pageState={pageParams.state as { product: import('../old-pages/services/types').GoldProductDetail; quantity: number } | null} addressId={pageParams.address_id} onNavigate={navigateToPage} />
+          ) : currentPage === 'orders' ? (
+            <OrdersPage onNavigate={navigateToPage} />
+          ) : currentPage === 'user' ? (
+            <UserPage onNavigate={navigateToPage} />
+          ) : currentPage === 'address' ? (
+            <AddressListPage from={pageParams.from} onNavigate={navigateToPage} />
+          ) : currentPage === 'addressAdd' ? (
+            <AddressAddPage onNavigate={navigateToPage} />
+          ) : currentPage === 'addressEdit' ? (
+            <AddressEditPage addressId={pageParams.id ?? ''} onNavigate={navigateToPage} />
+          ) : null}
 
           {isDrawerOpen ? (
             <button
@@ -419,15 +464,19 @@ export function NavigationShowcase() {
                 navigateToPage(label === '認購中心' ? 'subscription' : 'community')
                 return
               }
-              const routeMap: Record<string, string> = {
-                '算力挖礦': '/ming',
-                '黃金商城': '/shop',
-                '待支付訂單': '/orders',
-                '邀請中心': '/user',
+              const pageMap: Record<string, AppPage> = {
+                '算力挖礦': 'ming',
+                '黃金商城': 'shop',
+                '待支付訂單': 'orders',
+                '邀請中心': 'user',
               }
-              const route = routeMap[label]
-              if (route) {
-                routerNavigate(route)
+              const page = pageMap[label]
+              if (page) {
+                if (!authToken) {
+                  setFeedbackMessage(copy.loginRequired)
+                  return
+                }
+                navigateToPage(page)
                 return
               }
               setFeedbackMessage(copy.developing)

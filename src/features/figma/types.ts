@@ -25,7 +25,31 @@ export type ModelItem = {
   description: string
 }
 
-export type AppPage = 'home' | 'subscription' | 'community'
+export type AppPage =
+  | 'home'
+  | 'subscription'
+  | 'community'
+  | 'ming'
+  | 'mingLog'
+  | 'destoryList'
+  | 'shop'
+  | 'shopDetail'
+  | 'shopOrderList'
+  | 'shopOrderRelease'
+  | 'shopOrderConfirm'
+  | 'orders'
+  | 'user'
+  | 'address'
+  | 'addressAdd'
+  | 'addressEdit'
+
+export type PageParams = {
+  id?: string | number
+  from?: string
+  address_id?: string
+  group_id?: string
+  state?: unknown
+}
 
 export type SubscriptionPlanId = 'ops' | 'studio' | 'super' | 'normal'
 

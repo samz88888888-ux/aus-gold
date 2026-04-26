@@ -1,5 +1,4 @@
 import { useEffect, useState, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { PageContainer } from '../../components/PageContainer'
 import { PageNavBar } from '../../components/PageNavBar'
 import {
@@ -7,14 +6,18 @@ import {
   fetchProductList, fetchMallBlock,
 } from '../../services/api'
 import type { BannerItem, GoldPrice, GoldCategory, GoldProduct, GroupItem } from '../../services/types'
+import type { AppPage, PageParams } from '../../../figma/types'
 
-export function ShopPage() {
-  const navigate = useNavigate()
+type ShopPageProps = {
+  onNavigate: (page: AppPage, params?: PageParams) => void
+}
+
+export function ShopPage({ onNavigate }: ShopPageProps) {
   const [banners, setBanners] = useState<BannerItem[]>([])
   const [goldPrice, setGoldPrice] = useState<GoldPrice | null>(null)
   const [categories, setCategories] = useState<GoldCategory[]>([])
   const [products, setProducts] = useState<GoldProduct[]>([])
-  const [blocks, setBlocks] = useState<GroupItem[]>([])
+  const [, setBlocks] = useState<GroupItem[]>([])
   const [selectedBlockId, setSelectedBlockId] = useState<number | null>(null)
   const [selectedCatId, setSelectedCatId] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
@@ -41,17 +44,17 @@ export function ShopPage() {
 
   return (
     <PageContainer>
-      <PageNavBar title="商城" />
+      <PageNavBar title="商城" onBack={() => onNavigate('home')} />
       {/* Banner */}
       <BannerSection banners={banners} goldPrice={goldPrice} />
       {/* Quick actions */}
-      <QuickActions navigate={navigate} blockId={selectedBlockId} />
+      <QuickActions onNavigate={onNavigate} blockId={selectedBlockId} />
       {/* Categories */}
       <CategoryTabs categories={categories} selectedId={selectedCatId} onSelect={selectCategory} />
       {/* Products */}
       {loading ? <LoadingSpinner /> : (
         filtered.length > 0
-          ? <ProductGrid products={filtered} onTap={id => navigate(`/shop/detail/${id}`)} />
+          ? <ProductGrid products={filtered} onTap={id => onNavigate('shopDetail', { id })} />
           : <EmptyState />
       )}
       <div className="h-20" />
@@ -74,15 +77,15 @@ function BannerSection({ banners, goldPrice }: { banners: BannerItem[]; goldPric
   )
 }
 
-function QuickActions({ navigate, blockId }: { navigate: ReturnType<typeof useNavigate>; blockId: number | null }) {
-  const qs = blockId ? `?group_id=${blockId}` : ''
+function QuickActions({ onNavigate, blockId }: { onNavigate: (page: AppPage, params?: PageParams) => void; blockId: number | null }) {
+  const qs = blockId ? String(blockId) : undefined
   return (
     <div className="mx-4 mt-4 space-y-3">
       {[
-        { label: '我的订单', sub: '查看购买记录', path: `/shop/orderList${qs}` },
-        { label: '待释放记录', sub: '查看释放历史', path: `/shop/orderRelease${qs}` },
+        { label: '我的订单', sub: '查看购买记录', page: 'shopOrderList' as AppPage },
+        { label: '待释放记录', sub: '查看释放历史', page: 'shopOrderRelease' as AppPage },
       ].map(a => (
-        <button key={a.path} type="button" onClick={() => navigate(a.path)}
+        <button key={a.page} type="button" onClick={() => onNavigate(a.page, { group_id: qs })}
           className="flex w-full items-center gap-3 rounded-2xl border border-yellow-500/20 bg-[#1e1e1e] p-3 text-left shadow-md transition active:scale-[0.98]">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-yellow-400 to-amber-500 shadow">
             <svg className="h-5 w-5 text-black" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V5a2 2 0 00-2-2zm0 16H5V8h14v11zM7 10h10v2H7zm0 4h7v2H7z" /></svg>

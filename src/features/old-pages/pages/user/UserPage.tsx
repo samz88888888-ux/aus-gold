@@ -3,6 +3,7 @@ import { PageContainer } from '../../components/PageContainer'
 import { PageNavBar } from '../../components/PageNavBar'
 import { fetchUserInfoOld, fetchTeamList } from '../../services/api'
 import type { UserInfo, TeamMember } from '../../services/types'
+import type { AppPage, PageParams } from '../../../figma/types'
 
 function truncateAddr(addr: string) {
   if (!addr || addr.length < 12) return addr || '--'
@@ -80,7 +81,11 @@ function InviteCard({ icon, label, value, onCopy }: { icon: string; label: strin
   )
 }
 
-export function UserPage() {
+type UserPageProps = {
+  onNavigate: (page: AppPage, params?: PageParams) => void
+}
+
+export function UserPage({ onNavigate }: UserPageProps) {
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null)
   const [teamList, setTeamList] = useState<TeamMember[]>([])
   const [loading, setLoading] = useState(true)
@@ -102,7 +107,7 @@ export function UserPage() {
   if (loading) {
     return (
       <PageContainer>
-        <PageNavBar title="我的团队" />
+        <PageNavBar title="我的团队" onBack={() => onNavigate('home')} />
         <div className="flex flex-col items-center gap-2 py-32">
           <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-amber-400" />
           <span className="text-sm text-white/40">加载中...</span>
@@ -113,7 +118,7 @@ export function UserPage() {
 
   return (
     <PageContainer>
-      <PageNavBar title="我的团队" />
+      <PageNavBar title="我的团队" onBack={() => onNavigate('home')} />
 
       {/* hero bg */}
       <div className="relative h-[260px] w-full bg-cover bg-top bg-no-repeat" style={{ backgroundImage: "url('/old-pages/team/team-user-bg.png')" }} />

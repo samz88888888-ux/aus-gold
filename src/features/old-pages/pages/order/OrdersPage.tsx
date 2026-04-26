@@ -4,6 +4,7 @@ import { PageNavBar } from '../../components/PageNavBar'
 import { ConfirmPopup } from '../../components/ConfirmPopup'
 import { fetchPreOrderList, cancelPreOrder } from '../../services/api'
 import type { PreOrderItem } from '../../services/types'
+import type { AppPage, PageParams } from '../../../figma/types'
 
 // --- Countdown hook ---
 function useCountdown(expireAt: string) {
@@ -104,7 +105,11 @@ function OrderCard({
   )
 }
 
-export function OrdersPage() {
+type OrdersPageProps = {
+  onNavigate: (page: AppPage, params?: PageParams) => void
+}
+
+export function OrdersPage({ onNavigate }: OrdersPageProps) {
   const [orders, setOrders] = useState<PreOrderItem[]>([])
   const [loading, setLoading] = useState(true)
   const [cancelTarget, setCancelTarget] = useState<PreOrderItem | null>(null)
@@ -132,7 +137,7 @@ export function OrdersPage() {
 
   return (
     <PageContainer>
-      <PageNavBar title="待支付订单" />
+      <PageNavBar title="待支付订单" onBack={() => onNavigate('home')} />
 
       {/* hero bg */}
       <div className="relative">

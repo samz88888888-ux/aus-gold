@@ -1,18 +1,21 @@
 import { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { PageContainer } from '../../components/PageContainer'
 import { PageNavBar } from '../../components/PageNavBar'
 import { BottomPopup } from '../../components/BottomPopup'
 import { fetchUserInfoOld, fetchDestoryInfo } from '../../services/api'
 import type { UserInfo, DestoryInfo } from '../../services/types'
+import type { AppPage, PageParams } from '../../../figma/types'
 
 function formatNumber(value: number | string | undefined) {
   if (!value && value !== 0) return '0.00'
   return Number(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }
 
-export function MingPage() {
-  const navigate = useNavigate()
+type MingPageProps = {
+  onNavigate: (page: AppPage, params?: PageParams) => void
+}
+
+export function MingPage({ onNavigate }: MingPageProps) {
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null)
   const [destoryInfo, setDestoryInfo] = useState<DestoryInfo | null>(null)
   const [showPopup, setShowPopup] = useState(false)
@@ -24,7 +27,7 @@ export function MingPage() {
 
   return (
     <PageContainer bgClass="bg-[#050510]">
-      <PageNavBar title="算力" />
+      <PageNavBar title="算力" onBack={() => onNavigate('home')} />
 
       <div className="relative flex flex-col items-start px-4 pb-24 pt-4"
         style={{ backgroundImage: "url('/old-pages/ming/ming-list-bg.png')", backgroundSize: '100% 100%', backgroundRepeat: 'no-repeat' }}>
@@ -32,7 +35,7 @@ export function MingPage() {
         {/* 算力日志 tag */}
         <button
           type="button"
-          onClick={() => navigate('/mingLog')}
+          onClick={() => onNavigate('mingLog')}
           className="absolute right-0 top-[52px] z-10 flex h-[30px] items-center rounded-l-xl border-2 border-r-0 border-[rgba(251,208,5,0.19)] bg-black px-4"
         >
           <span className="text-xs text-white">算力日志&gt;</span>
@@ -67,7 +70,7 @@ export function MingPage() {
 
         {/* 按钮组 */}
         <div className="mt-4 flex w-full gap-4">
-          <GoldButton label="我的矿机" onClick={() => navigate('/destoryList')} />
+          <GoldButton label="我的矿机" onClick={() => onNavigate('destoryList')} />
           <GoldButton label="销毁挖矿" onClick={() => setShowPopup(true)} />
         </div>
       </div>

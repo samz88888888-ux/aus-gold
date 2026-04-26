@@ -1,17 +1,17 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { PageContainer } from '../../components/PageContainer'
 import { PageNavBar } from '../../components/PageNavBar'
 import type { AddressFormData } from '../../services/types'
+import type { AppPage, PageParams } from '../../../figma/types'
 
 type AddressFormProps = {
   title: string
   initial?: Partial<AddressFormData>
   onSubmit: (data: AddressFormData) => Promise<void>
+  onNavigate: (page: AppPage, params?: PageParams) => void
 }
 
-export function AddressForm({ title, initial, onSubmit }: AddressFormProps) {
-  const navigate = useNavigate()
+export function AddressForm({ title, initial, onSubmit, onNavigate }: AddressFormProps) {
   const [form, setForm] = useState<AddressFormData>({
     real_name: initial?.real_name ?? '',
     phone: initial?.phone ?? '',
@@ -33,14 +33,14 @@ export function AddressForm({ title, initial, onSubmit }: AddressFormProps) {
     setSubmitting(true)
     try {
       await onSubmit(form)
-      navigate(-1)
+      onNavigate('address')
     } catch { alert('操作失败，请重试') }
     finally { setSubmitting(false) }
   }
 
   return (
     <PageContainer>
-      <PageNavBar title={title} />
+      <PageNavBar title={title} onBack={() => onNavigate('address')} />
       <div className="space-y-4 px-4 pb-24 pt-4">
         <Field label="收货人" value={form.real_name} placeholder="请输入收货人姓名"
           onChange={v => update('real_name', v)} />
