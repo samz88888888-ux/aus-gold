@@ -43,6 +43,10 @@ export const menuItems: MenuItem[] = [
   { label: '我的資產', icon: BriefcaseIcon },
   { label: 'Swap', icon: SwapIcon },
   { label: '算力與收益', icon: AtomIcon },
+  { label: '算力挖礦', icon: MiningIcon },
+  { label: '黃金商城', icon: BriefcaseIcon },
+  { label: '待支付訂單', icon: SwapIcon },
+  { label: '邀請中心', icon: AtomIcon },
 ]
 
 export const advantages: AdvantageCard[] = [

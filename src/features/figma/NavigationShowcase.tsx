@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 import { copyByLanguage, languageOptions, menuItems } from './data'
 import {
@@ -29,6 +30,7 @@ import type { NoticeItem } from './services/api'
 import type { AppPage, LanguageCode, SubscriptionPlanId } from './types'
 
 export function NavigationShowcase() {
+  const routerNavigate = useNavigate()
   const heroSectionRef = useRef<HTMLElement | null>(null)
   const advantagesSectionRef = useRef<HTMLElement | null>(null)
   const modelSectionRef = useRef<HTMLElement | null>(null)
@@ -415,6 +417,17 @@ export function NavigationShowcase() {
                   return
                 }
                 navigateToPage(label === '認購中心' ? 'subscription' : 'community')
+                return
+              }
+              const routeMap: Record<string, string> = {
+                '算力挖礦': '/ming',
+                '黃金商城': '/shop',
+                '待支付訂單': '/orders',
+                '邀請中心': '/user',
+              }
+              const route = routeMap[label]
+              if (route) {
+                routerNavigate(route)
                 return
               }
               setFeedbackMessage(copy.developing)

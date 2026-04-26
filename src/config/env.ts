@@ -19,6 +19,7 @@ export const appEnv = {
   assetBaseUrl: import.meta.env.VITE_ASSET_BASE_URL,
   apiGatewayPath: import.meta.env.VITE_API_GATEWAY_PATH,
   apiUseGateway: import.meta.env.VITE_API_USE_GATEWAY === 'true',
+  useMock: import.meta.env.VITE_USE_MOCK === 'true',
   isDev: import.meta.env.DEV,
   isProd: import.meta.env.PROD,
 } as const
