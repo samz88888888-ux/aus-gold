@@ -23,9 +23,11 @@ export function PageContainer({ children, className = '', bgClass = 'bg-[#0a0a1a
             onMenuToggle={header.onMenuToggle}
             onLanguageToggle={header.onLanguageToggle}
             onWalletConnect={header.onWalletConnect}
+            showBackButton={header.showBackButton}
+            onBack={header.onBack}
           />
         ) : null}
-        <div className={header ? 'min-h-screen pt-[56px]' : 'min-h-screen'}>
+        <div className={header ? 'min-h-screen pt-[48px]' : 'min-h-screen'}>
           {children}
         </div>
       </div>

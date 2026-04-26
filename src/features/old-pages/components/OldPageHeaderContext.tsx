@@ -9,6 +9,8 @@ export type OldPageHeaderProps = {
   onMenuToggle: () => void
   onLanguageToggle: () => void
   onWalletConnect: () => void
+  showBackButton?: boolean
+  onBack?: () => void
 }
 
 const OldPageHeaderContext = createContext<OldPageHeaderProps | null>(null)

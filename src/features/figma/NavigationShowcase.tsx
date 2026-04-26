@@ -299,16 +299,6 @@ export function NavigationShowcase() {
   const chainName = getChainDisplayName(currentChainId)
   const isCurrentChainBsc = currentChainId?.toLowerCase() === BSC_CHAIN_ID
 
-  const oldPageHeaderProps = {
-    copy,
-    currentLanguage: selectedLanguage,
-    walletButtonLabel,
-    onMenuToggle: () => setIsDrawerOpen((open) => !open),
-    onLanguageToggle: () => setIsLanguageSheetOpen((open) => !open),
-    onWalletConnect: handleWalletConnect,
-  }
-
-
   const navigateToPage = (page: AppPage, params?: PageParams) => {
     setCurrentPage(page)
     setPageParams(params ?? {})
@@ -325,6 +315,36 @@ export function NavigationShowcase() {
       setActiveMenu(menuMap[page]!)
     }
     window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  // 这里就是 old-pages “二级页显示返回按钮”的清单：
+  // 只把从页面内部点击进入的页面放进来；
+  // 侧边栏直达页（ming/shop/orders/user）不放进来，就会显示 logo。
+  const oldPageSecondLevelBackMap: Partial<Record<AppPage, { page: AppPage; params?: PageParams }>> = {
+    mingLog: { page: 'ming' },
+    destoryList: { page: 'ming' },
+    shopDetail: { page: 'shop' },
+    shopOrderList: { page: 'shop' },
+    shopOrderRelease: { page: 'shop' },
+    shopOrderConfirm: { page: 'shop' },
+    address: { page: 'shop' },
+    addressAdd: { page: 'address' },
+    addressEdit: { page: 'address' },
+  }
+
+  const oldPageBackTarget = oldPageSecondLevelBackMap[currentPage] ?? null
+
+  const oldPageHeaderProps = {
+    copy,
+    currentLanguage: selectedLanguage,
+    walletButtonLabel,
+    onMenuToggle: () => setIsDrawerOpen((open) => !open),
+    onLanguageToggle: () => setIsLanguageSheetOpen((open) => !open),
+    onWalletConnect: handleWalletConnect,
+    showBackButton: oldPageBackTarget !== null,
+    onBack: oldPageBackTarget
+      ? () => navigateToPage(oldPageBackTarget.page, oldPageBackTarget.params)
+      : undefined,
   }
 
   const selectSubscriptionPlan = (planId: SubscriptionPlanId) => {

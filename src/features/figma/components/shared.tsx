@@ -107,6 +107,9 @@ export function TopNavigation({
   onMenuToggle,
   onLanguageToggle,
   onWalletConnect,
+  showBackButton = false,
+  onBack,
+  overlay = true,
 }: {
   copy: CopyText
   currentLanguage: LanguageOption
@@ -114,26 +117,44 @@ export function TopNavigation({
   onMenuToggle: () => void
   onLanguageToggle: () => void
   onWalletConnect: () => void
+  showBackButton?: boolean
+  onBack?: () => void
+  overlay?: boolean
 }) {
-  return (
-    <div className="absolute inset-x-0 top-0 z-30 flex items-center justify-between border-b border-black/5 bg-white/90 px-3 py-2.5 shadow-[0_5px_5px_rgba(24,28,0,0.07)] backdrop-blur-sm">
-      <div className="flex items-center gap-2">
-        <img src={brandLogoUrl} alt="logo" className="h-9 w-9 rounded-xl object-cover shadow-[0_4px_10px_rgba(0,0,0,0.08)]" />
-        <div className="flex flex-col">
-          <span className="text-[15px] font-extrabold leading-tight tracking-wide text-black">
-            AUS
-          </span>
-          <span className="text-[8px] font-medium uppercase tracking-[0.15em] text-black/30">
-            Digital Gold
-          </span>
-        </div>
-      </div>
+  const handleBack = onBack ?? (() => window.history.back())
+  const positionClass = overlay ? 'absolute inset-x-0 top-0' : 'relative'
 
-      <div className="flex items-center gap-2">
+  return (
+    <div className={`${positionClass} z-30 flex h-12 items-center justify-between border-b border-black/5 bg-white/90 px-2.5 shadow-[0_4px_10px_rgba(24,28,0,0.06)] backdrop-blur-sm`}>
+      {showBackButton ? (
+        <button
+          type="button"
+          onClick={handleBack}
+          className="inline-flex items-center gap-1 rounded-full border border-black/8 bg-white px-2.5 py-1 text-[11px] font-semibold text-black/75 shadow-[0_3px_8px_rgba(0,0,0,0.06)] transition hover:text-black"
+          aria-label="返回上一页"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+          <span>返回</span>
+        </button>
+      ) : (
+        <div className="flex items-center gap-1.5">
+          <img src={brandLogoUrl} alt="logo" className="h-8 w-8 rounded-lg object-cover shadow-[0_3px_8px_rgba(0,0,0,0.08)]" />
+          <div className="flex flex-col">
+            <span className="text-[13px] font-extrabold leading-tight tracking-wide text-black">
+              AUS
+            </span>
+            <span className="text-[7px] font-medium uppercase tracking-[0.14em] text-black/30">
+              Digital Gold
+            </span>
+          </div>
+        </div>
+      )}
+
+      <div className="flex items-center gap-1.5">
         <button
           type="button"
           onClick={onWalletConnect}
-          className="relative z-30 h-9 rounded-full border border-[#fad933]/45 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(251,208,5,0.22)_100%)] px-3.5 text-[12px] font-semibold text-[#9a6910] shadow-[0_6px_16px_rgba(200,164,54,0.2)]"
+          className="relative z-30 h-8 rounded-full border border-[#fad933]/45 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(251,208,5,0.22)_100%)] px-3 text-[11px] font-semibold text-[#9a6910] shadow-[0_4px_10px_rgba(200,164,54,0.18)]"
         >
           {walletButtonLabel}
         </button>
@@ -141,7 +162,7 @@ export function TopNavigation({
         <button
           type="button"
           onClick={onLanguageToggle}
-          className="relative z-30 flex h-9 w-9 items-center justify-center rounded-full border border-black/10 bg-black/75 p-[2px]"
+          className="relative z-30 flex h-8 w-8 items-center justify-center rounded-full border border-black/10 bg-black/75 p-[2px]"
           aria-label={copy.languageTitle}
         >
           <img
@@ -154,13 +175,13 @@ export function TopNavigation({
         <button
           type="button"
           onClick={onMenuToggle}
-          className="relative z-30 flex h-9 w-9 items-center justify-center rounded-full bg-transparent text-black"
+          className="relative z-30 flex h-8 w-8 items-center justify-center rounded-full bg-transparent text-black"
           aria-label="打開選單"
         >
-          <div className="flex flex-col gap-[4px]">
-            <span className="h-[2.5px] w-[22px] rounded-full bg-black" />
-            <span className="h-[2.5px] w-[22px] rounded-full bg-black" />
-            <span className="h-[2.5px] w-[22px] rounded-full bg-black" />
+          <div className="flex flex-col gap-[3px]">
+            <span className="h-[2px] w-[18px] rounded-full bg-black" />
+            <span className="h-[2px] w-[18px] rounded-full bg-black" />
+            <span className="h-[2px] w-[18px] rounded-full bg-black" />
           </div>
         </button>
       </div>

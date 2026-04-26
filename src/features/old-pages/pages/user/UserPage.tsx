@@ -121,30 +121,36 @@ export function UserPage({ onNavigate }: UserPageProps) {
       <PageNavBar title="我的团队" onBack={() => onNavigate('home')} />
 
       {/* hero bg */}
-      <div className="relative h-[260px] w-full bg-cover bg-top bg-no-repeat" style={{ backgroundImage: "url('/old-pages/team/team-user-bg.png')" }} />
+      <div
+        className="relative h-[514px] w-full bg-top bg-no-repeat"
+        style={{
+          backgroundImage: "url('/old-pages/team/team-user-bg.png')",
+          backgroundSize: '100% 100%',
+        }}
+      />
 
       {/* content */}
-      <div className="-mt-8 px-4 pb-32">
+      <div className="relative z-10 -mt-[30px] px-[15px] pb-[120px]">
         {/* invite cards */}
-        <div className="flex flex-col gap-3.5">
+        <div className="flex flex-col gap-[14px]">
           <InviteCard icon="/old-pages/team/user-invite-code.png" label="邀请码" value={userInfo?.code || '--'} onCopy={() => copyText(userInfo?.code || '')} />
           <InviteCard icon="/old-pages/team/user-invite-user.png" label="邀请链接" value={inviteLink} onCopy={() => copyText(inviteLink)} />
         </div>
 
         {/* stat cards row */}
-        <div className="mt-3.5 flex justify-center gap-2.5">
+        <div className="mt-[14px] flex justify-center gap-[9px]">
           <StatCard icon="/old-pages/team/user-share.svg" label="直推人数" value={fmtNum(userInfo?.zhi_num)} />
           <StatCard icon="/old-pages/team/user-team.svg" label="团队人数" value={fmtNum(userInfo?.team_num)} />
         </div>
 
         {/* performance rows */}
-        <div className="mt-3.5 flex flex-col gap-4">
+        <div className="mt-[14px] flex flex-col gap-[15px]">
           <PerfRow icon="/old-pages/team/team-mark.svg" label="个人业绩" value={userInfo?.me_performance ?? 0} />
           <PerfRow icon="/old-pages/team/team-perform.svg" label="团队业绩" value={userInfo?.team_performance ?? 0} />
         </div>
 
         {/* team list */}
-        <div className="mt-3.5 rounded-[14px] bg-[#1e1e1e] px-3.5 pb-6 pt-4">
+        <div className="mt-[14px] rounded-[14px] bg-[#1e1e1e] px-[13px] pb-[26px] pt-[18px]">
           <div className="flex items-center justify-between text-xs text-[#9fa0a3]">
             <span>成员</span>
             <span>业绩</span>
