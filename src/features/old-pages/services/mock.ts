@@ -19,9 +19,9 @@ export const destoryInfo: DestoryInfo = {
 }
 
 const miningLogs: MiningLogItem[] = Array.from({ length: 20 }, (_, i) => ({
-  id: i + 1, type: i % 3 === 0 ? 'mining' : i % 3 === 1 ? 'destory' : 'reward',
-  type_text: i % 3 === 0 ? '挖矿收益' : i % 3 === 1 ? '销毁挖矿' : '团队奖励',
-  amount: (Math.random() * 100).toFixed(2),
+  id: i + 1,
+  power: +(Math.random() * 100 * (i % 3 === 2 ? -1 : 1)).toFixed(4),
+  power_type: (i % 6) + 1,
   created_at: `2025-04-${String(20 - i).padStart(2, '0')} 12:00:00`,
   remark: `算力日志记录 #${i + 1}`,
 }))

@@ -16,12 +16,15 @@ export function AddressListPage({ from, onNavigate }: AddressListPageProps) {
   const [loading, setLoading] = useState(true)
   const [deleteTarget, setDeleteTarget] = useState<number | null>(null)
 
-  const load = () => {
-    setLoading(true)
-    fetchAddressList().then(data => { setList(data); setLoading(false) }).catch(() => setLoading(false))
-  }
-
-  useEffect(load, [])
+  useEffect(() => {
+    fetchAddressList()
+      .then((data) => {
+        setList(data)
+      })
+      .finally(() => {
+        setLoading(false)
+      })
+  }, [])
 
   const handleDelete = async () => {
     if (deleteTarget === null) return

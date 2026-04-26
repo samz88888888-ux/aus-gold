@@ -7,22 +7,27 @@ import type { AppPage, PageParams } from '../../../figma/types'
 
 type ShopOrderReleasePageProps = {
   groupId?: string
+  status?: string
   onNavigate: (page: AppPage, params?: PageParams) => void
 }
 
-export function ShopOrderReleasePage({ groupId, onNavigate }: ShopOrderReleasePageProps) {
+export function ShopOrderReleasePage({ groupId, status, onNavigate }: ShopOrderReleasePageProps) {
   const [records, setRecords] = useState<OrderReleaseItem[]>([])
   const [loading, setLoading] = useState(true)
 
   const load = useCallback(async () => {
     setLoading(true)
     try {
-      const params: Record<string, unknown> = { page: 1, page_size: 20 }
+      const params: Record<string, unknown> = { page: 1, page_size: 10 }
+      const statusValue = Number(status)
+      if (status && Number.isFinite(statusValue) && statusValue !== 0) {
+        params.status = statusValue
+      }
       if (groupId) params.group_id = groupId
       const res = await fetchOrderReleaseList(params)
       setRecords(res.list)
     } finally { setLoading(false) }
-  }, [groupId])
+  }, [groupId, status])
 
   useEffect(() => { load() }, [load])
 

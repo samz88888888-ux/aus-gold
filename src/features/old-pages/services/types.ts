@@ -34,9 +34,8 @@ export type PaymentMethod = {
 
 export type MiningLogItem = {
   id: number
-  type: string
-  type_text: string
-  amount: string
+  power: number
+  power_type: number
   created_at: string
   remark: string
 }
@@ -66,6 +65,13 @@ export type GoldProduct = {
   is_purchased: boolean
   weight: string
   purity: string
+}
+
+export type PagedList<T> = {
+  list: T[]
+  total: number
+  current_page?: number
+  last_page?: number
 }
 
 export type GoldProductDetail = GoldProduct & {
@@ -104,6 +110,7 @@ export type OrderReleaseItem = {
 export type BannerItem = {
   id: number
   image: string
+  banner?: string
   url: string
 }
 

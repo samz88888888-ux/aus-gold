@@ -48,6 +48,7 @@ export type PageParams = {
   from?: string
   address_id?: string
   group_id?: string
+  status?: string
   state?: unknown
 }
 

@@ -25,6 +25,7 @@ import { UserPage } from '../old-pages/pages/user/UserPage'
 import { AddressListPage } from '../old-pages/pages/address/AddressListPage'
 import { AddressAddPage } from '../old-pages/pages/address/AddressAddPage'
 import { AddressEditPage } from '../old-pages/pages/address/AddressEditPage'
+import { OldPageHeaderProvider } from '../old-pages/components/OldPageHeaderProvider'
 import {
   BSC_CHAIN_ID,
   clearAuth,
@@ -298,6 +299,15 @@ export function NavigationShowcase() {
   const chainName = getChainDisplayName(currentChainId)
   const isCurrentChainBsc = currentChainId?.toLowerCase() === BSC_CHAIN_ID
 
+  const oldPageHeaderProps = {
+    copy,
+    currentLanguage: selectedLanguage,
+    walletButtonLabel,
+    onMenuToggle: () => setIsDrawerOpen((open) => !open),
+    onLanguageToggle: () => setIsLanguageSheetOpen((open) => !open),
+    onWalletConnect: handleWalletConnect,
+  }
+
 
   const navigateToPage = (page: AppPage, params?: PageParams) => {
     setCurrentPage(page)
@@ -380,32 +390,36 @@ export function NavigationShowcase() {
               onWalletConnect={handleWalletConnect}
               onFeedback={setFeedbackMessage}
             />
-          ) : currentPage === 'ming' ? (
-            <MingPage onNavigate={navigateToPage} />
-          ) : currentPage === 'mingLog' ? (
-            <MingLogPage onNavigate={navigateToPage} />
-          ) : currentPage === 'destoryList' ? (
-            <DestoryListPage onNavigate={navigateToPage} />
-          ) : currentPage === 'shop' ? (
-            <ShopPage onNavigate={navigateToPage} />
-          ) : currentPage === 'shopDetail' ? (
-            <ShopDetailPage productId={pageParams.id ?? ''} onNavigate={navigateToPage} />
-          ) : currentPage === 'shopOrderList' ? (
-            <ShopOrderListPage onNavigate={navigateToPage} />
-          ) : currentPage === 'shopOrderRelease' ? (
-            <ShopOrderReleasePage groupId={pageParams.group_id} onNavigate={navigateToPage} />
-          ) : currentPage === 'shopOrderConfirm' ? (
-            <ShopOrderConfirmPage pageState={pageParams.state as { product: import('../old-pages/services/types').GoldProductDetail; quantity: number } | null} addressId={pageParams.address_id} onNavigate={navigateToPage} />
-          ) : currentPage === 'orders' ? (
-            <OrdersPage onNavigate={navigateToPage} />
-          ) : currentPage === 'user' ? (
-            <UserPage onNavigate={navigateToPage} />
-          ) : currentPage === 'address' ? (
-            <AddressListPage from={pageParams.from} onNavigate={navigateToPage} />
-          ) : currentPage === 'addressAdd' ? (
-            <AddressAddPage onNavigate={navigateToPage} />
-          ) : currentPage === 'addressEdit' ? (
-            <AddressEditPage addressId={pageParams.id ?? ''} onNavigate={navigateToPage} />
+          ) : ['ming', 'mingLog', 'destoryList', 'shop', 'shopDetail', 'shopOrderList', 'shopOrderRelease', 'shopOrderConfirm', 'orders', 'user', 'address', 'addressAdd', 'addressEdit'].includes(currentPage) ? (
+            <OldPageHeaderProvider value={oldPageHeaderProps}>
+              {currentPage === 'ming' ? (
+                <MingPage onNavigate={navigateToPage} />
+              ) : currentPage === 'mingLog' ? (
+                <MingLogPage onNavigate={navigateToPage} />
+              ) : currentPage === 'destoryList' ? (
+                <DestoryListPage onNavigate={navigateToPage} />
+              ) : currentPage === 'shop' ? (
+                <ShopPage onNavigate={navigateToPage} />
+              ) : currentPage === 'shopDetail' ? (
+                <ShopDetailPage productId={pageParams.id ?? ''} onNavigate={navigateToPage} />
+              ) : currentPage === 'shopOrderList' ? (
+                <ShopOrderListPage groupId={pageParams.group_id} onNavigate={navigateToPage} />
+              ) : currentPage === 'shopOrderRelease' ? (
+                <ShopOrderReleasePage groupId={pageParams.group_id} status={pageParams.status} onNavigate={navigateToPage} />
+              ) : currentPage === 'shopOrderConfirm' ? (
+                <ShopOrderConfirmPage pageState={pageParams.state as { product: import('../old-pages/services/types').GoldProductDetail; quantity: number } | null} addressId={pageParams.address_id} onNavigate={navigateToPage} />
+              ) : currentPage === 'orders' ? (
+                <OrdersPage onNavigate={navigateToPage} />
+              ) : currentPage === 'user' ? (
+                <UserPage onNavigate={navigateToPage} />
+              ) : currentPage === 'address' ? (
+                <AddressListPage from={pageParams.from} onNavigate={navigateToPage} />
+              ) : currentPage === 'addressAdd' ? (
+                <AddressAddPage onNavigate={navigateToPage} />
+              ) : currentPage === 'addressEdit' ? (
+                <AddressEditPage addressId={pageParams.id ?? ''} onNavigate={navigateToPage} />
+              ) : null}
+            </OldPageHeaderProvider>
           ) : null}
 
           {isDrawerOpen ? (

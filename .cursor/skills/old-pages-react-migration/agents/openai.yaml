@@ -1,0 +1,8 @@
+interface:
+  display_name: "Old Pages React Migration"
+  short_description: "Migrate old-pages Vue copies to current React UI style"
+  brand_color: "#FAD933"
+  default_prompt: "Use $old-pages-react-migration to restyle old-pages while preserving logic and navigation."
+
+policy:
+  allow_implicit_invocation: true

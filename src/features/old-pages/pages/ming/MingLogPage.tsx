@@ -1,9 +1,10 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useEffect, useState } from 'react'
+
+import type { AppPage, PageParams } from '../../../figma/types'
 import { PageContainer } from '../../components/PageContainer'
 import { PageNavBar } from '../../components/PageNavBar'
 import { fetchMiningLog } from '../../services/api'
 import type { MiningLogItem } from '../../services/types'
-import type { AppPage, PageParams } from '../../../figma/types'
 
 const TYPE_OPTIONS = [
   { text: '全部', value: 0 },
@@ -15,161 +16,238 @@ const TYPE_OPTIONS = [
   { text: '转移算力', value: 6 },
 ]
 
+const POWER_TYPE_TEXT: Record<number, string> = {
+  1: '购买矿机',
+  2: '购买节点',
+  3: '提现',
+  4: '冻结算力',
+  5: '解锁算力',
+}
+
 type MingLogPageProps = {
   onNavigate: (page: AppPage, params?: PageParams) => void
 }
 
 export function MingLogPage({ onNavigate }: MingLogPageProps) {
   const [list, setList] = useState<MiningLogItem[]>([])
+  const [page, setPage] = useState(1)
+  const [total, setTotal] = useState(0)
+  const [loading, setLoading] = useState(false)
   const [selectedType, setSelectedType] = useState(0)
   const [showFilter, setShowFilter] = useState(false)
-  const [loading, setLoading] = useState(false)
 
-  const loadData = useCallback(async (powerType: number) => {
+  useEffect(() => {
+    void loadData(1, selectedType, true)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedType])
+
+  async function loadData(pageNum: number, powerType: number, reset = false) {
+    if (loading) return
     setLoading(true)
     try {
-      const res = await fetchMiningLog({ page: 1, page_size: 50, power_type: powerType || undefined })
-      setList(res.list)
-    } finally { setLoading(false) }
-  }, [])
+      const params: Record<string, unknown> = { page: pageNum, page_size: 10 }
+      if (powerType !== 0) {
+        params.power_type = powerType
+      }
 
-  useEffect(() => { loadData(selectedType) }, [selectedType, loadData])
+      const res = await fetchMiningLog(params)
+      const newList = res.list ?? []
+      const nextTotal = res.total ?? 0
 
-  const selectedLabel = TYPE_OPTIONS.find(o => o.value === selectedType)?.text ?? '全部'
+      setTotal(nextTotal)
+      setPage(pageNum)
+      setList((prev) => (reset ? newList : [...prev, ...newList]))
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const finished = list.length >= total && total > 0
+  const selectedLabel = TYPE_OPTIONS.find((o) => o.value === selectedType)?.text ?? '全部'
 
   return (
-    <PageContainer bgClass="bg-[#07071a]">
-      <div className="relative min-h-screen">
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-[300px]"
-          style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(251,208,5,0.08) 0%, transparent 70%)' }} />
+    <PageContainer bgClass="bg-[#050505]">
+      <PageNavBar title="算力日志" onBack={() => onNavigate('ming')} />
 
-        <PageNavBar title="算力日志" onBack={() => onNavigate('ming')} />
+      <div className="relative overflow-hidden px-4 pb-10 pt-4">
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-[300px] bg-[radial-gradient(circle_at_top,rgba(251,208,5,0.2),rgba(251,208,5,0.04)_42%,transparent_72%)]" />
 
-        <div className="relative px-4 pt-2 pb-8">
-          <FilterChip label={selectedLabel} onClick={() => setShowFilter(true)} />
-          <LogList list={list} loading={loading} />
-        </div>
+        <section className="relative rounded-[24px] border border-[#f6c640]/20 bg-[linear-gradient(165deg,rgba(24,24,24,0.98)_0%,rgba(10,10,10,0.98)_100%)] p-4 shadow-[0_14px_36px_rgba(0,0,0,0.35)]">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#f6c640]">
+                Mining Logs
+              </p>
+              <h2 className="mt-1 text-[20px] font-black text-white">算力变动记录</h2>
+              <p className="mt-2 text-[11px] text-white/55">
+                共 {total} 条 · 当前 {list.length} 条
+              </p>
+            </div>
 
-        <FilterSheet
-          visible={showFilter}
-          selected={selectedType}
-          onSelect={(v) => { setSelectedType(v); setShowFilter(false) }}
-          onClose={() => setShowFilter(false)}
+            <button
+              type="button"
+              onClick={() => setShowFilter(true)}
+              className="inline-flex h-8 items-center gap-1.5 rounded-full border border-[#f6c640]/25 bg-black/45 px-3 text-[12px] font-semibold text-[#f6c640]"
+            >
+              {selectedLabel}
+              <img src="/old-pages/ming/arrow-down.png" alt="" className="h-2.5 w-2.5 opacity-80" />
+            </button>
+          </div>
+        </section>
+
+        <section className="mt-4 space-y-3">
+          {list.map((item) => (
+            <LogCard key={item.id} item={item} />
+          ))}
+        </section>
+
+        <LoadStatus
+          loading={loading}
+          finished={finished}
+          hasData={list.length > 0}
+          onLoadMore={() => void loadData(page + 1, selectedType)}
         />
       </div>
+
+      <FilterSheet
+        visible={showFilter}
+        selected={selectedType}
+        onSelect={(value) => {
+          setSelectedType(value)
+          setShowFilter(false)
+        }}
+        onClose={() => setShowFilter(false)}
+      />
     </PageContainer>
   )
 }
 
-function FilterChip({ label, onClick }: { label: string; onClick: () => void }) {
+function LogCard({ item }: { item: MiningLogItem }) {
+  const isPositive = item.power >= 0
+  const typeText = POWER_TYPE_TEXT[item.power_type] ?? '未知类型'
+
   return (
-    <button type="button" onClick={onClick}
-      className="mb-4 flex items-center gap-1.5 rounded-full border border-[#fbd005]/20 bg-[#fbd005]/8 px-4 py-2 transition active:scale-95">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fbd005" strokeWidth="2" strokeLinecap="round">
-        <path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z" />
-      </svg>
-      <span className="text-xs font-medium text-[#fbd005]">{label}</span>
-      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fbd005" strokeWidth="2.5" strokeLinecap="round">
-        <path d="M6 9l6 6 6-6" />
-      </svg>
+    <article className="rounded-[20px] border border-white/8 bg-[linear-gradient(160deg,rgba(25,25,25,0.95),rgba(10,10,10,0.95))] p-4 shadow-[0_10px_26px_rgba(0,0,0,0.24)]">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className={`text-[16px] font-black leading-none tabular-nums ${isPositive ? 'text-[#67e39d]' : 'text-[#ff6b6b]'}`}>
+            {isPositive ? '+' : ''}
+            {fmt(item.power)}
+          </p>
+          <div className="mt-2 flex items-center gap-1.5">
+            <img src="/old-pages/ming/dot.svg" alt="" className="h-1.5 w-1.5" />
+            <span className="text-[11px] text-white/45">{item.created_at}</span>
+          </div>
+        </div>
+
+        <span className="rounded-full border border-[#f6c640]/26 bg-[#f6c640]/10 px-2.5 py-1 text-[11px] font-semibold text-[#f6c640]">
+          {typeText}
+        </span>
+      </div>
+
+      {item.remark ? (
+        <p className="mt-3 rounded-[12px] border border-white/7 bg-white/[0.03] px-3 py-2 text-[12px] text-white/52">
+          {item.remark}
+        </p>
+      ) : null}
+    </article>
+  )
+}
+
+function fmt(value: number | string | undefined) {
+  if (!value && value !== 0) return '0.00'
+  return Number(value).toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 4,
+  })
+}
+
+function LoadStatus({
+  loading,
+  finished,
+  hasData,
+  onLoadMore,
+}: {
+  loading: boolean
+  finished: boolean
+  hasData: boolean
+  onLoadMore: () => void
+}) {
+  if (loading) {
+    return <p className="py-7 text-center text-[13px] text-white/35">加载中...</p>
+  }
+
+  if (!hasData) {
+    return <p className="py-20 text-center text-[13px] text-white/30">暂无记录</p>
+  }
+
+  if (finished) {
+    return <p className="py-7 text-center text-[13px] text-white/30">没有更多了</p>
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={onLoadMore}
+      className="mt-4 w-full rounded-[16px] border border-[#f6c640]/20 bg-[#f6c640]/10 py-3 text-[13px] font-semibold text-[#f6c640] transition active:scale-[0.99]"
+    >
+      加载更多
     </button>
   )
 }
 
-function LogList({ list, loading }: { list: MiningLogItem[]; loading: boolean }) {
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center py-20">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#fbd005]/30 border-t-[#fbd005]" />
-        <span className="mt-3 text-xs text-white/30">加载中...</span>
-      </div>
-    )
-  }
-  if (list.length === 0) {
-    return (
-      <div className="flex flex-col items-center py-20">
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/[0.04]">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5">
-            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
-            <polyline points="14 2 14 8 20 8" />
-          </svg>
-        </div>
-        <span className="mt-3 text-sm text-white/25">暂无记录</span>
-      </div>
-    )
-  }
-  return (
-    <div className="space-y-2.5">
-      {list.map(item => <LogCard key={item.id} item={item} />)}
-    </div>
-  )
-}
-
-function LogCard({ item }: { item: MiningLogItem }) {
-  const isPositive = !item.amount.startsWith('-')
-  return (
-    <div className="rounded-2xl border border-white/[0.06] px-4 py-3.5"
-      style={{ background: 'linear-gradient(160deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)' }}>
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <div className="flex items-center gap-2">
-            <span className="rounded-md bg-[#fbd005]/10 px-2 py-0.5 text-[10px] font-medium text-[#fbd005]">
-              {item.type_text}
-            </span>
-          </div>
-          <div className="mt-2 flex items-center gap-1.5">
-            <div className="h-1 w-1 rounded-full bg-white/20" />
-            <span className="text-[12px] text-white/35">{item.created_at}</span>
-          </div>
-          {item.remark && (
-            <p className="mt-1.5 text-[11px] leading-relaxed text-white/30">{item.remark}</p>
-          )}
-        </div>
-        <span className={`text-base font-semibold tabular-nums ${isPositive ? 'text-[#4ade80]' : 'text-[#f87171]'}`}>
-          {isPositive ? '+' : ''}{item.amount}
-        </span>
-      </div>
-    </div>
-  )
-}
-
-function FilterSheet({ visible, selected, onSelect, onClose }: {
+function FilterSheet({
+  visible,
+  selected,
+  onSelect,
+  onClose,
+}: {
   visible: boolean
   selected: number
   onSelect: (v: number) => void
   onClose: () => void
 }) {
   if (!visible) return null
+
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center">
-      <button type="button" className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} aria-label="关闭" />
-      <div className="relative w-full max-w-[430px] rounded-t-[24px]"
-        style={{ backgroundColor: '#fffdf8', animation: 'slideUp 0.3s ease' }}>
+      <button type="button" className="absolute inset-0 bg-black/72 backdrop-blur-sm" onClick={onClose} aria-label="关闭" />
+
+      <div className="relative w-full max-w-[430px] overflow-hidden rounded-t-[26px] border border-white/10 bg-[#0f0f10] shadow-[0_-20px_50px_rgba(0,0,0,0.4)]">
         <div className="flex justify-center pt-3 pb-1">
-          <div className="h-[4px] w-10 rounded-full bg-black/12" />
+          <div className="h-[4px] w-10 rounded-full bg-white/16" />
         </div>
+
         <div className="px-5 pb-8 pt-2">
           <div className="flex items-center justify-between">
-            <h2 className="text-[18px] font-bold text-black">筛选类型</h2>
-            <button type="button" onClick={onClose}
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-black/8 bg-black/4 text-black/50">
+            <h2 className="text-[18px] font-black text-white">篩選類型</h2>
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white/60"
+            >
               <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round">
                 <line x1="5" y1="5" x2="15" y2="15" />
                 <line x1="15" y1="5" x2="5" y2="15" />
               </svg>
             </button>
           </div>
+
           <div className="mt-4 grid grid-cols-2 gap-2.5">
-            {TYPE_OPTIONS.map(opt => {
+            {TYPE_OPTIONS.map((opt) => {
               const active = opt.value === selected
               return (
-                <button key={opt.value} type="button" onClick={() => onSelect(opt.value)}
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => onSelect(opt.value)}
                   className={[
-                    'rounded-xl px-4 py-3 text-[13px] font-medium transition',
+                    'rounded-[14px] px-4 py-3 text-[12px] font-semibold transition',
                     active
-                      ? 'border-2 border-[#fbd005] bg-[#fbd005]/10 text-[#b8860b] shadow-[0_2px_8px_rgba(251,208,5,0.15)]'
-                      : 'border border-black/8 bg-black/[0.02] text-black/50 hover:bg-black/[0.04]',
-                  ].join(' ')}>
+                      ? 'border border-[#f6c640] bg-[#f6c640]/14 text-[#f6c640]'
+                      : 'border border-white/10 bg-white/[0.02] text-white/55',
+                  ].join(' ')}
+                >
                   {opt.text}
                 </button>
               )

@@ -12,16 +12,24 @@ const statusColor: Record<number, string> = {
 }
 
 type ShopOrderListPageProps = {
+  groupId?: string
   onNavigate: (page: AppPage, params?: PageParams) => void
 }
 
-export function ShopOrderListPage({ onNavigate }: ShopOrderListPageProps) {
+export function ShopOrderListPage({ groupId, onNavigate }: ShopOrderListPageProps) {
   const [orders, setOrders] = useState<GoldOrderItem[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetchGoldOrderList().then(res => { setOrders(res.list); setLoading(false) }).catch(() => setLoading(false))
-  }, [])
+    const params: Record<string, unknown> = {
+      page: 1,
+      page_size: 10,
+      status: 0,
+    }
+    if (groupId) params.group_id = groupId
+
+    fetchGoldOrderList(params).then(res => { setOrders(res.list); setLoading(false) }).catch(() => setLoading(false))
+  }, [groupId])
 
   const handleConfirm = async (id: number) => {
     await fetchGoldProductConfirm({ id })

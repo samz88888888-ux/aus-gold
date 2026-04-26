@@ -103,10 +103,18 @@ async function requestDirect<T>(
   body?: Record<string, unknown>,
   token?: string | null,
 ): Promise<ApiResponse<T>> {
-  const res = await fetch(`${BASE_URL}${API_PREFIX}${path}`, {
+  const url = new URL(`${BASE_URL}${API_PREFIX}${path}`)
+  if (method === 'GET' && body) {
+    Object.entries(body).forEach(([key, value]) => {
+      if (value === undefined || value === null) return
+      url.searchParams.append(key, String(value))
+    })
+  }
+
+  const res = await fetch(url.toString(), {
     method,
     headers: getApiHeaders(token),
-    body: body ? JSON.stringify(body) : undefined,
+    body: method === 'GET' ? undefined : (body ? JSON.stringify(body) : undefined),
   })
 
   return parseJsonResponse<T>(res)

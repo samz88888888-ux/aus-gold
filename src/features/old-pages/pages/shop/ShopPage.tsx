@@ -22,25 +22,44 @@ export function ShopPage({ onNavigate }: ShopPageProps) {
   const [selectedCatId, setSelectedCatId] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
 
+  const loadProducts = useCallback(async (blockId: number | null, categoryId: number | null) => {
+    const params: Record<string, unknown> = { page: 1, page_size: 10 }
+    if (blockId) params.group_id = blockId
+    if (categoryId) params.category_id = categoryId
+    const res = await fetchProductList(params)
+    setProducts(res.list)
+  }, [])
+
   const load = useCallback(async () => {
     setLoading(true)
     try {
-      const [b, gp, bl] = await Promise.all([fetchMallBanner(), fetchTodayGoldPrice(), fetchMallBlock()])
-      setBanners(b); setGoldPrice(gp); setBlocks(bl)
+      const [gp, bl] = await Promise.all([fetchTodayGoldPrice(), fetchMallBlock()])
+      setGoldPrice(gp); setBlocks(bl)
       const blockId = bl.length > 0 ? bl[0].id : null
       setSelectedBlockId(blockId)
-      const [cats, prods] = await Promise.all([fetchCategoryList(), fetchProductList()])
-      setCategories(cats); setProducts(prods)
+      const query = blockId ? { group_id: blockId } : undefined
+      const [b, cats] = await Promise.all([fetchMallBanner(query), fetchCategoryList(query)])
+      setBanners(b); setCategories(cats)
+      await loadProducts(blockId, null)
     } finally { setLoading(false) }
-  }, [])
+  }, [loadProducts])
 
   useEffect(() => { load() }, [load])
 
-  const selectCategory = (id: number) => {
-    setSelectedCatId(prev => (prev === id ? null : id))
-  }
+  const reloadProductsByCategory = useCallback(async (categoryId: number | null) => {
+    setLoading(true)
+    try {
+      await loadProducts(selectedBlockId, categoryId)
+    } finally {
+      setLoading(false)
+    }
+  }, [loadProducts, selectedBlockId])
 
-  const filtered = selectedCatId ? products.filter(p => p.category_id === selectedCatId) : products
+  const selectCategory = (id: number) => {
+    const nextCategory = selectedCatId === id ? null : id
+    setSelectedCatId(nextCategory)
+    void reloadProductsByCategory(nextCategory)
+  }
 
   return (
     <PageContainer>
@@ -53,8 +72,8 @@ export function ShopPage({ onNavigate }: ShopPageProps) {
       <CategoryTabs categories={categories} selectedId={selectedCatId} onSelect={selectCategory} />
       {/* Products */}
       {loading ? <LoadingSpinner /> : (
-        filtered.length > 0
-          ? <ProductGrid products={filtered} onTap={id => onNavigate('shopDetail', { id })} />
+        products.length > 0
+          ? <ProductGrid products={products} onTap={id => onNavigate('shopDetail', { id })} />
           : <EmptyState />
       )}
       <div className="h-20" />
@@ -64,13 +83,17 @@ export function ShopPage({ onNavigate }: ShopPageProps) {
 
 function BannerSection({ banners, goldPrice }: { banners: BannerItem[]; goldPrice: GoldPrice | null }) {
   const src = banners[0]?.image || 'https://file.naaidepin.com/upload/images/c6135c4990ab6e4f1506d78c4eaa0ed8.png'
+  const change = String(goldPrice?.change ?? '0')
+  const changeRate = String(goldPrice?.change_rate ?? '0%')
+  const isUp = change.startsWith('+')
+
   return (
     <div className="relative mx-4 mt-3 overflow-hidden rounded-xl border border-yellow-500/20">
       <img src={src} alt="banner" className="h-40 w-full object-cover" />
       {goldPrice && (
         <div className="absolute left-2.5 top-2.5 flex items-center gap-1.5 rounded-full bg-gradient-to-r from-yellow-400/90 to-red-500/80 px-2.5 py-1 text-xs font-bold text-white shadow">
           <span>${goldPrice.price}</span>
-          <span className={goldPrice.change.startsWith('+') ? 'text-green-200' : 'text-red-200'}>{goldPrice.change} ({goldPrice.change_rate})</span>
+          <span className={isUp ? 'text-green-200' : 'text-red-200'}>{change} ({changeRate})</span>
         </div>
       )}
     </div>

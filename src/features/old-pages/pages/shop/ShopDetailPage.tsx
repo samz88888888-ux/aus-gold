@@ -71,17 +71,21 @@ export function ShopDetailPage({ productId, onNavigate }: ShopDetailPageProps) {
   )
 }
 
-function GallerySection({ images, name }: { images: string[]; name: string }) {
+function GallerySection({ images, name }: { images?: string[]; name: string }) {
   const [idx, setIdx] = useState(0)
-  const list = images.length > 0 ? images : ['/old-pages/shop/ring-cycle.png']
+  const safeImages = Array.isArray(images)
+    ? images.filter((item): item is string => typeof item === 'string' && item.length > 0)
+    : []
+  const list = safeImages.length > 0 ? safeImages : ['/old-pages/shop/ring-cycle.png']
+  const currentIdx = idx >= list.length ? 0 : idx
   return (
     <div className="relative mx-4 mt-3 overflow-hidden rounded-2xl border border-yellow-500/20 shadow-lg">
-      <img src={list[idx]} alt={name} className="h-80 w-full object-cover" />
+      <img src={list[currentIdx]} alt={name} className="h-80 w-full object-cover" />
       {list.length > 1 && (
         <div className="absolute bottom-3 left-1/2 flex -translate-x-1/2 gap-1.5">
           {list.map((_, i) => (
             <button key={i} type="button" onClick={() => setIdx(i)}
-              className={`h-1.5 rounded-full transition-all ${i === idx ? 'w-5 bg-yellow-400' : 'w-1.5 bg-white/40'}`} />
+              className={`h-1.5 rounded-full transition-all ${i === currentIdx ? 'w-5 bg-yellow-400' : 'w-1.5 bg-white/40'}`} />
           ))}
         </div>
       )}
@@ -106,13 +110,14 @@ function InfoSection({ product }: { product: GoldProductDetail }) {
   )
 }
 
-function SpecsSection({ specs }: { specs: { label: string; value: string }[] }) {
-  if (!specs.length) return null
+function SpecsSection({ specs }: { specs?: { label: string; value: string }[] }) {
+  const list = Array.isArray(specs) ? specs : []
+  if (!list.length) return null
   return (
     <div className="mx-4 mt-3 rounded-xl border border-yellow-500/20 bg-[#1e1e1e] p-4 shadow">
       <h3 className="mb-3 text-base font-semibold text-yellow-400">规格参数</h3>
       <div className="space-y-2">
-        {specs.map(s => (
+        {list.map(s => (
           <div key={s.label} className="flex justify-between text-sm">
             <span className="text-white/50">{s.label}</span>
             <span className="font-medium text-white">{s.value}</span>
@@ -123,11 +128,11 @@ function SpecsSection({ specs }: { specs: { label: string; value: string }[] }) 
   )
 }
 
-function ContentSection({ html }: { html: string }) {
+function ContentSection({ html }: { html?: string }) {
   return (
     <div className="mx-4 mt-3 rounded-xl border border-yellow-500/20 bg-[#1e1e1e] p-4 shadow">
       <h3 className="mb-3 text-base font-semibold text-yellow-400">商品详情</h3>
-      <div className="prose prose-invert prose-sm max-w-none text-white/80" dangerouslySetInnerHTML={{ __html: html }} />
+      <div className="prose prose-invert prose-sm max-w-none text-white/80" dangerouslySetInnerHTML={{ __html: html ?? '' }} />
     </div>
   )
 }
