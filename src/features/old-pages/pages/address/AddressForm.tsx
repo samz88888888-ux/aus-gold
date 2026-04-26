@@ -41,7 +41,7 @@ export function AddressForm({ title, initial, onSubmit, onNavigate }: AddressFor
   return (
     <PageContainer>
       <PageNavBar title={title} onBack={() => onNavigate('address')} />
-      <div className="space-y-4 px-4 pb-24 pt-4">
+      <div className="space-y-4 px-4 pb-32 pt-4">
         <Field label="收货人" value={form.real_name} placeholder="请输入收货人姓名"
           onChange={v => update('real_name', v)} />
         <Field label="手机号码" value={form.phone} placeholder="请输入手机号码" type="tel" maxLength={11}
@@ -64,7 +64,7 @@ export function AddressForm({ title, initial, onSubmit, onNavigate }: AddressFor
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-1/2 w-full max-w-[430px] -translate-x-1/2 border-t border-white/10 bg-[#0a0a1a]/95 px-4 py-3 backdrop-blur">
+      <div className="fixed bottom-[62px] left-1/2 w-full max-w-[430px] -translate-x-1/2 border-t border-white/10 bg-[#0a0a1a]/95 px-4 py-3 backdrop-blur">
         <button type="button" onClick={handleSubmit} disabled={submitting}
           className="w-full rounded-xl bg-gradient-to-r from-yellow-300 to-amber-500 py-3 text-sm font-bold text-black disabled:opacity-50">
           {submitting ? '提交中...' : '保存'}

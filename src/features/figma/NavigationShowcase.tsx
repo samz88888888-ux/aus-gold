@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 
-import { copyByLanguage, languageOptions, menuItems } from './data'
+import { copyByLanguage, languageOptions } from './data'
 import {
   FeedbackToast,
   InviteCodeSheet,
   LanguageSheet,
   NetworkSheet,
-  SideDrawer,
   WalletSheet,
 } from './components/shared'
 import { HomeScreen } from './pages/HomeScreen'
@@ -48,13 +47,11 @@ export function NavigationShowcase() {
   const modelSectionRef = useRef<HTMLElement | null>(null)
   const partnersSectionRef = useRef<HTMLElement | null>(null)
   const contactSectionRef = useRef<HTMLElement | null>(null)
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const [isLanguageSheetOpen, setIsLanguageSheetOpen] = useState(false)
   const [isWalletSheetOpen, setIsWalletSheetOpen] = useState(false)
   const [isNoticeDetailOpen, setIsNoticeDetailOpen] = useState(false)
   const [currentPage, setCurrentPage] = useState<AppPage>('home')
   const [pageParams, setPageParams] = useState<PageParams>({})
-  const [activeMenu, setActiveMenu] = useState(menuItems[0].label)
   const [activeSubscriptionPlan, setActiveSubscriptionPlan] = useState<SubscriptionPlanId>('ops')
   const [selectedLanguageCode] = useState<LanguageCode>(() => {
     if (typeof window === 'undefined') {
@@ -302,19 +299,61 @@ export function NavigationShowcase() {
   const navigateToPage = (page: AppPage, params?: PageParams) => {
     setCurrentPage(page)
     setPageParams(params ?? {})
-    const menuMap: Partial<Record<AppPage, string>> = {
-      home: '首頁',
-      subscription: '認購中心',
-      community: '我的社區',
-      ming: '算力挖礦',
-      shop: '黃金商城',
-      orders: '待支付訂單',
-      user: '邀請中心',
-    }
-    if (menuMap[page]) {
-      setActiveMenu(menuMap[page]!)
-    }
     window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const goOrdersFromHeader = () => {
+    if (!authToken) {
+      setFeedbackMessage(copy.loginRequired)
+      return
+    }
+    navigateToPage('orders')
+  }
+
+  type BottomTabKey = 'home' | 'ming' | 'shop' | 'user' | null
+  const getBottomTabKey = (page: AppPage): BottomTabKey => {
+    if (page === 'home' || page === 'subscription' || page === 'community') return 'home'
+    if (page === 'ming' || page === 'mingLog' || page === 'destoryList') return 'ming'
+    if (
+      page === 'shop'
+      || page === 'shopDetail'
+      || page === 'shopOrderList'
+      || page === 'shopOrderRelease'
+      || page === 'shopOrderConfirm'
+      || page === 'address'
+      || page === 'addressAdd'
+      || page === 'addressEdit'
+    ) return 'shop'
+    if (page === 'user') return 'user'
+    return null
+  }
+
+  const activeBottomTab = getBottomTabKey(currentPage)
+
+  const oldPageRoutes: AppPage[] = [
+    'ming',
+    'mingLog',
+    'destoryList',
+    'shop',
+    'shopDetail',
+    'shopOrderList',
+    'shopOrderRelease',
+    'shopOrderConfirm',
+    'orders',
+    'user',
+    'address',
+    'addressAdd',
+    'addressEdit',
+  ]
+  const isOldPageRoute = oldPageRoutes.includes(currentPage)
+  const shellBgClass = isOldPageRoute ? 'bg-[#0a0a1a]' : 'bg-[#1c1508]'
+
+  const handleBottomTabClick = (page: AppPage) => {
+    if (page !== 'home' && !authToken) {
+      setFeedbackMessage(copy.loginRequired)
+      return
+    }
+    navigateToPage(page)
   }
 
   // 这里就是 old-pages “二级页显示返回按钮”的清单：
@@ -338,7 +377,7 @@ export function NavigationShowcase() {
     copy,
     currentLanguage: selectedLanguage,
     walletButtonLabel,
-    onMenuToggle: () => setIsDrawerOpen((open) => !open),
+    onMenuToggle: goOrdersFromHeader,
     onLanguageToggle: () => setIsLanguageSheetOpen((open) => !open),
     onWalletConnect: handleWalletConnect,
     showBackButton: oldPageBackTarget !== null,
@@ -351,10 +390,23 @@ export function NavigationShowcase() {
     setActiveSubscriptionPlan(planId)
   }
 
+  const bottomTabs: Array<{
+    key: Exclude<BottomTabKey, null>
+    label: string
+    page: AppPage
+    icon: string
+    activeIcon: string
+  }> = [
+    { key: 'home', label: '首页', page: 'home', icon: '/old-pages/footer/home.svg', activeIcon: '/old-pages/footer/home-active.svg' },
+    { key: 'ming', label: '算力', page: 'ming', icon: '/old-pages/footer/depin.svg', activeIcon: '/old-pages/footer/depin-active.svg' },
+    { key: 'shop', label: '商城', page: 'shop', icon: '/old-pages/footer/mall.svg', activeIcon: '/old-pages/footer/mall-active.svg' },
+    { key: 'user', label: '邀请', page: 'user', icon: '/old-pages/footer/invite.svg', activeIcon: '/old-pages/footer/invite-active.svg' },
+  ]
+
   return (
     <main className="min-h-screen bg-[#03070b] text-white">
-      <div className="mx-auto min-h-screen max-w-[430px] bg-[#1c1508] shadow-[0_0_0_1px_rgba(255,255,255,0.06)]">
-        <div className="relative min-h-screen overflow-hidden">
+      <div className={`mx-auto min-h-screen max-w-[430px] ${shellBgClass} shadow-[0_0_0_1px_rgba(255,255,255,0.06)]`}>
+        <div className={`relative min-h-screen overflow-hidden pb-[76px] ${shellBgClass}`}>
           {currentPage === 'home' ? (
             <HomeScreen
               copy={copy}
@@ -362,7 +414,7 @@ export function NavigationShowcase() {
               notices={notices}
               selectedNotice={selectedNotice}
               walletButtonLabel={walletButtonLabel}
-              onMenuToggle={() => setIsDrawerOpen((open) => !open)}
+              onMenuToggle={goOrdersFromHeader}
               onLanguageToggle={() => setIsLanguageSheetOpen((open) => !open)}
               onNoticeSelect={(n) => { setSelectedNotice(n); setIsNoticeDetailOpen(true) }}
               onNoticeDetailClose={() => { setIsNoticeDetailOpen(false); setSelectedNotice(null) }}
@@ -389,7 +441,7 @@ export function NavigationShowcase() {
               walletAddress={walletAddress}
               authToken={authToken}
               activePlan={activeSubscriptionPlan}
-              onMenuToggle={() => setIsDrawerOpen((open) => !open)}
+              onMenuToggle={goOrdersFromHeader}
               onLanguageToggle={() => setIsLanguageSheetOpen((open) => !open)}
               onWalletConnect={handleWalletConnect}
               onSelectPlan={selectSubscriptionPlan}
@@ -405,12 +457,12 @@ export function NavigationShowcase() {
               currentLanguage={selectedLanguage}
               walletButtonLabel={walletButtonLabel}
               authToken={authToken}
-              onMenuToggle={() => setIsDrawerOpen((open) => !open)}
+              onMenuToggle={goOrdersFromHeader}
               onLanguageToggle={() => setIsLanguageSheetOpen((open) => !open)}
               onWalletConnect={handleWalletConnect}
               onFeedback={setFeedbackMessage}
             />
-          ) : ['ming', 'mingLog', 'destoryList', 'shop', 'shopDetail', 'shopOrderList', 'shopOrderRelease', 'shopOrderConfirm', 'orders', 'user', 'address', 'addressAdd', 'addressEdit'].includes(currentPage) ? (
+          ) : isOldPageRoute ? (
             <OldPageHeaderProvider value={oldPageHeaderProps}>
               {currentPage === 'ming' ? (
                 <MingPage onNavigate={navigateToPage} />
@@ -442,15 +494,6 @@ export function NavigationShowcase() {
             </OldPageHeaderProvider>
           ) : null}
 
-          {isDrawerOpen ? (
-            <button
-              type="button"
-              aria-label="關閉選單遮罩"
-              onClick={() => setIsDrawerOpen(false)}
-              className="absolute inset-0 z-20 bg-black/55"
-            />
-          ) : null}
-
           {isLanguageSheetOpen ? (
             <button
               type="button"
@@ -477,48 +520,6 @@ export function NavigationShowcase() {
               className="fixed inset-0 z-40 bg-black/55"
             />
           ) : null}
-
-          <SideDrawer
-            copy={copy}
-            isOpen={isDrawerOpen}
-            activeMenu={activeMenu}
-            walletAddress={walletAddress}
-            onClose={() => setIsDrawerOpen(false)}
-            onMenuSelect={(label) => {
-              setIsDrawerOpen(false)
-              if (label === '首頁') {
-                navigateToPage('home')
-                return
-              }
-              if (label === '認購中心' || label === '我的社區') {
-                if (!authToken) {
-                  setFeedbackMessage(copy.loginRequired)
-                  return
-                }
-                navigateToPage(label === '認購中心' ? 'subscription' : 'community')
-                return
-              }
-              const pageMap: Record<string, AppPage> = {
-                '算力挖礦': 'ming',
-                '黃金商城': 'shop',
-                '待支付訂單': 'orders',
-                '邀請中心': 'user',
-              }
-              const page = pageMap[label]
-              if (page) {
-                if (!authToken) {
-                  setFeedbackMessage(copy.loginRequired)
-                  return
-                }
-                navigateToPage(page)
-                return
-              }
-              setFeedbackMessage(copy.developing)
-            }}
-            onWalletConnect={handleWalletConnect}
-            onWalletSwitch={handleWalletSwitch}
-            onWalletDisconnect={handleWalletDisconnect}
-          />
 
           <LanguageSheet
             copy={copy}
@@ -575,6 +576,25 @@ export function NavigationShowcase() {
 
           <FeedbackToast message={feedbackMessage} />
         </div>
+
+        <nav className="fixed inset-x-0 bottom-0 z-[35] mx-auto w-full max-w-[430px] border-t border-white/10 bg-[#111218]/96 shadow-[0_-8px_20px_rgba(0,0,0,0.32)] backdrop-blur">
+          <div className="grid grid-cols-4 px-2 pb-[calc(4px+env(safe-area-inset-bottom))] pt-1.5">
+            {bottomTabs.map((tab) => {
+              const active = activeBottomTab === tab.key
+              return (
+                <button
+                  key={tab.key}
+                  type="button"
+                  onClick={() => handleBottomTabClick(tab.page)}
+                  className="flex flex-col items-center justify-center gap-0.5 rounded-lg py-1 transition active:scale-[0.98]"
+                >
+                  <img src={active ? tab.activeIcon : tab.icon} alt={tab.label} className="h-5 w-5 object-contain" />
+                  <span className={`text-[11px] font-medium ${active ? 'text-[#fbd005]' : 'text-white/60'}`}>{tab.label}</span>
+                </button>
+              )
+            })}
+          </div>
+        </nav>
       </div>
     </main>
   )

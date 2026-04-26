@@ -60,13 +60,13 @@ export function ShopOrderConfirmPage({ pageState, addressId, onNavigate }: ShopO
   return (
     <PageContainer>
       <PageNavBar title="确认订单" onBack={() => onNavigate('shop')} />
-      <div className="px-4 pb-40 pt-4">
+      <div className="px-4 pb-52 pt-4">
         <DeliveryToggle active={needDelivery} onChange={setNeedDelivery} />
         {needDelivery && <AddressCard address={selectedAddress} onSelect={() => onNavigate('address', { from: 'shopOrderConfirm' })} />}
         <ProductCard product={product} quantity={quantity} setQuantity={setQuantity} />
         <RemarkSection value={remark} onChange={setRemark} />
       </div>
-      <div className="fixed bottom-0 left-1/2 z-40 flex w-full max-w-[430px] -translate-x-1/2 items-center justify-between border-t border-yellow-500/20 bg-[#1e1e1e] px-4 py-3 shadow-[0_-4px_12px_rgba(0,0,0,0.4)]">
+      <div className="fixed bottom-[62px] left-1/2 z-40 flex w-full max-w-[430px] -translate-x-1/2 items-center justify-between border-t border-white/10 bg-[#0a0a1a]/95 px-4 py-3 shadow-[0_-4px_12px_rgba(0,0,0,0.4)] backdrop-blur">
         <div>
           <div className="text-xs text-white/60">商品金额</div>
           <div className="text-xl font-bold text-yellow-400">{total} <span className="text-xs font-medium">USDT</span></div>

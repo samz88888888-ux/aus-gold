@@ -47,7 +47,7 @@ export function AddressListPage({ from, onNavigate }: AddressListPageProps) {
   return (
     <PageContainer>
       <PageNavBar title="收货地址" onBack={() => onNavigate('shop')} />
-      <div className="px-4 py-4">
+      <div className="px-4 py-4 pb-28">
         {loading ? (
           <p className="py-20 text-center text-sm text-white/40">加载中...</p>
         ) : list.length === 0 ? (
@@ -89,7 +89,7 @@ export function AddressListPage({ from, onNavigate }: AddressListPageProps) {
         )}
       </div>
 
-      <div className="fixed bottom-0 left-1/2 w-full max-w-[430px] -translate-x-1/2 border-t border-white/10 bg-[#0a0a1a]/95 px-4 py-3 backdrop-blur">
+      <div className="fixed bottom-[62px] left-1/2 w-full max-w-[430px] -translate-x-1/2 border-t border-white/10 bg-[#0a0a1a]/95 px-4 py-3 backdrop-blur">
         <button type="button" onClick={() => onNavigate('addressAdd')}
           className="w-full rounded-xl bg-gradient-to-r from-yellow-300 to-amber-500 py-3 text-sm font-bold text-black">
           新增收货地址

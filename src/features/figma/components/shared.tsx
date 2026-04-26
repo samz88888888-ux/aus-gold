@@ -130,20 +130,20 @@ export function TopNavigation({
         <button
           type="button"
           onClick={handleBack}
-          className="inline-flex items-center gap-1 rounded-full border border-black/8 bg-white px-2.5 py-1 text-[11px] font-semibold text-black/75 shadow-[0_3px_8px_rgba(0,0,0,0.06)] transition hover:text-black"
+          className="inline-flex h-8 items-center gap-1 rounded-full border border-black/8 bg-white px-2.5 text-[11px] font-semibold text-black/75 shadow-[0_3px_8px_rgba(0,0,0,0.06)] transition hover:text-black"
           aria-label="返回上一页"
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
           <span>返回</span>
         </button>
       ) : (
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-2">
           <img src={brandLogoUrl} alt="logo" className="h-8 w-8 rounded-lg object-cover shadow-[0_3px_8px_rgba(0,0,0,0.08)]" />
           <div className="flex flex-col">
             <span className="text-[13px] font-extrabold leading-tight tracking-wide text-black">
               AUS
             </span>
-            <span className="text-[7px] font-medium uppercase tracking-[0.14em] text-black/30">
+            <span className="text-[7px] font-medium uppercase tracking-[0.12em] text-black/30">
               Digital Gold
             </span>
           </div>
@@ -154,7 +154,7 @@ export function TopNavigation({
         <button
           type="button"
           onClick={onWalletConnect}
-          className="relative z-30 h-8 rounded-full border border-[#fad933]/45 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(251,208,5,0.22)_100%)] px-3 text-[11px] font-semibold text-[#9a6910] shadow-[0_4px_10px_rgba(200,164,54,0.18)]"
+          className="relative z-30 h-7 max-w-[96px] truncate rounded-full border border-[#fad933]/45 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(251,208,5,0.22)_100%)] px-2.5 text-[10px] font-semibold text-[#9a6910] shadow-[0_3px_8px_rgba(200,164,54,0.16)]"
         >
           {walletButtonLabel}
         </button>
@@ -162,7 +162,7 @@ export function TopNavigation({
         <button
           type="button"
           onClick={onLanguageToggle}
-          className="relative z-30 flex h-8 w-8 items-center justify-center rounded-full border border-black/10 bg-black/75 p-[2px]"
+          className="relative z-30 flex h-7 w-7 items-center justify-center rounded-full border border-black/10 bg-black/75 p-[2px]"
           aria-label={copy.languageTitle}
         >
           <img
@@ -175,14 +175,16 @@ export function TopNavigation({
         <button
           type="button"
           onClick={onMenuToggle}
-          className="relative z-30 flex h-8 w-8 items-center justify-center rounded-full bg-transparent text-black"
-          aria-label="打開選單"
+          className="relative z-30 flex h-7 w-7 items-center justify-center rounded-full border border-black/10 bg-white text-black"
+          aria-label="待支付订单"
         >
-          <div className="flex flex-col gap-[3px]">
-            <span className="h-[2px] w-[18px] rounded-full bg-black" />
-            <span className="h-[2px] w-[18px] rounded-full bg-black" />
-            <span className="h-[2px] w-[18px] rounded-full bg-black" />
-          </div>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 3h6" />
+            <path d="M10 6h4" />
+            <rect x="5" y="4" width="14" height="16" rx="2" />
+            <path d="M8 11h8" />
+            <path d="M8 15h5" />
+          </svg>
         </button>
       </div>
     </div>

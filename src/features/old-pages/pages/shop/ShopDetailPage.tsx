@@ -64,7 +64,7 @@ export function ShopDetailPage({ productId, onNavigate }: ShopDetailPageProps) {
       <InfoSection product={product} />
       <SpecsSection specs={product.specs} />
       <ContentSection html={product.content} />
-      <div className="h-24" />
+      <div className="h-40" />
       <BottomBar quantity={quantity} stock={stock} dec={dec} inc={inc} onBuy={handleBuy} />
       <AgreementPopup visible={showAgreement} onClose={() => setShowAgreement(false)} onConfirm={handleAgree} content={product.agreement} />
     </PageContainer>
@@ -139,7 +139,7 @@ function ContentSection({ html }: { html?: string }) {
 
 function BottomBar({ quantity, stock, dec, inc, onBuy }: { quantity: number; stock: number; dec: () => void; inc: () => void; onBuy: () => void }) {
   return (
-    <div className="fixed bottom-0 left-1/2 z-40 flex w-full max-w-[430px] -translate-x-1/2 items-center justify-between border-t border-yellow-500/20 bg-[#1e1e1e] px-4 py-3 shadow-[0_-4px_12px_rgba(0,0,0,0.4)]">
+    <div className="fixed bottom-[62px] left-1/2 z-40 flex w-full max-w-[430px] -translate-x-1/2 items-center justify-between border-t border-white/10 bg-[#0a0a1a]/95 px-4 py-3 shadow-[0_-4px_12px_rgba(0,0,0,0.4)] backdrop-blur">
       <div className="flex items-center overflow-hidden rounded-lg border border-yellow-500/30 bg-black/30">
         <button type="button" onClick={dec} disabled={quantity <= 1} className="flex h-10 w-10 items-center justify-center text-lg text-yellow-400 disabled:text-white/30">-</button>
         <span className="flex h-10 w-14 items-center justify-center border-x border-yellow-500/20 text-sm font-semibold text-white">{quantity}</span>
