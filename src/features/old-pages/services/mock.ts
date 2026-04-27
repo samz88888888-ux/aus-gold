@@ -159,7 +159,7 @@ export const machineOrderList: GoldOrderItem[] = [
 export const userInfoData: UserInfo = {
   code: 'A8B2C1', name: 'User_0x3f...a1b2', wallet_address: '0x3f4e5d6c7b8a9012345678901234567890a1b2c3',
   zhi_num: 12, team_num: 156, me_performance: 25000, team_performance: 380000,
-  level_id: 3, level_name: 'VIP3', valid_user_power: 1250.5, gold_order_status: false,
+  level_id: 3, level_name: 'VIP3', valid_user_power: 1250.5,power: 0, gold_order_status: false,
 }
 
 export const teamList: TeamMember[] = [

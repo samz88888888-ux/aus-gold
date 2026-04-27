@@ -251,6 +251,7 @@ export type UserInfo = {
   level_id: number
   level_name: string
   valid_user_power: number
+  power: number
   gold_order_status?: boolean
 }
 

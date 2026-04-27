@@ -55,8 +55,8 @@ export function MingPage({ onNavigate }: MingPageProps) {
     }
   }, [])
 
-  const totalPower = fmt(userInfo?.valid_user_power)
-  const lockedPower = fmt(userInfo?.valid_user_power)
+  const totalPower = fmt(userInfo?.power)
+  // const lockedPower = fmt(userInfo?.valid_user_power)
 
   const handleDestroySubmit = async (payload: DestroyAmountSubmitPayload) => {
     try {
@@ -159,9 +159,9 @@ export function MingPage({ onNavigate }: MingPageProps) {
             <div className="mt-5 flex items-end justify-between gap-4">
               <div>
                 <p className="text-[42px] font-black leading-none tracking-[-0.04em] text-white">{totalPower}</p>
-                <div className="mt-4 inline-flex items-center rounded-full bg-[linear-gradient(135deg,#ffec92_0%,#fbd005_55%,#d79712_100%)] px-3.5 py-1.5 shadow-[0_10px_24px_rgba(251,208,5,0.24)]">
+                {/* <div className="mt-4 inline-flex items-center rounded-full bg-[linear-gradient(135deg,#ffec92_0%,#fbd005_55%,#d79712_100%)] px-3.5 py-1.5 shadow-[0_10px_24px_rgba(251,208,5,0.24)]">
                   <span className="text-[12px] font-black tracking-[0.02em] text-[#251600]">鎖倉算力：{lockedPower}</span>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
