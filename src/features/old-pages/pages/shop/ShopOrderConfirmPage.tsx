@@ -1,40 +1,64 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+
+import type { AppPage, PageParams } from '../../../figma/types'
+import { PreOrderPaymentMethodModal } from '../../components/payment/PreOrderPaymentMethodModal'
 import { PageContainer } from '../../components/PageContainer'
 import { PageNavBar } from '../../components/PageNavBar'
-import { fetchAddressList } from '../../services/api'
-import type { GoldProductDetail, AddressItem } from '../../services/types'
-import type { AppPage, PageParams } from '../../../figma/types'
-
-type LocationState = { product: GoldProductDetail; quantity: number }
+import { createPreOrder, fetchAddressList } from '../../services/api'
+import { clearShopOrderDraft, getShopOrderDraft } from '../../services/shopOrderDraft'
+import type { AddressItem, PaymentMethod, ShopOrderDraft } from '../../services/types'
 
 type ShopOrderConfirmPageProps = {
-  pageState?: LocationState | null
+  pageState?: ShopOrderDraft | null
   addressId?: string
   onNavigate: (page: AppPage, params?: PageParams) => void
 }
 
-export function ShopOrderConfirmPage({ pageState, addressId, onNavigate }: ShopOrderConfirmPageProps) {
-  const product = pageState?.product
-  const initQty = pageState?.quantity ?? 1
+function getDraft(pageState?: ShopOrderDraft | null) {
+  return pageState ?? getShopOrderDraft()
+}
 
-  const [quantity, setQuantity] = useState(initQty)
+export function ShopOrderConfirmPage({ pageState, addressId, onNavigate }: ShopOrderConfirmPageProps) {
+  const [draft] = useState<ShopOrderDraft | null>(() => getDraft(pageState))
   const [needDelivery, setNeedDelivery] = useState(true)
   const [remark, setRemark] = useState('')
-  const [submitting, setSubmitting] = useState(false)
   const [selectedAddress, setSelectedAddress] = useState<AddressItem | null>(null)
+  const [submitting, setSubmitting] = useState(false)
+  const [showPaymentPopup, setShowPaymentPopup] = useState(false)
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([])
 
   useEffect(() => {
-    fetchAddressList().then(list => {
-      if (addressId) {
-        const found = list.find(a => a.id === Number(addressId))
-        if (found) { setSelectedAddress(found); return }
-      }
-      const def = list.find(a => a.is_default === 1) ?? list[0] ?? null
-      setSelectedAddress(def)
-    })
+    let cancelled = false
+
+    fetchAddressList()
+      .then((list) => {
+        if (cancelled) return
+        if (addressId) {
+          const found = list.find((item) => item.id === Number(addressId))
+          if (found) {
+            setSelectedAddress(found)
+            return
+          }
+        }
+        const nextDefault = list.find((item) => item.is_default === 1) ?? list[0] ?? null
+        setSelectedAddress(nextDefault)
+      })
+      .catch(() => {
+        if (!cancelled) setSelectedAddress(null)
+      })
+
+    return () => {
+      cancelled = true
+    }
   }, [addressId])
 
-  if (!product) {
+  const canSubmit = useMemo(() => {
+    if (!draft) return false
+    if (needDelivery && !selectedAddress) return false
+    return !submitting
+  }, [draft, needDelivery, selectedAddress, submitting])
+
+  if (!draft) {
     return (
       <PageContainer>
         <PageNavBar title="确认订单" onBack={() => onNavigate('shop')} />
@@ -46,15 +70,50 @@ export function ShopOrderConfirmPage({ pageState, addressId, onNavigate }: ShopO
     )
   }
 
-  const price = parseFloat(product.price.replace(/,/g, '') || '0')
-  const total = (price * quantity).toFixed(2)
+  const handleSubmit = () => {
+    if (needDelivery && !selectedAddress) {
+      alert('请选择收货地址')
+      return
+    }
 
-  const handleSubmit = async () => {
+    const methods = needDelivery ? draft.product.payment : draft.product.no_payment
+    if (!methods || methods.length === 0) {
+      alert('暂无可用支付方式')
+      return
+    }
+
+    setPaymentMethods(methods)
+    setShowPaymentPopup(true)
+  }
+
+  const handleCreateGoldOrder = async (method: PaymentMethod) => {
     if (submitting) return
-    setSubmitting(true)
-    await new Promise(r => setTimeout(r, 800))
-    setSubmitting(false)
-    onNavigate('orders')
+
+    try {
+      setSubmitting(true)
+      await createPreOrder({
+        order_type: 'gold_goods',
+        payment_id: Number(method.id),
+        source_extend: {
+          goods_id: draft.product.id,
+          count: draft.quantity,
+          address_id: needDelivery ? selectedAddress?.id ?? null : null,
+          sku_unique_id: draft.skuInfo?.unique ?? null,
+          remark: remark.trim(),
+          order_type: needDelivery ? 1 : 2,
+        },
+      })
+
+      clearShopOrderDraft()
+      setShowPaymentPopup(false)
+      alert('下单成功，请前往待支付订单完成支付')
+      onNavigate('orders')
+    } catch (error) {
+      const message = error instanceof Error ? error.message : '创建订单失败'
+      alert(message)
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -62,31 +121,54 @@ export function ShopOrderConfirmPage({ pageState, addressId, onNavigate }: ShopO
       <PageNavBar title="确认订单" onBack={() => onNavigate('shop')} />
       <div className="px-4 pb-52 pt-4">
         <DeliveryToggle active={needDelivery} onChange={setNeedDelivery} />
-        {needDelivery && <AddressCard address={selectedAddress} onSelect={() => onNavigate('address', { from: 'shopOrderConfirm' })} />}
-        <ProductCard product={product} quantity={quantity} setQuantity={setQuantity} />
+        {needDelivery ? (
+          <AddressCard address={selectedAddress} onSelect={() => onNavigate('address', { from: 'shopOrderConfirm' })} />
+        ) : null}
+        <ProductCard draft={draft} />
         <RemarkSection value={remark} onChange={setRemark} />
       </div>
+
       <div className="fixed bottom-[62px] left-1/2 z-40 flex w-full max-w-[430px] -translate-x-1/2 items-center justify-between border-t border-white/10 bg-[#0a0a1a]/95 px-4 py-3 shadow-[0_-4px_12px_rgba(0,0,0,0.4)] backdrop-blur">
         <div>
           <div className="text-xs text-white/60">商品金额</div>
-          <div className="text-xl font-bold text-yellow-400">{total} <span className="text-xs font-medium">USDT</span></div>
+          <div className="text-xl font-bold text-yellow-400">{draft.totalPrice} <span className="text-xs font-medium">USDT</span></div>
         </div>
-        <button type="button" onClick={handleSubmit} disabled={submitting}
-          className="rounded-lg bg-gradient-to-r from-yellow-400 to-amber-500 px-8 py-3 text-base font-bold text-black shadow disabled:opacity-50">
-          {submitting ? '提交中...' : '确认下单 →'}
+        <button
+          type="button"
+          onClick={handleSubmit}
+          disabled={!canSubmit}
+          className="rounded-lg bg-gradient-to-r from-yellow-400 to-amber-500 px-8 py-3 text-base font-bold text-black shadow disabled:opacity-50"
+        >
+          {submitting ? '提交中...' : '立即支付 →'}
         </button>
       </div>
+
+      <PreOrderPaymentMethodModal
+        visible={showPaymentPopup}
+        orderAmount={draft.totalPrice}
+        paymentMethods={paymentMethods}
+        title={submitting ? '正在创建订单...' : '选择支付方式'}
+        onClose={() => {
+          if (submitting) return
+          setShowPaymentPopup(false)
+        }}
+        onConfirm={handleCreateGoldOrder}
+      />
     </PageContainer>
   )
 }
 
-function DeliveryToggle({ active, onChange }: { active: boolean; onChange: (v: boolean) => void }) {
+function DeliveryToggle({ active, onChange }: { active: boolean; onChange: (value: boolean) => void }) {
   return (
     <div className="mb-4 grid grid-cols-2 overflow-hidden rounded-xl border border-yellow-500/20 bg-[#1e1e1e] shadow">
-      {[true, false].map(v => (
-        <button key={String(v)} type="button" onClick={() => onChange(v)}
-          className={`py-3 text-sm font-medium transition ${active === v ? 'bg-gradient-to-br from-yellow-400 to-amber-500 font-semibold text-black' : 'text-white/60'}`}>
-          {v ? '需要发货' : '无需发货'}
+      {[true, false].map((value) => (
+        <button
+          key={String(value)}
+          type="button"
+          onClick={() => onChange(value)}
+          className={`py-3 text-sm font-medium transition ${active === value ? 'bg-gradient-to-br from-yellow-400 to-amber-500 font-semibold text-black' : 'text-white/60'}`}
+        >
+          {value ? '需要发货' : '无需发货'}
         </button>
       ))}
     </div>
@@ -96,16 +178,23 @@ function DeliveryToggle({ active, onChange }: { active: boolean; onChange: (v: b
 function AddressCard({ address, onSelect }: { address: AddressItem | null; onSelect: () => void }) {
   if (!address) {
     return (
-      <button type="button" onClick={onSelect}
-        className="mb-4 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-yellow-500/30 bg-[#1e1e1e] p-4 text-sm text-yellow-400/70">
+      <button
+        type="button"
+        onClick={onSelect}
+        className="mb-4 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-yellow-500/30 bg-[#1e1e1e] p-4 text-sm text-yellow-400/70"
+      >
         <span>+ 选择收货地址</span>
       </button>
     )
   }
+
   return (
-    <button type="button" onClick={onSelect}
-      className="mb-4 flex w-full items-center gap-3 rounded-xl border border-yellow-500/20 bg-[#1e1e1e] p-4 text-left shadow">
-      <span className="text-lg">📍</span>
+    <button
+      type="button"
+      onClick={onSelect}
+      className="mb-4 flex w-full items-center gap-3 rounded-xl border border-yellow-500/20 bg-[#1e1e1e] p-4 text-left shadow"
+    >
+      <img src="/old-pages/shop/location.png" alt="" className="h-6 w-6 shrink-0" />
       <div className="flex-1">
         <div className="flex gap-4 text-sm">
           <span className="font-semibold text-white">{address.real_name}</span>
@@ -118,31 +207,33 @@ function AddressCard({ address, onSelect }: { address: AddressItem | null; onSel
   )
 }
 
-function ProductCard({ product, quantity, setQuantity }: { product: GoldProductDetail; quantity: number; setQuantity: (q: number) => void }) {
+function ProductCard({ draft }: { draft: ShopOrderDraft }) {
   return (
     <div className="mb-4 flex gap-3 rounded-xl border border-yellow-500/20 bg-[#1e1e1e] p-4 shadow">
-      <img src={product.image} alt={product.name} className="h-20 w-20 shrink-0 rounded-xl border border-yellow-500/20 bg-black/30 object-cover" />
+      <img src={draft.product.img} alt={draft.product.name} className="h-20 w-20 shrink-0 rounded-xl border border-yellow-500/20 bg-black/30 object-cover" />
       <div className="flex flex-1 flex-col justify-between">
-        <div className="text-sm font-semibold text-white">{product.name}</div>
+        <div className="text-sm font-semibold text-white">{draft.product.name}</div>
+        <div className="text-xs text-white/55">{draft.selectedSkuValue || '默认规格'}</div>
         <div className="flex items-center justify-between">
-          <span className="text-base font-bold text-yellow-400">{product.price} <span className="text-xs font-medium">USDT</span></span>
-          <div className="flex items-center gap-2 rounded-lg border border-yellow-500/30 bg-yellow-400/10 px-2 py-1">
-            <button type="button" onClick={() => setQuantity(Math.max(1, quantity - 1))} className="text-sm text-yellow-400">-</button>
-            <span className="w-6 text-center text-sm font-semibold text-yellow-400">{quantity}</span>
-            <button type="button" onClick={() => setQuantity(quantity + 1)} className="text-sm text-yellow-400">+</button>
-          </div>
+          <span className="text-base font-bold text-yellow-400">{Number(draft.price).toFixed(2)} <span className="text-xs font-medium">USDT</span></span>
+          <div className="text-sm text-white/60">x{draft.quantity}</div>
         </div>
       </div>
     </div>
   )
 }
 
-function RemarkSection({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+function RemarkSection({ value, onChange }: { value: string; onChange: (value: string) => void }) {
   return (
     <div className="rounded-xl border border-yellow-500/20 bg-[#1e1e1e] p-4 shadow">
       <div className="mb-2 text-sm font-semibold text-yellow-400">备注信息</div>
-      <textarea value={value} onChange={e => onChange(e.target.value)} maxLength={200} placeholder="选填，请输入备注信息"
-        className="h-20 w-full resize-none rounded-lg border border-yellow-500/20 bg-black/30 p-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-yellow-500/40" />
+      <textarea
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        maxLength={200}
+        placeholder="选填，请输入备注信息"
+        className="h-20 w-full resize-none rounded-lg border border-yellow-500/20 bg-black/30 p-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-yellow-500/40"
+      />
     </div>
   )
 }

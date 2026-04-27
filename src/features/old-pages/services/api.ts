@@ -14,6 +14,10 @@ import type {
   GroupItem,
   GoldPrice,
   PreOrderItem,
+  PreOrderListResponse,
+  PreOrderPaymentInfo,
+  PreOrderPayResponse,
+  PendingOrderTips,
   UserInfo,
   TeamMember,
   UnionMiningConfig,
@@ -21,6 +25,8 @@ import type {
   AddressItem,
   AddressFormData,
   PagedList,
+  PaymentMethod,
+  GoldSkuInfo,
 } from './types'
 import * as mock from './mock'
 
@@ -70,6 +76,27 @@ function normalizeBannerList(data: Array<Partial<BannerItem>>): BannerItem[] {
   }))
 }
 
+function normalizePaymentMethods(data: unknown): PaymentMethod[] {
+  if (!Array.isArray(data)) return []
+  return data
+    .filter((item): item is PaymentMethod => !!item && typeof item === 'object' && typeof (item as PaymentMethod).id === 'number' && typeof (item as PaymentMethod).name === 'string')
+}
+
+function normalizeSkuMap(data: unknown): Record<string, GoldSkuInfo> | undefined {
+  if (!data || typeof data !== 'object' || Array.isArray(data)) return undefined
+  return Object.entries(data as Record<string, unknown>).reduce<Record<string, GoldSkuInfo>>((acc, [key, value]) => {
+    if (!value || typeof value !== 'object') return acc
+    const record = value as Record<string, unknown>
+    acc[key] = {
+      price: typeof record.price === 'number' || typeof record.price === 'string' ? record.price : 0,
+      stock: typeof record.stock === 'number' ? record.stock : Number(record.stock ?? 0),
+      unique: typeof record.unique === 'string' ? record.unique : undefined,
+      ...record,
+    }
+    return acc
+  }, {})
+}
+
 function normalizeProductDetail(data: Partial<GoldProductDetail> & { img?: string; slider_img?: string[] }): GoldProductDetail {
   const image = typeof data.image === 'string' && data.image
     ? data.image
@@ -102,7 +129,21 @@ function normalizeProductDetail(data: Partial<GoldProductDetail> & { img?: strin
     agreement: typeof data.agreement === 'string' ? data.agreement : '',
     images: mergedImages,
     specs,
+    img: image,
+    slider_img: sliderImages,
+    payment: normalizePaymentMethods(data.payment),
+    no_payment: normalizePaymentMethods(data.no_payment),
+    handicraft_fee: typeof data.handicraft_fee === 'number' || typeof data.handicraft_fee === 'string'
+      ? data.handicraft_fee
+      : 0,
+    is_sku: typeof data.is_sku === 'number' ? data.is_sku : Number(data.is_sku ?? 0),
+    sku_attr_value: normalizeSkuMap(data.sku_attr_value),
   }
+}
+
+function normalizePreOrderList(data: PreOrderListResponse | PreOrderItem[]): PreOrderItem[] {
+  if (Array.isArray(data)) return data
+  return Array.isArray(data.list) ? data.list : []
 }
 
 async function apiGet<T>(path: string, params?: QueryParams): Promise<ApiResponse<T>> {
@@ -203,7 +244,13 @@ export async function fetchGoldProductConfirm(data: QueryParams): Promise<QueryP
 
 // --- 订单模块 ---
 export async function fetchPreOrderList(params?: QueryParams): Promise<PreOrderItem[]> {
-  return withMockFallback(async () => (await apiGet<PreOrderItem[]>('/preOrder/preOrderList', params)).data, () => mock.preOrderList)
+  return withMockFallback(
+    async () => {
+      const data = (await apiGet<PreOrderListResponse | PreOrderItem[]>('/preOrder/preOrderList', params)).data
+      return normalizePreOrderList(data)
+    },
+    () => mock.preOrderList,
+  )
 }
 
 export async function fetchMachineOrderList(params?: QueryParams): Promise<{ list: GoldOrderItem[]; total: number }> {
@@ -217,6 +264,34 @@ export async function cancelPreOrder(params: QueryParams): Promise<void> {
   return withMockFallback(async () => {
     await apiPost('/preOrder/cancel', params)
   }, () => undefined)
+}
+
+export async function createPreOrder(data: QueryParams): Promise<QueryParams> {
+  return withMockFallback(
+    async () => (await apiPost<QueryParams>('/preOrder/preOrder', data)).data,
+    () => ({ success: true }),
+  )
+}
+
+export async function fetchPreOrderPaymentInfo(params: QueryParams): Promise<PreOrderPaymentInfo> {
+  return withMockFallback(
+    async () => (await apiGet<PreOrderPaymentInfo>('/preOrder/getPreOrderPayment', params)).data,
+    () => mock.preOrderPaymentInfo,
+  )
+}
+
+export async function payPreOrder(params: QueryParams): Promise<PreOrderPayResponse> {
+  return withMockFallback(
+    async () => (await apiPost<PreOrderPayResponse>('/preOrder/pay', params)).data,
+    () => mock.preOrderPayResponse,
+  )
+}
+
+export async function fetchPreOrderTips(params?: QueryParams): Promise<PendingOrderTips> {
+  return withMockFallback(
+    async () => (await apiGet<PendingOrderTips>('/preOrder/tips', params)).data,
+    () => ({ exists: mock.preOrderList.length > 0 }),
+  )
 }
 
 // --- 用户模块 ---

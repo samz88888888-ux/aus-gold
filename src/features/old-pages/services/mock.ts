@@ -2,7 +2,8 @@ import type {
   MachineItem, DestoryInfo, MiningLogItem, MiningLogResponse,
   GoldCategory, GoldProduct, GoldProductDetail, GoldOrderItem,
   OrderReleaseItem, BannerItem, GroupItem, GoldPrice,
-  PreOrderItem, UserInfo, TeamMember, UnionMiningConfig,
+  PreOrderItem, PreOrderPaymentInfo, PreOrderPayResponse,
+  UserInfo, TeamMember, UnionMiningConfig,
   AddressItem,
 } from './types'
 
@@ -13,9 +14,15 @@ export const machineList: MachineItem[] = [
 ]
 
 export const destoryInfo: DestoryInfo = {
-  min_amount: 100, price: 0.85, naau_price: 1.2,
-  payment: [{ id: 1, name: 'USDT', icon: '', type: 'usdt' }, { id: 2, name: 'NADI', icon: '', type: 'nadi' }],
-  naau_payment: [{ id: 3, name: 'NAAU', icon: '', type: 'naau' }],
+  min_amount: 100,
+  price: 0.85,
+  naau_price: 1.2,
+  currency: { name: 'MCG' },
+  payment: [
+    { id: 1, name: 'USDT', icon: '', type: 'usdt', pay_type: 1, extend: { system_currency_id: 1 } },
+    { id: 2, name: 'NADI+MCG', icon: '', type: 'nadi', pay_type: 2, extend: { primary_system_currency_id: 2, secondary_system_currency_id: 5 } },
+  ],
+  naau_payment: [{ id: 3, name: 'NAAU', icon: '', type: 'naau', pay_type: 1, extend: { system_currency_id: 10 } }],
 }
 
 const miningLogs: MiningLogItem[] = Array.from({ length: 20 }, (_, i) => ({
@@ -63,6 +70,16 @@ export const productDetail: GoldProductDetail = {
   agreement: '购买协议：本协议确认您已了解黄金投资风险，同意按照平台规则进行交易。黄金价格受市场波动影响，投资需谨慎。购买后将按照约定周期进行释放。',
   images: ['/old-pages/shop/ring-cycle.png', '/old-pages/shop/slide-ring.png'],
   specs: [{ label: '重量', value: '50g' }, { label: '纯度', value: '999.9' }, { label: '认证', value: '国际认证' }],
+  img: '/old-pages/shop/ring-cycle.png',
+  slider_img: ['/old-pages/shop/ring-cycle.png', '/old-pages/shop/slide-ring.png'],
+  handicraft_fee: '20.00',
+  payment: [{ id: 11, name: 'USDT', pay_type: 1, extend: { system_currency_id: 1 } }],
+  no_payment: [{ id: 12, name: 'NADI', pay_type: 1, extend: { system_currency_id: 2 } }],
+  is_sku: 2,
+  sku_attr_value: {
+    '标准款': { price: '28800', stock: 20, unique: 'sku-std' },
+    '典藏款': { price: '29800', stock: 10, unique: 'sku-pro' },
+  },
 }
 
 export const goldOrderList: GoldOrderItem[] = [
@@ -80,9 +97,60 @@ export const orderReleaseList: OrderReleaseItem[] = [
 export const goldPrice: GoldPrice = { price: '576.00', change: '+3.20', change_rate: '+0.56%' }
 
 export const preOrderList: PreOrderItem[] = [
-  { id: 1, order_no: 'PO20250420001', order_type: 'destroy_machine', order_type_text: '销毁挖矿', amount: '500.00', status: 0, status_text: '待支付', created_at: '2025-04-20 15:30:00', expire_at: '2025-04-20 16:30:00', payment_methods: [{ id: 1, name: 'USDT', icon: '', type: 'usdt' }] },
-  { id: 2, order_no: 'PO20250418002', order_type: 'gold_purchase', order_type_text: '黄金购买', amount: '28,800.00', status: 0, status_text: '待支付', created_at: '2025-04-18 10:00:00', expire_at: '2025-04-18 11:00:00', payment_methods: [{ id: 1, name: 'USDT', icon: '', type: 'usdt' }, { id: 2, name: 'NADI', icon: '', type: 'nadi' }] },
+  {
+    id: 1,
+    order_no: 'PO20250420001',
+    order_type: 3,
+    order_type_text: '销毁挖矿',
+    amount: '500.00',
+    total_amount: '500.00',
+    status: 1,
+    status_text: '待支付',
+    created_at: '2025-04-20 15:30:00',
+    expire_at: '2025-04-20 16:30:00',
+    payment: [{ id: 101, system_currency_id: 2, radio_rate: '100', total_amount: '425', status: 1 }],
+  },
+  {
+    id: 2,
+    order_no: 'PO20250418002',
+    order_type: 5,
+    order_type_text: '黄金购买',
+    amount: '28800.00',
+    total_amount: '28800.00',
+    status: 1,
+    status_text: '待支付',
+    created_at: '2025-04-18 10:00:00',
+    expire_at: '2025-04-18 11:00:00',
+    payment: [{ id: 102, system_currency_id: 1, radio_rate: '100', total_amount: '28800', status: 1 }],
+    gold_source: { title: '50g投资金条' },
+  },
 ]
+
+export const preOrderPaymentInfo: PreOrderPaymentInfo = {
+  ac_amount: '425',
+  price: '0.85',
+  total_amount: '500',
+  payment_methods: 3,
+  system_currency_id: 2,
+  systemAmount: '300',
+  chainCurrency: {
+    name: 'NADI',
+    chain_id: 399,
+    contract_address: '0x1000000000000000000000000000000000000000',
+    decimals: 18,
+  },
+}
+
+export const preOrderPayResponse: PreOrderPayResponse = {
+  amount: '425',
+  order_no: 'PO20250420001',
+  currency: {
+    name: 'NADI',
+    chain_id: 399,
+    contract_address: '0x1000000000000000000000000000000000000000',
+    decimals: 18,
+  },
+}
 
 export const machineOrderList: GoldOrderItem[] = [
   { id: 10, order_no: 'MC20250401001', goods_name: 'NAAI-S1 矿机', goods_image: '/old-pages/ming/ming-list-bg.png', price: '1,000', quantity: 1, total_amount: '1,000', status: 2, status_text: '已发货', created_at: '2025-04-01 10:30:00', shipped_at: '2025-04-03 09:00:00', logistics_no: 'SF1111111111', weight: '' },
@@ -91,7 +159,7 @@ export const machineOrderList: GoldOrderItem[] = [
 export const userInfoData: UserInfo = {
   code: 'A8B2C1', name: 'User_0x3f...a1b2', wallet_address: '0x3f4e5d6c7b8a9012345678901234567890a1b2c3',
   zhi_num: 12, team_num: 156, me_performance: 25000, team_performance: 380000,
-  level_id: 3, level_name: 'VIP3', valid_user_power: 1250.5,
+  level_id: 3, level_name: 'VIP3', valid_user_power: 1250.5, gold_order_status: false,
 }
 
 export const teamList: TeamMember[] = [

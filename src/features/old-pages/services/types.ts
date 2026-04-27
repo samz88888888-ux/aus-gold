@@ -4,6 +4,32 @@ export type ApiResponse<T = unknown> = {
   data: T
 }
 
+export type CurrencyInfo = {
+  id?: number
+  name?: string
+  chain_id?: number
+  contract_address?: string
+  decimals?: number
+  amount?: number | string
+}
+
+export type PaymentMethodExtend = {
+  system_currency_id?: number
+  primary_system_currency_id?: number
+  secondary_system_currency_id?: number
+  [key: string]: unknown
+}
+
+export type PaymentMethod = {
+  id: number
+  name: string
+  icon?: string
+  type?: string | number
+  pay_type?: number
+  extend?: PaymentMethodExtend
+  [key: string]: unknown
+}
+
 export type MachineItem = {
   id: number
   name: string
@@ -23,13 +49,7 @@ export type DestoryInfo = {
   naau_price: number
   payment: PaymentMethod[]
   naau_payment: PaymentMethod[]
-}
-
-export type PaymentMethod = {
-  id: number
-  name: string
-  icon: string
-  type: string
+  currency?: CurrencyInfo | null
 }
 
 export type MiningLogItem = {
@@ -65,6 +85,14 @@ export type GoldProduct = {
   is_purchased: boolean
   weight: string
   purity: string
+  img?: string
+}
+
+export type GoldSkuInfo = {
+  price: number | string
+  stock: number
+  unique?: string
+  [key: string]: unknown
 }
 
 export type PagedList<T> = {
@@ -79,6 +107,13 @@ export type GoldProductDetail = GoldProduct & {
   agreement: string
   images: string[]
   specs: { label: string; value: string }[]
+  payment?: PaymentMethod[]
+  no_payment?: PaymentMethod[]
+  handicraft_fee?: number | string
+  slider_img?: string[]
+  is_sku?: number
+  sku_attr_value?: Record<string, GoldSkuInfo>
+  gold_order_status?: boolean
 }
 
 export type GoldOrderItem = {
@@ -127,17 +162,82 @@ export type GoldPrice = {
   change_rate: string
 }
 
+export type PreOrderPaymentItem = {
+  id: number
+  system_currency_id?: number
+  radio_rate?: number | string
+  total_amount?: number | string
+  status: number
+  name?: string
+  icon?: string
+  [key: string]: unknown
+}
+
+export type PreOrderSourceInfo = {
+  title?: string
+  name?: string
+}
+
 export type PreOrderItem = {
   id: number
   order_no: string
-  order_type: string
-  order_type_text: string
-  amount: string
+  order_type: string | number
+  order_type_text?: string
+  amount?: string
+  total_amount?: string
   status: number
   status_text: string
   created_at: string
   expire_at: string
-  payment_methods: PaymentMethod[]
+  payment?: PreOrderPaymentItem[]
+  payment_methods?: PaymentMethod[]
+  equipment_source?: PreOrderSourceInfo | null
+  node_source?: PreOrderSourceInfo | null
+  gold_source?: PreOrderSourceInfo | null
+}
+
+export type PreOrderListResponse = PagedList<PreOrderItem>
+
+export type PreOrderPaymentInfo = {
+  ac_amount: number | string
+  price: number | string
+  total_amount: number | string
+  payment_methods: number
+  system_currency_id?: number
+  systemAmount?: number | string
+  chainCurrency?: CurrencyInfo | null
+  currency?: CurrencyInfo | null
+  sub_currency?: CurrencyInfo | null
+  amount?: number | string
+  order_no?: string
+}
+
+export type PreOrderPayResponse = {
+  currency?: CurrencyInfo | null
+  sub_currency?: CurrencyInfo | null
+  amount: number | string
+  order_no: string
+}
+
+export type PendingOrderTips = {
+  exists: boolean
+}
+
+export type ResolvedPendingPaymentMethod = {
+  id: number
+  type: 1 | 2
+  system_currency_id?: number
+  name: string
+  currency: string
+  icon?: string
+  balance: number
+  available: boolean
+  payment: string
+  isChainMatch?: boolean
+  targetChainId?: number
+  targetChainName?: string
+  needSwitchChain?: boolean
+  chainInfo?: CurrencyInfo | null
 }
 
 export type UserInfo = {
@@ -151,6 +251,7 @@ export type UserInfo = {
   level_id: number
   level_name: string
   valid_user_power: number
+  gold_order_status?: boolean
 }
 
 export type TeamMember = {
@@ -173,14 +274,20 @@ export type UnionMiningConfig = {
   icon: string
 }
 
-export type ShopOrderInfo = {
-  goods_id: number
-  goods_name: string
-  goods_image: string
-  price: string
+export type ShopOrderDraft = {
+  product: {
+    id: number
+    name: string
+    img: string
+    payment?: PaymentMethod[]
+    no_payment?: PaymentMethod[]
+    handicraft_fee?: number | string
+  }
   quantity: number
-  total_amount: string
-  address_id?: number
+  selectedSkuValue: string | null
+  skuInfo: GoldSkuInfo | null
+  price: number | string
+  totalPrice: string
 }
 
 export type AddressItem = {

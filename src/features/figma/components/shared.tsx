@@ -175,10 +175,10 @@ export function TopNavigation({
         <button
           type="button"
           onClick={onMenuToggle}
-          className="relative z-30 flex h-7 w-7 items-center justify-center rounded-full border border-black/10 bg-white text-black"
+          className="relative z-30 flex h-8 w-8 items-center justify-center rounded-full border border-[#fbd005]/45 bg-white text-[#3a2a05] shadow-[0_0_0_2px_rgba(251,208,5,0.14),0_3px_8px_rgba(0,0,0,0.08)]"
           aria-label="待支付订单"
         >
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
             <path d="M9 3h6" />
             <path d="M10 6h4" />
             <rect x="5" y="4" width="14" height="16" rx="2" />

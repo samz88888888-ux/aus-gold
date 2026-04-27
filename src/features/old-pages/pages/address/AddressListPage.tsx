@@ -46,7 +46,7 @@ export function AddressListPage({ from, onNavigate }: AddressListPageProps) {
 
   return (
     <PageContainer>
-      <PageNavBar title="收货地址" onBack={() => onNavigate('shop')} />
+      <PageNavBar title="收货地址" onBack={() => onNavigate(from === 'shopOrderConfirm' ? 'shopOrderConfirm' : 'shop')} />
       <div className="px-4 py-4 pb-28">
         {loading ? (
           <p className="py-20 text-center text-sm text-white/40">加载中...</p>

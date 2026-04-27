@@ -221,7 +221,7 @@ function HeroSection({
 }) {
   return (
     <section ref={sectionRef} className="animate-fade-in-up">
-      <div className={`${sectionCardClass} overflow-hidden rounded-[24px] p-1.5`}>
+      <div className={`${sectionCardClass} overflow-hidden rounded-[24px]`}>
         <img src={heroMainUrl} alt="" className="h-[210px] w-full rounded-[20px] object-cover" />
       </div>
 

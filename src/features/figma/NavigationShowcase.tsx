@@ -25,6 +25,8 @@ import { AddressListPage } from '../old-pages/pages/address/AddressListPage'
 import { AddressAddPage } from '../old-pages/pages/address/AddressAddPage'
 import { AddressEditPage } from '../old-pages/pages/address/AddressEditPage'
 import { OldPageHeaderProvider } from '../old-pages/components/OldPageHeaderProvider'
+import { UnpaidOrderReminderModal } from '../old-pages/components/payment/UnpaidOrderReminderModal'
+import { fetchPreOrderTips } from '../old-pages/services/api'
 import {
   BSC_CHAIN_ID,
   clearAuth,
@@ -76,6 +78,7 @@ export function NavigationShowcase() {
   const [currentChainId, setCurrentChainId] = useState<string | null>(null)
   const [notices, setNotices] = useState<NoticeItem[]>([])
   const [selectedNotice, setSelectedNotice] = useState<NoticeItem | null>(null)
+  const [showUnpaidOrderPopup, setShowUnpaidOrderPopup] = useState(false)
   const urlInviteCode = useRef(getInviteCodeFromUrl())
 
   const selectedLanguage =
@@ -113,6 +116,29 @@ export function NavigationShowcase() {
       .then((chainId) => setCurrentChainId(chainId))
       .catch(() => {})
   }, [])
+
+  useEffect(() => {
+    if (!authToken) {
+      setShowUnpaidOrderPopup(false)
+      return
+    }
+
+    const lastClosedTime = window.localStorage.getItem('unpaidOrderPopupClosed')
+    if (lastClosedTime) {
+      const elapsed = Date.now() - Number(lastClosedTime)
+      if (elapsed < 3 * 60 * 60 * 1000) {
+        return
+      }
+    }
+
+    fetchPreOrderTips()
+      .then((result) => {
+        if (result.exists) {
+          setShowUnpaidOrderPopup(true)
+        }
+      })
+      .catch(() => {})
+  }, [authToken])
 
   useEffect(() => {
     const ethereum = window.ethereum
@@ -347,6 +373,7 @@ export function NavigationShowcase() {
   ]
   const isOldPageRoute = oldPageRoutes.includes(currentPage)
   const shellBgClass = isOldPageRoute ? 'bg-[#0a0a1a]' : 'bg-[#1c1508]'
+  const useGlobalBottomSafePadding = currentPage !== 'ming'
 
   const handleBottomTabClick = (page: AppPage) => {
     if (page !== 'home' && !authToken) {
@@ -406,7 +433,7 @@ export function NavigationShowcase() {
   return (
     <main className="min-h-screen bg-[#03070b] text-white">
       <div className={`mx-auto min-h-screen max-w-[430px] ${shellBgClass} shadow-[0_0_0_1px_rgba(255,255,255,0.06)]`}>
-        <div className={`relative min-h-screen overflow-hidden pb-[76px] ${shellBgClass}`}>
+        <div className={`relative min-h-screen overflow-hidden ${useGlobalBottomSafePadding ? 'pb-[76px]' : ''} ${shellBgClass}`}>
           {currentPage === 'home' ? (
             <HomeScreen
               copy={copy}
@@ -479,7 +506,7 @@ export function NavigationShowcase() {
               ) : currentPage === 'shopOrderRelease' ? (
                 <ShopOrderReleasePage groupId={pageParams.group_id} status={pageParams.status} onNavigate={navigateToPage} />
               ) : currentPage === 'shopOrderConfirm' ? (
-                <ShopOrderConfirmPage pageState={pageParams.state as { product: import('../old-pages/services/types').GoldProductDetail; quantity: number } | null} addressId={pageParams.address_id} onNavigate={navigateToPage} />
+                <ShopOrderConfirmPage pageState={pageParams.state as import('../old-pages/services/types').ShopOrderDraft | null} addressId={pageParams.address_id} onNavigate={navigateToPage} />
               ) : currentPage === 'orders' ? (
                 <OrdersPage onNavigate={navigateToPage} />
               ) : currentPage === 'user' ? (
@@ -572,6 +599,18 @@ export function NavigationShowcase() {
             isOpen={isInviteCodeSheetOpen}
             onClose={() => { setIsInviteCodeSheetOpen(false); setPendingAddress(null) }}
             onConfirm={handleInviteCodeConfirm}
+          />
+
+          <UnpaidOrderReminderModal
+            visible={showUnpaidOrderPopup}
+            onClose={() => {
+              window.localStorage.setItem('unpaidOrderPopupClosed', String(Date.now()))
+              setShowUnpaidOrderPopup(false)
+            }}
+            onGoPayment={() => {
+              setShowUnpaidOrderPopup(false)
+              navigateToPage('orders')
+            }}
           />
 
           <FeedbackToast message={feedbackMessage} />
