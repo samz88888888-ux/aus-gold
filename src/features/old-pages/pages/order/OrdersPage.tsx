@@ -76,6 +76,14 @@ function getOrderBusinessType(order: PreOrderItem) {
   return order.order_type_text || '待支付订单'
 }
 
+function getOrderTypeWithSource(order: PreOrderItem) {
+  const orderType = Number(order.order_type)
+  if (orderType === 1 && order.equipment_source?.title) return order.equipment_source.title
+  if (orderType === 2 && order.node_source?.name) return order.node_source.name
+  if (orderType === 5 && order.gold_source?.title) return order.gold_source.title
+  return getOrderBusinessType(order)
+}
+
 function getPaymentStateLabel(order: PreOrderItem, payment: PreOrderPaymentItem) {
   if (payment.status === 2 || order.status === 3) return '已支付'
   if (payment.status === 3 || order.status === 4) return '已取消'
@@ -87,6 +95,12 @@ function getPaymentStateClass(order: PreOrderItem, payment: PreOrderPaymentItem)
   if (label === '已支付') return 'bg-emerald-400/12 text-emerald-300 ring-1 ring-emerald-300/15'
   if (label === '已取消') return 'bg-white/8 text-white/45 ring-1 ring-white/10'
   return 'bg-sky-400/12 text-sky-200 ring-1 ring-sky-300/15'
+}
+
+function formatRate(rate?: string | number) {
+  const num = Number(rate ?? 100)
+  if (Number.isNaN(num)) return '100.00%'
+  return `${num.toFixed(2)}%`
 }
 
 type OrderCardProps = {
@@ -107,11 +121,11 @@ function OrderCard({ order, onCancel, onPay }: OrderCardProps) {
       <div className="relative flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <span className="inline-flex rounded-full border border-[#fbd005]/18 bg-[#fbd005]/10 px-4 py-1 text-[10px] font-semibold leading-none text-[#ffe08a]">
-            {getOrderBusinessType(order)}
+            {getOrderTypeWithSource(order)}
           </span>
           {/* <h3 className="mt-2 truncate text-[15px] font-bold text-white">{formatOrderTitle(order)}</h3> */}
           <div className="mt-2 flex items-end gap-1.5">
-            <span className="text-[22px] font-black leading-none text-white">{formatAmount(total, 2)}</span>
+            <span className="text-[22px] font-black leading-none text-white">{formatAmount(total, 4)}</span>
             <span className="pb-0.5 text-xs font-semibold text-white/58">USDT</span>
           </div>
           <p className="mt-1 text-[11px] text-white/38">创建时间 {order.created_at}</p>
@@ -121,10 +135,10 @@ function OrderCard({ order, onCancel, onPay }: OrderCardProps) {
           <button
             type="button"
             onClick={() => onCancel(order)}
-            className="mt-0.5 flex shrink-0 items-center gap-1 rounded-full border border-red-500/20 bg-red-500/10 px-2 py-[3px] text-[9px] font-medium text-red-300 active:opacity-70"
+            className="mt-0.5 flex shrink-0 items-center gap-1 rounded-full border border-red-500/25 bg-red-500/12 px-2 py-px text-[10px] font-medium leading-none text-red-300 active:opacity-70"
           >
-            <svg width="8" height="8" viewBox="0 0 14 14" fill="none"><path d="M2 2L12 12M12 2L2 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" /></svg>
-            取消
+            <svg width="8" height="8" viewBox="0 0 14 14" fill="none"><path d="M2 2L12 12M12 2L2 12" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" /></svg>
+            取消订单
           </button>
         ) : null}
       </div>
@@ -133,43 +147,40 @@ function OrderCard({ order, onCancel, onPay }: OrderCardProps) {
         {payments.map((payment) => {
           const disabled = order.status === 3 || order.status === 4 || payment.status === 2 || payment.status === 3
           return (
-            <div key={payment.id} className="rounded-[16px] border border-white/8 bg-white/[0.04] p-3">
-              <div className="flex items-center justify-between gap-3">
+            <div key={payment.id} className="rounded-[16px] border border-white/8 bg-white/4 p-3">
+              <p className="text-[12px] text-white/75">
+                {getCurrencyByChainId(payment.system_currency_id)} | {formatRate(payment.radio_rate)}
+              </p>
+              <div className="mt-2 flex items-center justify-between gap-3">
                 <div className="min-w-0 flex flex-1 items-center gap-2.5">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#fbd005]/10">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#fbd005]/10">
                     <img
                       src={getCurrencyIconById(payment.system_currency_id)}
                       alt={getCurrencyByChainId(payment.system_currency_id)}
-                      className="h-7 w-7 object-contain"
+                      className="h-8 w-8 object-contain"
                     />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-sm font-semibold text-white">{getCurrencyByChainId(payment.system_currency_id)}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="truncate text-[13px] font-semibold text-white">{getCurrencyByChainId(payment.system_currency_id)}</span>
                       <span className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold ${getPaymentStateClass(order, payment)}`}>
                         {getPaymentStateLabel(order, payment)}
                       </span>
                     </div>
-                    <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-white/42">
-                      <span>支付币种 {getCurrencyByChainId(payment.system_currency_id)}</span>
-                      <span className="h-1 w-1 rounded-full bg-white/20" />
-                      <span>比例 {payment.radio_rate ?? '--'}%</span>
+                    <div className="mt-1 text-[13px] font-bold leading-none text-white">
+                      ${formatAmount(payment.total_amount, 4)}
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <div className="text-right">
-                    <div className="text-sm font-bold text-white">{formatAmount(payment.total_amount, 2)}</div>
-                    <div className="text-[11px] text-white/35">USDT</div>
-                  </div>
+                <div className="flex shrink-0 items-center">
                   <button
                     type="button"
                     disabled={disabled}
                     onClick={() => onPay(order, payment)}
-                    className={`shrink-0 rounded-xl px-3 py-2 text-[11px] font-bold transition ${disabled ? 'bg-white/8 text-white/28' : 'bg-gradient-to-r from-[#fff2a2] to-[#f0ae24] text-[#171200]'}`}
+                    className={`h-8 shrink-0 rounded-full px-3.5 text-[11px] font-bold leading-none transition ${disabled ? 'bg-white/8 text-white/28' : 'bg-gradient-to-r from-[#fff2a2] to-[#f0ae24] text-[#171200]'}`}
                   >
-                    {disabled ? (payment.status === 2 || order.status === 3 ? '已支付' : '已取消') : '支付'}
+                    {disabled ? (payment.status === 2 || order.status === 3 ? '已支付' : '已取消') : '立即支付'}
                   </button>
                 </div>
               </div>
