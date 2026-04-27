@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 
 import type { AppPage, PageParams } from '../../../figma/types'
+import { NoticePopup } from '../../components/NoticePopup'
 import { PreOrderPaymentMethodModal } from '../../components/payment/PreOrderPaymentMethodModal'
 import { PageContainer } from '../../components/PageContainer'
 import { PageNavBar } from '../../components/PageNavBar'
@@ -26,6 +27,12 @@ export function ShopOrderConfirmPage({ pageState, addressId, onNavigate }: ShopO
   const [submitting, setSubmitting] = useState(false)
   const [showPaymentPopup, setShowPaymentPopup] = useState(false)
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([])
+  const [notice, setNotice] = useState<{
+    title?: string
+    message: string
+    confirmText?: string
+    onConfirm?: () => void
+  } | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -72,13 +79,13 @@ export function ShopOrderConfirmPage({ pageState, addressId, onNavigate }: ShopO
 
   const handleSubmit = () => {
     if (needDelivery && !selectedAddress) {
-      alert('请选择收货地址')
+      setNotice({ message: '请选择收货地址' })
       return
     }
 
     const methods = needDelivery ? draft.product.payment : draft.product.no_payment
     if (!methods || methods.length === 0) {
-      alert('暂无可用支付方式')
+      setNotice({ message: '暂无可用支付方式' })
       return
     }
 
@@ -106,11 +113,17 @@ export function ShopOrderConfirmPage({ pageState, addressId, onNavigate }: ShopO
 
       clearShopOrderDraft()
       setShowPaymentPopup(false)
-      alert('下单成功，请前往待支付订单完成支付')
-      onNavigate('orders')
+      setNotice({
+        message: '下单成功，请前往待支付订单完成支付',
+        confirmText: '前往订单',
+        onConfirm: () => {
+          setNotice(null)
+          onNavigate('orders')
+        },
+      })
     } catch (error) {
       const message = error instanceof Error ? error.message : '创建订单失败'
-      alert(message)
+      setNotice({ message })
     } finally {
       setSubmitting(false)
     }
@@ -153,6 +166,15 @@ export function ShopOrderConfirmPage({ pageState, addressId, onNavigate }: ShopO
           setShowPaymentPopup(false)
         }}
         onConfirm={handleCreateGoldOrder}
+      />
+
+      <NoticePopup
+        visible={notice !== null}
+        title={notice?.title}
+        message={notice?.message ?? ''}
+        confirmText={notice?.confirmText}
+        onClose={() => setNotice(null)}
+        onConfirm={notice?.onConfirm}
       />
     </PageContainer>
   )

@@ -617,7 +617,7 @@ export function NavigationShowcase() {
         </div>
 
         <nav className="fixed inset-x-0 bottom-0 z-[35] mx-auto w-full max-w-[430px] border-t border-white/10 bg-[#111218]/96 shadow-[0_-8px_20px_rgba(0,0,0,0.32)] backdrop-blur">
-          <div className="grid grid-cols-4 px-2 pb-[calc(4px+env(safe-area-inset-bottom))] pt-1.5">
+          <div className="grid grid-cols-4 px-2 pb-[calc(6px+env(safe-area-inset-bottom))] pt-2">
             {bottomTabs.map((tab) => {
               const active = activeBottomTab === tab.key
               return (
@@ -625,10 +625,10 @@ export function NavigationShowcase() {
                   key={tab.key}
                   type="button"
                   onClick={() => handleBottomTabClick(tab.page)}
-                  className="flex flex-col items-center justify-center gap-0.5 rounded-lg py-1 transition active:scale-[0.98]"
+                  className={`flex flex-col items-center justify-center gap-1 rounded-xl py-1.5 transition active:scale-[0.98] ${active ? 'bg-white/[0.03]' : ''}`}
                 >
-                  <img src={active ? tab.activeIcon : tab.icon} alt={tab.label} className="h-5 w-5 object-contain" />
-                  <span className={`text-[11px] font-medium ${active ? 'text-[#fbd005]' : 'text-white/60'}`}>{tab.label}</span>
+                  <img src={active ? tab.activeIcon : tab.icon} alt={tab.label} className={`object-contain transition-transform ${active ? 'h-7 w-7 scale-105' : 'h-6 w-6'}`} />
+                  <span className={`text-[12px] font-medium ${active ? 'text-[#fbd005]' : 'text-white/60'}`}>{tab.label}</span>
                 </button>
               )
             })}

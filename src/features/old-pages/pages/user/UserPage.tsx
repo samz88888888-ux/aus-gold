@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { NoticePopup } from '../../components/NoticePopup'
 import { PageContainer } from '../../components/PageContainer'
 import { PageNavBar } from '../../components/PageNavBar'
 import { fetchUserInfoOld, fetchTeamList } from '../../services/api'
@@ -17,7 +18,6 @@ function fmtNum(n: number | string | undefined) {
 async function copyText(text: string) {
   try {
     await navigator.clipboard.writeText(text)
-    alert('复制成功')
   } catch {
     const ta = document.createElement('textarea')
     ta.value = text
@@ -27,7 +27,6 @@ async function copyText(text: string) {
     ta.select()
     document.execCommand('copy')
     document.body.removeChild(ta)
-    alert('复制成功')
   }
 }
 
@@ -89,6 +88,7 @@ export function UserPage({ onNavigate }: UserPageProps) {
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null)
   const [teamList, setTeamList] = useState<TeamMember[]>([])
   const [loading, setLoading] = useState(true)
+  const [noticeMessage, setNoticeMessage] = useState<string | null>(null)
   const loadedRef = useRef(false)
 
   useEffect(() => {
@@ -103,6 +103,12 @@ export function UserPage({ onNavigate }: UserPageProps) {
   const inviteLink = userInfo?.code
     ? `${window.location.origin}/#/index?code=${userInfo.code}`
     : '--'
+
+  const handleCopy = async (text: string) => {
+    if (!text || text === '--') return
+    await copyText(text)
+    setNoticeMessage('复制成功')
+  }
 
   if (loading) {
     return (
@@ -133,8 +139,8 @@ export function UserPage({ onNavigate }: UserPageProps) {
       <div className="relative z-10 -mt-[30px] px-[15px] pb-[120px]">
         {/* invite cards */}
         <div className="flex flex-col gap-[14px]">
-          <InviteCard icon="/old-pages/team/user-invite-code.png" label="邀请码" value={userInfo?.code || '--'} onCopy={() => copyText(userInfo?.code || '')} />
-          <InviteCard icon="/old-pages/team/user-invite-user.png" label="邀请链接" value={inviteLink} onCopy={() => copyText(inviteLink)} />
+          <InviteCard icon="/old-pages/team/user-invite-code.png" label="邀请码" value={userInfo?.code || '--'} onCopy={() => void handleCopy(userInfo?.code || '')} />
+          <InviteCard icon="/old-pages/team/user-invite-user.png" label="邀请链接" value={inviteLink} onCopy={() => void handleCopy(inviteLink)} />
         </div>
 
         {/* stat cards row */}
@@ -175,6 +181,12 @@ export function UserPage({ onNavigate }: UserPageProps) {
           )}
         </div>
       </div>
+
+      <NoticePopup
+        visible={noticeMessage !== null}
+        message={noticeMessage ?? ''}
+        onClose={() => setNoticeMessage(null)}
+      />
     </PageContainer>
   )
 }

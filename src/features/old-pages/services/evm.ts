@@ -7,8 +7,9 @@ export const DEFAULT_GAS_LIMIT = 1_000_000n
 export const MAX_UINT256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
 export const BSC_RECHARGE_CONTRACT = '0x34A41001889Eeb080ce8ad7fA50252b5138D30Df'
 export const NADI_RECHARGE_CONTRACT = '0x34A41001889Eeb080ce8ad7fA50252b5138D30Df'
+export const PYTHIA_RECHARGE_CONTRACT = '0x34A41001889Eeb080ce8ad7fA50252b5138D30Df'
 
-export type SupportedChainId = 56 | 399
+export type SupportedChainId = 56 | 399 | 9777
 
 export type ChainConfig = {
   chainId: SupportedChainId
@@ -46,7 +47,19 @@ const CHAIN_CONFIGS: Record<SupportedChainId, ChainConfig> = {
       decimals: 18,
     },
     rpcUrls: ['https://rpc.naaidepin.co/', 'https://rpc-nadi.naaidepin.co'],
-    blockExplorerUrls: ['https://rpc.naaidepin.co'],
+    blockExplorerUrls: ['https://explorer.naaidepin.co'],
+  },
+  9777: {
+    chainId: 9777,
+    chainHexId: '0x2631',
+    chainName: 'PYTHIA',
+    nativeCurrency: {
+      name: 'PYTHIA',
+      symbol: 'PYTHIA',
+      decimals: 18,
+    },
+    rpcUrls: ['https://rpc-pythia.naaidepin.co/'],
+    blockExplorerUrls: ['https://explorer.naaidepin.co'],
   },
 }
 
@@ -300,6 +313,7 @@ export function isNativeCurrency(currency: CurrencyInfo | null | undefined, targ
   const normalized = currency.contract_address.toLowerCase()
   if (normalized === ZERO_ADDRESS.toLowerCase()) return true
   if (targetChainId === 399 && currency.name?.toUpperCase() === 'NADI') return true
+  if (targetChainId === 9777 && currency.name?.toUpperCase() === 'PYTHIA') return true
   if (targetChainId === 56 && currency.name?.toUpperCase() === 'BNB') return true
   return false
 }
@@ -320,7 +334,9 @@ export async function getSmartCurrencyBalance(params: {
   return getErc20Balance(params.currency.contract_address, params.owner)
 }
 
-export async function executeNadiPayment(params: {
+async function executeNativeRechargePayment(params: {
+  targetChainId: 399 | 9777
+  rechargeContract: string
   paymentInfo: {
     currency?: CurrencyInfo | null
   }
@@ -328,12 +344,12 @@ export async function executeNadiPayment(params: {
   orderNo: string
 }) {
   const address = await requestAccounts()
-  if (!(await isChainMatched(399))) {
-    throw new Error(`请切换到 ${CHAIN_CONFIGS[399].chainName} 网络`)
+  if (!(await isChainMatched(params.targetChainId))) {
+    throw new Error(`请切换到 ${CHAIN_CONFIGS[params.targetChainId].chainName} 网络`)
   }
 
   const currency = params.paymentInfo.currency
-  const nativePayment = isNativeCurrency(currency, 399)
+  const nativePayment = isNativeCurrency(currency, params.targetChainId)
   const amountValue = parseUnits(params.amount, currency?.decimals ?? 18)
   const tokenAddress = nativePayment ? ZERO_ADDRESS : String(currency?.contract_address ?? '')
 
@@ -353,7 +369,7 @@ export async function executeNadiPayment(params: {
     await approveErc20Token({
       owner: address,
       tokenAddress: currency.contract_address,
-      spender: NADI_RECHARGE_CONTRACT,
+      spender: params.rechargeContract,
       minimumAmount: amountValue,
     })
   }
@@ -366,9 +382,37 @@ export async function executeNadiPayment(params: {
 
   return sendTransaction({
     from: address,
-    to: NADI_RECHARGE_CONTRACT,
+    to: params.rechargeContract,
     data,
     value: nativePayment ? amountValue : 0n,
+  })
+}
+
+export async function executeNadiPayment(params: {
+  paymentInfo: {
+    currency?: CurrencyInfo | null
+  }
+  amount: number | string
+  orderNo: string
+}) {
+  return executeNativeRechargePayment({
+    targetChainId: 399,
+    rechargeContract: NADI_RECHARGE_CONTRACT,
+    ...params,
+  })
+}
+
+export async function executePythiaPayment(params: {
+  paymentInfo: {
+    currency?: CurrencyInfo | null
+  }
+  amount: number | string
+  orderNo: string
+}) {
+  return executeNativeRechargePayment({
+    targetChainId: 9777,
+    rechargeContract: PYTHIA_RECHARGE_CONTRACT,
+    ...params,
   })
 }
 

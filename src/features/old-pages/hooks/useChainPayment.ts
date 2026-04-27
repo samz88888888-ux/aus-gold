@@ -3,12 +3,14 @@ import { useEffect, useState } from 'react'
 import {
   executeBscPayment,
   executeNadiPayment,
+  executePythiaPayment,
   formatUnits,
   getConnectedAddress,
   getChainConfig,
   getCurrentChainHexId,
   getSmartCurrencyBalance,
   isChainMatched,
+  type SupportedChainId,
   switchOrAddChain,
 } from '../services/evm'
 import type { CurrencyInfo } from '../services/types'
@@ -64,21 +66,21 @@ export function useChainPayment() {
     }
   }
 
-  const getBalanceForCurrency = async (currency: CurrencyInfo, targetChainId: 56 | 399) => {
+  const getBalanceForCurrency = async (currency: CurrencyInfo, targetChainId: SupportedChainId) => {
     const { address } = await refreshWalletState()
     if (!address) return 0
     const rawBalance = await getSmartCurrencyBalance({ currency, targetChainId, owner: address })
     return Number(formatUnits(rawBalance, currency.decimals ?? 18, 6))
   }
 
-  const checkChainMatch = async (targetChainId: 56 | 399) => {
+  const checkChainMatch = async (targetChainId: SupportedChainId) => {
     const matched = await isChainMatched(targetChainId)
     const chainId = await getCurrentChainHexId().catch(() => null)
     setCurrentChainId(chainId)
     return matched
   }
 
-  const switchChain = async (targetChainId: 56 | 399) => {
+  const switchChain = async (targetChainId: SupportedChainId) => {
     await switchOrAddChain(targetChainId)
     const chainId = await getCurrentChainHexId().catch(() => null)
     setCurrentChainId(chainId)
@@ -95,12 +97,22 @@ export function useChainPayment() {
 
     try {
       const chainId = params.paymentInfo.currency?.chain_id
+      if (chainId !== 56 && chainId !== 399 && chainId !== 9777) {
+        throw new Error(`不支持的链ID: ${chainId ?? 'unknown'}`)
+      }
+
       const txHash = chainId === 399
         ? await executeNadiPayment({
           paymentInfo: { currency: params.paymentInfo.currency },
           amount: params.amount,
           orderNo: params.orderNo,
         })
+        : chainId === 9777
+          ? await executePythiaPayment({
+            paymentInfo: { currency: params.paymentInfo.currency },
+            amount: params.amount,
+            orderNo: params.orderNo,
+          })
         : await executeBscPayment({
           paymentInfo: params.paymentInfo,
           amount: params.amount,
@@ -127,6 +139,6 @@ export function useChainPayment() {
     checkChainMatch,
     switchChain,
     executePendingOrderChainPayment,
-    getTargetChainName: (targetChainId: 56 | 399) => getChainConfig(targetChainId).chainName,
+    getTargetChainName: (targetChainId: SupportedChainId) => getChainConfig(targetChainId).chainName,
   }
 }

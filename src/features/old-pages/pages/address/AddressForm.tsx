@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { PageContainer } from '../../components/PageContainer'
 import { PageNavBar } from '../../components/PageNavBar'
+import { NoticePopup } from '../../components/NoticePopup'
 import type { AddressFormData } from '../../services/types'
 import type { AppPage, PageParams } from '../../../figma/types'
 
@@ -22,19 +23,22 @@ export function AddressForm({ title, initial, onSubmit, onNavigate }: AddressFor
     is_default: initial?.is_default ?? 0,
   })
   const [submitting, setSubmitting] = useState(false)
+  const [noticeMessage, setNoticeMessage] = useState<string | null>(null)
 
   const update = (key: keyof AddressFormData, value: string | number) => setForm(prev => ({ ...prev, [key]: value }))
 
   const handleSubmit = async () => {
-    if (!form.real_name.trim()) { alert('请输入收货人姓名'); return }
-    if (!form.phone.trim() || form.phone.length < 8) { alert('请输入正确的手机号码'); return }
-    if (!form.province.trim() || !form.city.trim()) { alert('请选择省市区'); return }
-    if (!form.address.trim()) { alert('请输入详细地址'); return }
+    if (!form.real_name.trim()) { setNoticeMessage('请输入收货人姓名'); return }
+    if (!form.phone.trim() || form.phone.length < 8) { setNoticeMessage('请输入正确的手机号码'); return }
+    if (!form.province.trim() || !form.city.trim()) { setNoticeMessage('请选择省市区'); return }
+    if (!form.address.trim()) { setNoticeMessage('请输入详细地址'); return }
     setSubmitting(true)
     try {
       await onSubmit(form)
       onNavigate('address')
-    } catch { alert('操作失败，请重试') }
+    } catch {
+      setNoticeMessage('操作失败，请重试')
+    }
     finally { setSubmitting(false) }
   }
 
@@ -70,6 +74,12 @@ export function AddressForm({ title, initial, onSubmit, onNavigate }: AddressFor
           {submitting ? '提交中...' : '保存'}
         </button>
       </div>
+
+      <NoticePopup
+        visible={noticeMessage !== null}
+        message={noticeMessage ?? ''}
+        onClose={() => setNoticeMessage(null)}
+      />
     </PageContainer>
   )
 }

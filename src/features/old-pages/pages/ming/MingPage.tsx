@@ -1,6 +1,7 @@
 import { type ReactNode, useEffect, useState } from 'react'
 
 import type { AppPage, PageParams } from '../../../figma/types'
+import { NoticePopup } from '../../components/NoticePopup'
 import { DestroyAmountModal, type DestroyAmountSubmitPayload } from '../../components/payment/DestroyAmountModal'
 import { PreOrderPaymentMethodModal } from '../../components/payment/PreOrderPaymentMethodModal'
 import { PageContainer } from '../../components/PageContainer'
@@ -27,6 +28,12 @@ export function MingPage({ onNavigate }: MingPageProps) {
   const [destroyAmount, setDestroyAmount] = useState(0)
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([])
   const [submitting, setSubmitting] = useState(false)
+  const [notice, setNotice] = useState<{
+    title?: string
+    message: string
+    confirmText?: string
+    onConfirm?: () => void
+  } | null>(null)
 
   useEffect(() => {
     let cancelled = false
@@ -57,13 +64,15 @@ export function MingPage({ onNavigate }: MingPageProps) {
       setDestoryInfo(latestInfo)
 
       if (Number(payload.amount) < Number(latestInfo.min_amount)) {
-        alert(`最低销毁数量为 ${Number(latestInfo.min_amount).toFixed(2)} USDT`)
+        setNotice({
+          message: `最低销毁数量为 ${Number(latestInfo.min_amount).toFixed(2)} USDT`,
+        })
         return
       }
 
       const nextMethods = payload.paymentType === 'naau' ? latestInfo.naau_payment : latestInfo.payment
       if (!nextMethods || nextMethods.length === 0) {
-        alert('暂无可用支付方式')
+        setNotice({ message: '暂无可用支付方式' })
         return
       }
 
@@ -73,7 +82,7 @@ export function MingPage({ onNavigate }: MingPageProps) {
       setShowPaymentModal(true)
     } catch (error) {
       const message = error instanceof Error ? error.message : '获取支付方式失败'
-      alert(message)
+      setNotice({ message })
     }
   }
 
@@ -91,11 +100,17 @@ export function MingPage({ onNavigate }: MingPageProps) {
       })
 
       setShowPaymentModal(false)
-      alert('下单成功，请前往待支付订单完成支付')
-      onNavigate('orders')
+      setNotice({
+        message: '下单成功，请前往待支付订单完成支付',
+        confirmText: '前往订单',
+        onConfirm: () => {
+          setNotice(null)
+          onNavigate('orders')
+        },
+      })
     } catch (error) {
       const message = error instanceof Error ? error.message : '销毁下单失败'
-      alert(message)
+      setNotice({ message })
     } finally {
       setSubmitting(false)
     }
@@ -175,10 +190,30 @@ export function MingPage({ onNavigate }: MingPageProps) {
           </div>
         </section>
 
-        <div className="mt-5 grid grid-cols-2 gap-3">
-          <ActionButton icon={<PlusBadgeIcon />} label="我的礦機" onClick={() => onNavigate('destoryList')} />
-          <ActionButton icon={<ArrowBadgeIcon />} label="銷毀挖礦" onClick={() => setShowAmountModal(true)} />
-        </div>
+        <section className="relative mt-5 overflow-hidden rounded-[28px] border border-white/8 bg-[linear-gradient(180deg,rgba(18,18,18,0.98),rgba(8,8,8,0.98))] p-4 shadow-[0_16px_42px_rgba(0,0,0,0.34)]">
+          <div className="absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(251,208,5,0.45),transparent)]" />
+          <div className="pointer-events-none absolute right-[-40px] top-[-28px] h-32 w-32 rounded-full bg-[#f8cf48]/12 blur-3xl" />
+
+          <div className="relative flex items-center justify-between gap-3">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#f6c640]">Quick Access</p>
+              <h2 className="mt-1 text-[20px] font-black text-white">快捷操作</h2>
+            </div>
+            <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-medium text-white/48">Main Action</div>
+          </div>
+
+          <div className="relative mt-4">
+            <ActionButton
+              className="w-full"
+              variant="primary"
+              icon={<ArrowBadgeIcon />}
+              label="銷毀挖礦"
+              description="輸入 USDT 金額後自動換算支付幣種，建立待支付訂單後前往完成鏈上或餘額支付。"
+              badge={`最低銷毀 ${fmt(destoryInfo?.min_amount)} USDT`}
+              onClick={() => setShowAmountModal(true)}
+            />
+          </div>
+        </section>
       </div>
 
       <DestroyAmountModal
@@ -203,29 +238,71 @@ export function MingPage({ onNavigate }: MingPageProps) {
         }}
         onConfirm={handleCreateDestroyOrder}
       />
+
+      <NoticePopup
+        visible={notice !== null}
+        title={notice?.title}
+        message={notice?.message ?? ''}
+        confirmText={notice?.confirmText}
+        onClose={() => setNotice(null)}
+        onConfirm={notice?.onConfirm}
+      />
     </PageContainer>
   )
 }
 
 function ActionButton({
+  className,
+  variant = 'secondary',
   icon,
   label,
+  description,
+  badge,
   onClick,
 }: {
+  className?: string
+  variant?: 'primary' | 'secondary'
   icon: ReactNode
   label: string
+  description: string
+  badge?: string
   onClick: () => void
 }) {
+  const primary = variant === 'primary'
+
   return (
     <button
       type="button"
       onClick={onClick}
-      className="group rounded-[18px] border border-[#f6c640]/28 bg-[linear-gradient(165deg,rgba(29,29,29,0.98)_0%,rgba(10,10,10,0.98)_100%)] px-3.5 py-3 text-left text-white shadow-[0_16px_24px_rgba(0,0,0,0.28),inset_0_1px_0_rgba(255,255,255,0.05)] transition-transform active:scale-[0.98]"
+      className={[
+        'group relative overflow-hidden rounded-[22px] border px-4 py-4 text-left text-white shadow-[0_16px_24px_rgba(0,0,0,0.28),inset_0_1px_0_rgba(255,255,255,0.05)] transition-transform active:scale-[0.98]',
+        primary
+          ? 'border-[#f6c640]/28 bg-[linear-gradient(150deg,rgba(55,41,7,0.98)_0%,rgba(25,20,7,0.98)_42%,rgba(10,10,10,0.98)_100%)]'
+          : 'border-white/10 bg-[linear-gradient(165deg,rgba(29,29,29,0.98)_0%,rgba(10,10,10,0.98)_100%)]',
+        className ?? '',
+      ].join(' ')}
     >
-      <div className="flex items-center gap-2.5">
-        {icon}
-        <div className="min-w-0 flex-1">
-          <p className="truncate whitespace-nowrap text-[14px] font-bold leading-none text-[#f8cf48]">{label}</p>
+      <div className={`absolute right-[-16px] top-[-20px] h-24 w-24 rounded-full blur-2xl ${primary ? 'bg-[#f8cf48]/18' : 'bg-[#f8cf48]/8'}`} />
+      <div className="relative flex h-full flex-col">
+        <div className="flex items-start gap-2.5">
+          {icon}
+          <div className="min-w-0 flex-1">
+            <p className={`truncate whitespace-nowrap text-[15px] font-black leading-none ${primary ? 'text-[#ffe08a]' : 'text-[#f8cf48]'}`}>{label}</p>
+            <p className="mt-2 line-clamp-2 text-[11px] leading-5 text-white/62">{description}</p>
+          </div>
+        </div>
+
+        <div className="mt-4 flex items-center justify-between gap-2">
+          <span className={`inline-flex rounded-full px-2.5 py-1 text-[10px] font-semibold ${primary ? 'bg-[#f8cf48]/12 text-[#ffe08a]' : 'bg-white/8 text-white/60'}`}>
+            {badge}
+          </span>
+          <div className={`inline-flex items-center gap-2 text-[11px] font-semibold ${primary ? 'text-[#ffe08a]' : 'text-white/52'}`}>
+            立即銷毀
+            <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M5 12h14" />
+              <path d="m13 6 6 6-6 6" />
+            </svg>
+          </div>
         </div>
       </div>
     </button>
@@ -238,17 +315,6 @@ function InfoTile({ label, value }: { label: string; value: string }) {
       <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/35">{label}</p>
       <p className="mt-2 text-[16px] font-black text-white">{value}</p>
     </div>
-  )
-}
-
-function PlusBadgeIcon() {
-  return (
-    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#f8cf48]/35 bg-[#f8cf48]/12 text-[#f8cf48] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
-      <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round">
-        <path d="M12 5v14" />
-        <path d="M5 12h14" />
-      </svg>
-    </span>
   )
 }
 
