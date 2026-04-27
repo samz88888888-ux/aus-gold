@@ -26,6 +26,7 @@ import type {
   AddressFormData,
   PagedList,
   PaymentMethod,
+  WalletMoneyLogItem,
   GoldSkuInfo,
 } from './types'
 import * as mock from './mock'
@@ -297,6 +298,32 @@ export async function fetchPreOrderTips(params?: QueryParams): Promise<PendingOr
 // --- 用户模块 ---
 export async function fetchUserInfoOld(): Promise<UserInfo> {
   return withMockFallback(async () => (await apiGet<UserInfo>('/user/info')).data, () => mock.userInfoData)
+}
+
+export async function fetchWalletMoneyLog(params?: QueryParams): Promise<PagedList<WalletMoneyLogItem>> {
+  return withMockFallback(
+    async () => {
+      const endpointCandidates = ['/wallet/incomeRecord', '/wallet/moneyLog', '/wallet/log']
+      let lastError: unknown = null
+
+      for (const endpoint of endpointCandidates) {
+        try {
+          const data = (await apiGet<PagedList<WalletMoneyLogItem> | WalletMoneyLogItem[]>(endpoint, params)).data
+          return normalizePagedList(data)
+        } catch (error) {
+          lastError = error
+        }
+      }
+
+      throw lastError instanceof Error ? lastError : new Error('获取资金记录失败')
+    },
+    () => ({
+      list: mock.walletMoneyLogList,
+      total: mock.walletMoneyLogList.length,
+      current_page: 1,
+      last_page: 1,
+    }),
+  )
 }
 
 export async function fetchTeamList(): Promise<TeamMember[]> {

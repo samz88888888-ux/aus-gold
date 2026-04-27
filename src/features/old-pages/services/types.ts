@@ -243,6 +243,7 @@ export type ResolvedPendingPaymentMethod = {
 export type UserInfo = {
   code: string
   name: string
+  address?: string
   wallet_address: string
   zhi_num: number
   team_num: number
@@ -252,7 +253,19 @@ export type UserInfo = {
   level_name: string
   valid_user_power: number
   power: number
+  usdt?: number | string
+  usdt_mine?: number | string
   gold_order_status?: boolean
+}
+
+export type WalletMoneyLogItem = {
+  id: number
+  title?: string
+  type_text?: string
+  amount?: number | string
+  currency?: string
+  created_at: string
+  remark?: string
 }
 
 export type TeamMember = {

@@ -4,6 +4,7 @@ import type {
   OrderReleaseItem, BannerItem, GroupItem, GoldPrice,
   PreOrderItem, PreOrderPaymentInfo, PreOrderPayResponse,
   UserInfo, TeamMember, UnionMiningConfig,
+  WalletMoneyLogItem,
   AddressItem,
 } from './types'
 
@@ -159,8 +160,40 @@ export const machineOrderList: GoldOrderItem[] = [
 export const userInfoData: UserInfo = {
   code: 'A8B2C1', name: 'User_0x3f...a1b2', wallet_address: '0x3f4e5d6c7b8a9012345678901234567890a1b2c3',
   zhi_num: 12, team_num: 156, me_performance: 25000, team_performance: 380000,
-  level_id: 3, level_name: 'VIP3', valid_user_power: 1250.5,power: 0, gold_order_status: false,
+  level_id: 3, level_name: 'VIP3', valid_user_power: 1250.5, power: 0, gold_order_status: false,
+  usdt: '1240.360000',
+  usdt_mine: '82.150000',
 }
+
+export const walletMoneyLogList: WalletMoneyLogItem[] = [
+  {
+    id: 1,
+    title: '提现',
+    type_text: '提现成功',
+    amount: '-120.500000',
+    currency: 'USDT',
+    created_at: '2026-04-22 11:30:00',
+    remark: 'TX: 0x9f...22a1',
+  },
+  {
+    id: 2,
+    title: '算力收益',
+    type_text: '收益到账',
+    amount: '+8.200000',
+    currency: 'USDT(挖矿)',
+    created_at: '2026-04-22 08:12:00',
+    remark: '矿池收益发放',
+  },
+  {
+    id: 3,
+    title: '充值',
+    type_text: '链上入账',
+    amount: '+500.000000',
+    currency: 'USDT',
+    created_at: '2026-04-20 19:23:00',
+    remark: 'TRC20',
+  },
+]
 
 export const teamList: TeamMember[] = [
   { id: 1, address: '0x1234...5678', zhi_num: 5, team_num: 23, created_at: '2025-01-15', level_name: 'VIP1', performance: 8500 },

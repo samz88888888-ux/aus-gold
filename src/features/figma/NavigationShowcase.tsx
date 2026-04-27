@@ -19,6 +19,9 @@ import { ShopDetailPage } from '../old-pages/pages/shop/ShopDetailPage'
 import { ShopOrderListPage } from '../old-pages/pages/shop/ShopOrderListPage'
 import { ShopOrderReleasePage } from '../old-pages/pages/shop/ShopOrderReleasePage'
 import { ShopOrderConfirmPage } from '../old-pages/pages/shop/ShopOrderConfirmPage'
+import { WalletPage } from '../old-pages/pages/wallet/WalletPage'
+import { MoneyLogPage } from '../old-pages/pages/wallet/MoneyLogPage'
+import { WithdrawPage } from '../old-pages/pages/wallet/WithdrawPage'
 import { OrdersPage } from '../old-pages/pages/order/OrdersPage'
 import { UserPage } from '../old-pages/pages/user/UserPage'
 import { AddressListPage } from '../old-pages/pages/address/AddressListPage'
@@ -336,7 +339,7 @@ export function NavigationShowcase() {
     navigateToPage('orders')
   }
 
-  type BottomTabKey = 'home' | 'ming' | 'shop' | 'user' | null
+  type BottomTabKey = 'home' | 'ming' | 'shop' | 'wallet' | 'user' | null
   const getBottomTabKey = (page: AppPage): BottomTabKey => {
     if (page === 'home' || page === 'subscription' || page === 'community') return 'home'
     if (page === 'ming' || page === 'mingLog' || page === 'destoryList') return 'ming'
@@ -350,6 +353,7 @@ export function NavigationShowcase() {
       || page === 'addressAdd'
       || page === 'addressEdit'
     ) return 'shop'
+    if (page === 'wallet' || page === 'moneyLog' || page === 'withdraw') return 'wallet'
     if (page === 'user') return 'user'
     return null
   }
@@ -365,6 +369,9 @@ export function NavigationShowcase() {
     'shopOrderList',
     'shopOrderRelease',
     'shopOrderConfirm',
+    'wallet',
+    'moneyLog',
+    'withdraw',
     'orders',
     'user',
     'address',
@@ -393,6 +400,8 @@ export function NavigationShowcase() {
     shopOrderList: { page: 'shop' },
     shopOrderRelease: { page: 'shop' },
     shopOrderConfirm: { page: 'shop' },
+    moneyLog: { page: 'wallet' },
+    withdraw: { page: 'wallet' },
     address: { page: 'shop' },
     addressAdd: { page: 'address' },
     addressEdit: { page: 'address' },
@@ -427,6 +436,7 @@ export function NavigationShowcase() {
     { key: 'home', label: '首页', page: 'home', icon: '/old-pages/footer/home.svg', activeIcon: '/old-pages/footer/home-active.svg' },
     { key: 'ming', label: '算力', page: 'ming', icon: '/old-pages/footer/depin.svg', activeIcon: '/old-pages/footer/depin-active.svg' },
     { key: 'shop', label: '商城', page: 'shop', icon: '/old-pages/footer/mall.svg', activeIcon: '/old-pages/footer/mall-active.svg' },
+    { key: 'wallet', label: '钱包', page: 'wallet', icon: '/old-pages/footer/wallet.svg', activeIcon: '/old-pages/footer/wallet-active.svg' },
     { key: 'user', label: '邀请', page: 'user', icon: '/old-pages/footer/invite.svg', activeIcon: '/old-pages/footer/invite-active.svg' },
   ]
 
@@ -507,6 +517,12 @@ export function NavigationShowcase() {
                 <ShopOrderReleasePage groupId={pageParams.group_id} status={pageParams.status} onNavigate={navigateToPage} />
               ) : currentPage === 'shopOrderConfirm' ? (
                 <ShopOrderConfirmPage pageState={pageParams.state as import('../old-pages/services/types').ShopOrderDraft | null} addressId={pageParams.address_id} onNavigate={navigateToPage} />
+              ) : currentPage === 'wallet' ? (
+                <WalletPage onNavigate={navigateToPage} />
+              ) : currentPage === 'moneyLog' ? (
+                <MoneyLogPage onNavigate={navigateToPage} />
+              ) : currentPage === 'withdraw' ? (
+                <WithdrawPage onNavigate={navigateToPage} />
               ) : currentPage === 'orders' ? (
                 <OrdersPage onNavigate={navigateToPage} />
               ) : currentPage === 'user' ? (
@@ -617,7 +633,7 @@ export function NavigationShowcase() {
         </div>
 
         <nav className="fixed inset-x-0 bottom-0 z-[35] mx-auto w-full max-w-[430px] border-t border-white/10 bg-[#111218]/96 shadow-[0_-8px_20px_rgba(0,0,0,0.32)] backdrop-blur">
-          <div className="grid grid-cols-4 px-2 pb-[calc(6px+env(safe-area-inset-bottom))] pt-2">
+          <div className="grid grid-cols-5 px-2 pb-[calc(6px+env(safe-area-inset-bottom))] pt-2">
             {bottomTabs.map((tab) => {
               const active = activeBottomTab === tab.key
               return (
