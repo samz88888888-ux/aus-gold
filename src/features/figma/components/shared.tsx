@@ -634,14 +634,24 @@ export function LanguageSheet({
 
 export function InviteCodeSheet({
   isOpen,
+  defaultCode = '',
   onClose,
   onConfirm,
 }: {
   isOpen: boolean
+  defaultCode?: string
   onClose: () => void
   onConfirm: (code: string) => void
 }) {
   const [code, setCode] = useState('')
+
+  useEffect(() => {
+    if (!isOpen) {
+      return
+    }
+
+    setCode(defaultCode.trim())
+  }, [defaultCode, isOpen])
 
   return (
     <div

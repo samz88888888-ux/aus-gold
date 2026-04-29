@@ -37,6 +37,8 @@ import {
   getChainDisplayName,
   getCurrentChainId,
   getInviteCodeFromUrl,
+  getSavedAddress,
+  getSavedToken,
   isBscNetwork,
   signAndLogin,
   switchToBscNetwork,
@@ -69,8 +71,8 @@ export function NavigationShowcase() {
       ? (savedLanguage as LanguageCode)
       : 'zh-TW'
   })
-  const [walletAddress, setWalletAddress] = useState<string | null>(null)
-  const [authToken, setAuthToken] = useState<string | null>(null)
+  const [walletAddress, setWalletAddress] = useState<string | null>(() => getSavedAddress())
+  const [authToken, setAuthToken] = useState<string | null>(() => getSavedToken())
   const [isConnectingWallet, setIsConnectingWallet] = useState(false)
   const [isSwitchingNetwork, setIsSwitchingNetwork] = useState(false)
   const [feedbackMessage, setFeedbackMessage] = useState<string | null>(null)
@@ -83,6 +85,7 @@ export function NavigationShowcase() {
   const [selectedNotice, setSelectedNotice] = useState<NoticeItem | null>(null)
   const [showUnpaidOrderPopup, setShowUnpaidOrderPopup] = useState(false)
   const urlInviteCode = useRef(getInviteCodeFromUrl())
+  const autoConnectTriggeredRef = useRef(false)
 
   const selectedLanguage =
     languageOptions.find((item) => item.code === selectedLanguageCode) ?? languageOptions[0]
@@ -170,7 +173,6 @@ export function NavigationShowcase() {
     }
   }, [walletAddress])
 
-
   const showError = useCallback((err: unknown) => {
     const msg = err instanceof Error ? err.message : ''
     if (msg === 'NO_WALLET') {
@@ -209,7 +211,7 @@ export function NavigationShowcase() {
       return
     }
 
-    await doSignIn(address, urlInviteCode.current || undefined)
+    await doSignIn(address)
   }, [doSignIn])
 
   const handleWalletConnect = useCallback(async () => {
@@ -235,6 +237,15 @@ export function NavigationShowcase() {
       setIsConnectingWallet(false)
     }
   }, [walletAddress, authToken, isConnectingWallet, copy, continueWithConnectedWallet, showError])
+
+  useEffect(() => {
+    if (autoConnectTriggeredRef.current || authToken || isConnectingWallet || !window.ethereum) {
+      return
+    }
+
+    autoConnectTriggeredRef.current = true
+    void handleWalletConnect()
+  }, [authToken, handleWalletConnect, isConnectingWallet])
 
   const handleInviteCodeConfirm = useCallback(async (code: string) => {
     setIsInviteCodeSheetOpen(false)
@@ -283,7 +294,7 @@ export function NavigationShowcase() {
 
       if (pendingNetworkAddress && chainId?.toLowerCase() === BSC_CHAIN_ID) {
         setIsConnectingWallet(true)
-        await doSignIn(pendingNetworkAddress, urlInviteCode.current || undefined)
+        await doSignIn(pendingNetworkAddress)
         setPendingNetworkAddress(null)
       }
     } catch (err) {
@@ -613,6 +624,7 @@ export function NavigationShowcase() {
 
           <InviteCodeSheet
             isOpen={isInviteCodeSheetOpen}
+            defaultCode={urlInviteCode.current}
             onClose={() => { setIsInviteCodeSheetOpen(false); setPendingAddress(null) }}
             onConfirm={handleInviteCodeConfirm}
           />

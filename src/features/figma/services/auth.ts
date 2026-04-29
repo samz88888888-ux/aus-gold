@@ -60,8 +60,23 @@ function saveAuth(token: string, address: string) {
 }
 
 export function getInviteCodeFromUrl(): string {
-  const params = new URLSearchParams(window.location.search)
-  return params.get('code') ?? ''
+  const readCode = (query: string) => {
+    const normalizedQuery = query.startsWith('?') ? query.slice(1) : query
+    return new URLSearchParams(normalizedQuery).get('code')?.trim() ?? ''
+  }
+
+  const searchCode = readCode(window.location.search)
+  if (searchCode) {
+    return searchCode
+  }
+
+  const hash = window.location.hash ?? ''
+  const queryIndex = hash.indexOf('?')
+  if (queryIndex >= 0) {
+    return readCode(hash.slice(queryIndex + 1))
+  }
+
+  return ''
 }
 
 export async function getCurrentChainId(): Promise<string | null> {
