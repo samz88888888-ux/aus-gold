@@ -39,6 +39,7 @@ function shortAddress(addr: string) {
 }
 
 const TOKEN_ICON = '/old-pages/wallet/usdt-coin.png'
+const BRIDGE_URL = 'https://bridge.pychain.co/bridge'
 
 export function WalletPage({ onNavigate }: WalletPageProps) {
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null)
@@ -91,11 +92,13 @@ export function WalletPage({ onNavigate }: WalletPageProps) {
         <section className="mt-4 grid grid-cols-4 gap-2.5">
           <button
             type="button"
-            onClick={() => setNotice('敬请期待')}
+            onClick={() => {
+              window.location.href = BRIDGE_URL
+            }}
             className="flex flex-col items-center gap-1.5 rounded-xl bg-[#1b1c25] px-2 py-3 active:opacity-80"
           >
-            <img src={rechargeIcon} alt="充值" className="h-9 w-9 object-contain" />
-            <span className="text-xs text-white/90">充值</span>
+            <img src={rechargeIcon} alt="跨链桥" className="h-9 w-9 object-contain" />
+            <span className="text-xs text-white/90">跨链桥</span>
           </button>
           <button
             type="button"
