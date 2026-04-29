@@ -55,9 +55,16 @@ export type DestoryInfo = {
 export type MiningLogItem = {
   id: number
   power: number
-  power_type: number
+  power_type?: number
   created_at: string
   remark: string
+  type?: number
+  cate?: number
+  total?: string | number
+  msg?: string
+  content?: string
+  ordernum?: string
+  updated_at?: string
 }
 
 export type MiningLogResponse = {
@@ -266,6 +273,13 @@ export type WalletMoneyLogItem = {
   currency?: string
   created_at: string
   remark?: string
+  type?: number
+  cate?: number
+  total?: number | string
+  msg?: string
+  content?: string
+  ordernum?: string
+  updated_at?: string
 }
 
 export type WithdrawConfigItem = {

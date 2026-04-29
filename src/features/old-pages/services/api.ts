@@ -165,6 +165,48 @@ function normalizePreOrderList(data: PreOrderListResponse | PreOrderItem[]): Pre
   return Array.isArray(data.list) ? data.list : []
 }
 
+function normalizeWalletMoneyLogList(data: PagedList<WalletMoneyLogItem> | WalletMoneyLogItem[], currency: string): PagedList<WalletMoneyLogItem> {
+  const normalized = normalizePagedList(data)
+
+  return {
+    ...normalized,
+    list: normalized.list.map((item) => {
+      const totalValue = Number(item.total ?? item.amount ?? 0)
+      const amountValue = item.amount ?? ((item.type === 2 ? -1 : 1) * totalValue)
+
+      return {
+        ...item,
+        title: item.msg || item.title || item.type_text || '资金变动',
+        type_text: item.msg || item.type_text,
+        amount: amountValue,
+        currency: item.currency || currency,
+        remark: item.content || item.remark || item.msg || '',
+      }
+    }),
+  }
+}
+
+function normalizeMiningLogResponse(data: MiningLogResponse): MiningLogResponse {
+  const list = Array.isArray(data.list) ? data.list : []
+
+  return {
+    ...data,
+    list: list.map((item) => {
+      const totalValue = Number(item.total ?? item.power ?? 0)
+      const itemType = Number(item.type ?? 1)
+      const normalizedPower = item.power ?? (itemType === 2 ? -totalValue : totalValue)
+
+      return {
+        ...item,
+        power: Number(normalizedPower || 0),
+        power_type: item.power_type ?? item.cate,
+        remark: item.remark || item.content || '',
+        msg: item.msg || '',
+      }
+    }),
+  }
+}
+
 async function apiGet<T>(path: string, params?: QueryParams): Promise<ApiResponse<T>> {
   if (useMock) {
     await new Promise((resolve) => setTimeout(resolve, 300 + Math.random() * 400))
@@ -191,7 +233,10 @@ export async function fetchDestoryInfo(): Promise<DestoryInfo> {
 }
 
 export async function fetchMiningLog(params?: QueryParams): Promise<MiningLogResponse> {
-  return withMockFallback(async () => (await apiGet<MiningLogResponse>('/user/powerLog', params)).data, () => mock.miningLogResponse)
+  return withMockFallback(
+    async () => normalizeMiningLogResponse((await apiGet<MiningLogResponse>('/user/powerLog', params)).data),
+    () => normalizeMiningLogResponse(mock.miningLogResponse),
+  )
 }
 
 export async function fetchUnionMiningConfig(): Promise<UnionMiningConfig[]> {
@@ -322,29 +367,33 @@ export async function fetchUserInfoOld(): Promise<UserInfo> {
   return withMockFallback(async () => (await apiGet<UserInfo>('/user/info')).data, () => mockUserInfo)
 }
 
-export async function fetchWalletMoneyLog(params?: QueryParams): Promise<PagedList<WalletMoneyLogItem>> {
+export async function fetchWalletMoneyLog(logKind: 'usdt' | 'usdtMine', params?: QueryParams): Promise<PagedList<WalletMoneyLogItem>> {
   return withMockFallback(
     async () => {
-      const endpointCandidates = ['/wallet/incomeRecord', '/wallet/moneyLog', '/wallet/log']
-      let lastError: unknown = null
-
-      for (const endpoint of endpointCandidates) {
-        try {
-          const data = (await apiGet<PagedList<WalletMoneyLogItem> | WalletMoneyLogItem[]>(endpoint, params)).data
-          return normalizePagedList(data)
-        } catch (error) {
-          lastError = error
-        }
-      }
-
-      throw lastError instanceof Error ? lastError : new Error('获取资金记录失败')
+      const endpoint = logKind === 'usdt' ? '/user/usdtLog' : '/user/usdtMineLog'
+      const currency = logKind === 'usdt' ? 'USDT' : 'USDT挖矿'
+      const data = (await apiGet<PagedList<WalletMoneyLogItem> | WalletMoneyLogItem[]>(endpoint, params)).data
+      return normalizeWalletMoneyLogList(data, currency)
     },
-    () => ({
-      list: mock.walletMoneyLogList,
-      total: mock.walletMoneyLogList.length,
-      current_page: 1,
-      last_page: 1,
-    }),
+    () => {
+      const sourceList = mock.walletMoneyLogList.filter((item) => item.currency === (logKind === 'usdt' ? 'USDT' : 'USDT挖矿'))
+      const filterType = Number(params?.type ?? 0)
+      const filteredList = filterType === 0
+        ? sourceList
+        : sourceList.filter((item) => {
+          if (filterType === 1) return item.msg === '提币扣除'
+          if (filterType === 2) return item.msg === '提币退回'
+          if (filterType === 3) return item.msg === '收益'
+          return true
+        })
+
+      return normalizeWalletMoneyLogList({
+        list: filteredList,
+        total: filteredList.length,
+        current_page: 1,
+        last_page: 1,
+      }, logKind === 'usdt' ? 'USDT' : 'USDT挖矿')
+    },
   )
 }
 

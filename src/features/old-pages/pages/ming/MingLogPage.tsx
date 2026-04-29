@@ -16,14 +16,6 @@ const TYPE_OPTIONS = [
   { text: '转移算力', value: 6 },
 ]
 
-const POWER_TYPE_TEXT: Record<number, string> = {
-  1: '购买矿机',
-  2: '购买节点',
-  3: '提现',
-  4: '冻结算力',
-  5: '解锁算力',
-}
-
 type MingLogPageProps = {
   onNavigate: (page: AppPage, params?: PageParams) => void
 }
@@ -63,8 +55,6 @@ export function MingLogPage({ onNavigate }: MingLogPageProps) {
   }
 
   const finished = list.length >= total && total > 0
-  const selectedLabel = TYPE_OPTIONS.find((o) => o.value === selectedType)?.text ?? '全部'
-
   return (
     <PageContainer bgClass="bg-[#050505]">
       <PageNavBar title="算力日志" onBack={() => onNavigate('ming')} />
@@ -72,7 +62,7 @@ export function MingLogPage({ onNavigate }: MingLogPageProps) {
       <div className="relative overflow-hidden px-4 pb-10 pt-4">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-[300px] bg-[radial-gradient(circle_at_top,rgba(251,208,5,0.2),rgba(251,208,5,0.04)_42%,transparent_72%)]" />
 
-        <section className="relative rounded-[24px] border border-[#f6c640]/20 bg-[linear-gradient(165deg,rgba(24,24,24,0.98)_0%,rgba(10,10,10,0.98)_100%)] p-4 shadow-[0_14px_36px_rgba(0,0,0,0.35)]">
+        {/* <section className="relative rounded-[24px] border border-[#f6c640]/20 bg-[linear-gradient(165deg,rgba(24,24,24,0.98)_0%,rgba(10,10,10,0.98)_100%)] p-4 shadow-[0_14px_36px_rgba(0,0,0,0.35)]">
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#f6c640]">
@@ -93,7 +83,7 @@ export function MingLogPage({ onNavigate }: MingLogPageProps) {
               <img src="/old-pages/ming/arrow-down.png" alt="" className="h-2.5 w-2.5 opacity-80" />
             </button>
           </div>
-        </section>
+        </section> */}
 
         <section className="mt-4 space-y-3">
           {list.map((item) => (
@@ -124,7 +114,7 @@ export function MingLogPage({ onNavigate }: MingLogPageProps) {
 
 function LogCard({ item }: { item: MiningLogItem }) {
   const isPositive = item.power >= 0
-  const typeText = POWER_TYPE_TEXT[item.power_type] ?? '未知类型'
+  const typeText = item.msg || '未知类型'
 
   return (
     <article className="rounded-[20px] border border-white/8 bg-[linear-gradient(160deg,rgba(25,25,25,0.95),rgba(10,10,10,0.95))] p-4 shadow-[0_10px_26px_rgba(0,0,0,0.24)]">
@@ -145,11 +135,11 @@ function LogCard({ item }: { item: MiningLogItem }) {
         </span>
       </div>
 
-      {item.remark ? (
+      {/* {item.remark ? (
         <p className="mt-3 rounded-[12px] border border-white/7 bg-white/[0.03] px-3 py-2 text-[12px] text-white/52">
           {item.remark}
         </p>
-      ) : null}
+      ) : null} */}
     </article>
   )
 }
