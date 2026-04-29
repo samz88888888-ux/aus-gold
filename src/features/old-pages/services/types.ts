@@ -268,6 +268,90 @@ export type WalletMoneyLogItem = {
   remark?: string
 }
 
+export type WithdrawConfigItem = {
+  min_withdraw: string
+  max_withdraw: string
+  withdraw_enable: number
+  daily_max_withdraw: number | string
+  coin_price: string
+  fee_rate?: string
+}
+
+export type WithdrawDayConfigItem = {
+  id: number
+  day: number
+  fee_rate: string
+}
+
+export type WithdrawMineConfigItem = WithdrawConfigItem & {
+  day_list: WithdrawDayConfigItem[]
+}
+
+export type WithdrawConfigData = {
+  usdt_config: WithdrawConfigItem
+  usdt_mine_config: WithdrawMineConfigItem
+}
+
+export type WithdrawApplyPayload = {
+  num: string
+  coin_type: 1 | 2
+  conf_id?: string | number
+}
+
+export type WithdrawRecordItem = {
+  id: number
+  no: string
+  coin_type: 1 | 2
+  total_day: number
+  wait_day: number
+  num: string
+  fee: string
+  fee_amount: string
+  ac_amount: string
+  real_coin_id: number
+  real_num: string
+  real_fee_amount: string
+  real_ac_amount: string
+  status: number
+  coin_price: string
+  created_at: string
+}
+
+export type WithdrawRecordListResponse = {
+  list: WithdrawRecordItem[]
+  total: number
+}
+
+export type WithdrawMinerDetailItem = {
+  id: number
+  wid: number
+  user_id: number
+  ordernum: string
+  address: string
+  status: number
+  day: string
+  num: string
+  fee: string
+  fee_amount: string
+  ac_amount: string
+  real_coin_id: number
+  real_num: string
+  real_fee_amount: string
+  real_ac_amount: string
+  coin_price: string
+  finsh_time: string
+  push_time: string
+  is_push: number
+  hash: string
+  created_at: string
+  updated_at: string
+}
+
+export type WithdrawMinerDetailResponse = {
+  list: WithdrawMinerDetailItem[]
+  total: number
+}
+
 export type TeamMember = {
   id: number
   address: string

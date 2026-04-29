@@ -28,6 +28,10 @@ import type {
   PaymentMethod,
   WalletMoneyLogItem,
   GoldSkuInfo,
+  WithdrawApplyPayload,
+  WithdrawConfigData,
+  WithdrawMinerDetailResponse,
+  WithdrawRecordListResponse,
 } from './types'
 import * as mock from './mock'
 
@@ -65,6 +69,20 @@ function normalizePagedList<T>(data: PagedList<T> | T[]): PagedList<T> {
     total: typeof data.total === 'number' ? data.total : 0,
     current_page: data.current_page,
     last_page: data.last_page,
+  }
+}
+
+function paginateList<T>(list: T[], params?: QueryParams): PagedList<T> {
+  const page = Math.max(1, Number(params?.page ?? 1))
+  const pageSize = Math.max(1, Number(params?.page_size ?? (list.length || 10)))
+  const start = (page - 1) * pageSize
+  const pageList = list.slice(start, start + pageSize)
+
+  return {
+    list: pageList,
+    total: list.length,
+    current_page: page,
+    last_page: Math.max(1, Math.ceil(list.length / pageSize)),
   }
 }
 
@@ -296,8 +314,12 @@ export async function fetchPreOrderTips(params?: QueryParams): Promise<PendingOr
 }
 
 // --- 用户模块 ---
+let mockUserInfo = { ...mock.userInfoData }
+let mockWithdrawRecords = [...mock.withdrawRecordList]
+let mockWithdrawMinerDetails = [...mock.withdrawMinerDetailList]
+
 export async function fetchUserInfoOld(): Promise<UserInfo> {
-  return withMockFallback(async () => (await apiGet<UserInfo>('/user/info')).data, () => mock.userInfoData)
+  return withMockFallback(async () => (await apiGet<UserInfo>('/user/info')).data, () => mockUserInfo)
 }
 
 export async function fetchWalletMoneyLog(params?: QueryParams): Promise<PagedList<WalletMoneyLogItem>> {
@@ -328,6 +350,129 @@ export async function fetchWalletMoneyLog(params?: QueryParams): Promise<PagedLi
 
 export async function fetchTeamList(): Promise<TeamMember[]> {
   return withMockFallback(async () => (await apiGet<TeamMember[]>('/user/zhiList')).data, () => mock.teamList)
+}
+
+// --- 提现模块 ---
+export async function fetchWithdrawConfig(): Promise<WithdrawConfigData> {
+  return withMockFallback(
+    async () => (await apiGet<WithdrawConfigData>('/withdraw/withdrawConfig')).data,
+    () => mock.withdrawConfigData,
+  )
+}
+
+export async function applyWithdraw(data: WithdrawApplyPayload): Promise<void> {
+  return withMockFallback(async () => {
+    await apiPost('/withdraw/apply', data as unknown as QueryParams)
+  }, () => {
+    const now = new Date()
+    const nowText = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`
+    const nextId = Math.max(0, ...mockWithdrawRecords.map((item) => item.id)) + 1
+    const isMine = data.coin_type === 2
+    const config = mock.withdrawConfigData
+    const selectedDay = isMine
+      ? config.usdt_mine_config.day_list.find((item) => String(item.id) === String(data.conf_id))
+      : null
+    const feeRate = Number(isMine ? selectedDay?.fee_rate ?? 0 : config.usdt_config.fee_rate ?? 0) / 100
+    const num = Number(data.num || 0)
+    const feeAmount = num * feeRate
+    const acAmount = num - feeAmount
+    const coinPrice = Number(isMine ? config.usdt_mine_config.coin_price : config.usdt_config.coin_price)
+    const realNum = num * coinPrice
+    const realFeeAmount = feeAmount * coinPrice
+    const realAcAmount = acAmount * coinPrice
+
+    const record = {
+      id: nextId,
+      no: `W${Date.now()}`,
+      coin_type: data.coin_type,
+      total_day: isMine ? Number(selectedDay?.day ?? 1) : 1,
+      wait_day: isMine ? Number(selectedDay?.day ?? 1) : 1,
+      num: num.toFixed(6),
+      fee: feeRate.toFixed(6),
+      fee_amount: feeAmount.toFixed(6),
+      ac_amount: acAmount.toFixed(6),
+      real_coin_id: isMine ? 3 : 1,
+      real_num: realNum.toFixed(6),
+      real_fee_amount: realFeeAmount.toFixed(6),
+      real_ac_amount: realAcAmount.toFixed(6),
+      status: 0,
+      coin_price: coinPrice.toFixed(10),
+      created_at: nowText,
+    } satisfies WithdrawRecordListResponse['list'][number]
+
+    mockWithdrawRecords = [record, ...mockWithdrawRecords]
+
+    if (isMine) {
+      const totalDay = Number(selectedDay?.day ?? 1)
+      const items = Array.from({ length: totalDay }, (_, index) => {
+        const date = new Date(now)
+        date.setDate(date.getDate() + index + 1)
+        const dayText = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+        return {
+          id: nextId * 100 + index + 1,
+          wid: nextId,
+          user_id: 61,
+          ordernum: `WI${nextId}${String(index + 1).padStart(2, '0')}`,
+          address: mockUserInfo.wallet_address,
+          status: 0,
+          day: dayText,
+          num: (num / totalDay).toFixed(6),
+          fee: feeRate.toFixed(6),
+          fee_amount: (feeAmount / totalDay).toFixed(6),
+          ac_amount: (acAmount / totalDay).toFixed(6),
+          real_coin_id: 3,
+          real_num: (realNum / totalDay).toFixed(6),
+          real_fee_amount: (realFeeAmount / totalDay).toFixed(6),
+          real_ac_amount: (realAcAmount / totalDay).toFixed(6),
+          coin_price: coinPrice.toFixed(10),
+          finsh_time: '',
+          push_time: `${dayText} ${nowText.slice(11)}`,
+          is_push: 0,
+          hash: '',
+          created_at: nowText,
+          updated_at: nowText,
+        }
+      })
+      mockWithdrawMinerDetails = [...items, ...mockWithdrawMinerDetails]
+      mockUserInfo = {
+        ...mockUserInfo,
+        usdt_mine: String(Math.max(0, Number(mockUserInfo.usdt_mine || 0) - num)),
+      }
+      return
+    }
+
+    mockUserInfo = {
+      ...mockUserInfo,
+      usdt: String(Math.max(0, Number(mockUserInfo.usdt || 0) - num)),
+    }
+  })
+}
+
+export async function fetchWithdrawList(params?: QueryParams): Promise<WithdrawRecordListResponse> {
+  return withMockFallback(
+    async () => (await apiGet<WithdrawRecordListResponse>('/withdraw/list', params)).data,
+    () => {
+      const paged = paginateList(mockWithdrawRecords, params)
+      return {
+        list: paged.list,
+        total: paged.total,
+      }
+    },
+  )
+}
+
+export async function fetchWithdrawMinerDetail(params: { wid: number | string }): Promise<WithdrawMinerDetailResponse> {
+  return withMockFallback(
+    async () => (await apiGet<WithdrawMinerDetailResponse>('/withdraw/itemList', params as unknown as QueryParams)).data,
+    () => {
+      const wid = Number(params.wid)
+      const list = mockWithdrawMinerDetails.filter((item) => item.wid === wid)
+      return {
+        list,
+        total: list.length,
+      }
+    },
+  )
 }
 
 // --- 地址模块 ---

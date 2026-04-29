@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useEffect, useEffectEvent, useMemo, useState } from 'react'
 
 import type { AppPage, PageParams } from '../../../figma/types'
 import { BottomPopup } from '../../components/BottomPopup'
@@ -33,18 +33,24 @@ export function MoneyLogPage({ onNavigate }: MoneyLogPageProps) {
   const [showFilter, setShowFilter] = useState(false)
   const [selectedFilter, setSelectedFilter] = useState<CurrencyFilter>('all')
 
-  const loadData = useCallback(async (pageNum: number, reset = false) => {
+  const loadData = useEffectEvent(async (pageNum: number, reset = false) => {
     if (loading) return
     setLoading(true)
     try {
       const res = await fetchWalletMoneyLog({ page: pageNum, page_size: 20 })
       const newList = res.list ?? []
-      setList((prev) => (reset ? newList : [...prev, ...newList]))
+      let currentLength = newList.length
+      setList((prev) => {
+        const nextList = reset ? newList : [...prev, ...newList]
+        currentLength = nextList.length
+        return nextList
+      })
       setPage(pageNum)
       const total = Number(res.total ?? 0)
-      const currentLength = (reset ? newList : [...list, ...newList]).length
       if (newList.length === 0 || (total > 0 && currentLength >= total)) {
         setFinished(true)
+      } else {
+        setFinished(false)
       }
     } catch {
       if (reset) setList([])
@@ -52,7 +58,7 @@ export function MoneyLogPage({ onNavigate }: MoneyLogPageProps) {
     } finally {
       setLoading(false)
     }
-  }, [list, loading])
+  })
 
   useEffect(() => {
     setList([])
