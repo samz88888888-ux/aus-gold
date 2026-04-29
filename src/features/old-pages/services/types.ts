@@ -224,6 +224,19 @@ export type PreOrderPayResponse = {
   sub_currency?: CurrencyInfo | null
   amount: number | string
   order_no: string
+  recharge_contract?: string
+  tx_data?: string
+  amount_wei?: string
+  web3?: {
+    method?: string
+    recharge_contract?: string
+    tx_data?: string
+    amount_wei?: string
+    gold_amount_wei?: string
+    direct_recipients?: string[]
+    direct_amounts_wei?: string[]
+    lp_amount_wei?: string
+  } | null
 }
 
 export type PendingOrderTips = {

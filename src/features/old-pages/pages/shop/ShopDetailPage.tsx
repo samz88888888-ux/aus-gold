@@ -251,24 +251,35 @@ function BottomBar({
   onBuy: () => void
 }) {
   return (
-    <div className="fixed bottom-[62px] left-1/2 z-40 flex w-full max-w-[430px] -translate-x-1/2 items-center justify-between border-t border-white/10 bg-[#0a0a1a]/95 px-4 py-3 shadow-[0_-4px_12px_rgba(0,0,0,0.4)] backdrop-blur">
-      <div className="flex items-center overflow-hidden rounded-lg border border-yellow-500/30 bg-black/30">
-        <button type="button" onClick={onDecrease} disabled={quantity <= 1} className="flex h-10 w-10 items-center justify-center text-lg text-yellow-400 disabled:text-white/30">-</button>
-        <span className="flex h-10 w-14 items-center justify-center border-x border-yellow-500/20 text-sm font-semibold text-white">{quantity}</span>
-        <button type="button" onClick={onIncrease} disabled={quantity >= stock} className="flex h-10 w-10 items-center justify-center text-lg text-yellow-400 disabled:text-white/30">+</button>
+    <div className="fixed bottom-[76px] left-1/2 z-40 w-full max-w-[430px] -translate-x-1/2 border-t border-white/10 bg-[#0a0a1a]/95 px-4 py-3 pb-[calc(12px+env(safe-area-inset-bottom))] shadow-[0_-4px_12px_rgba(0,0,0,0.4)] backdrop-blur">
+      <div className="mb-3 flex items-center justify-between rounded-2xl border border-yellow-500/15 bg-white/[0.04] px-3.5 py-2.5">
+        <div>
+          <p className="text-[11px] uppercase tracking-[0.14em] text-yellow-400/70">Order Summary</p>
+          <p className="mt-1 text-[15px] font-bold text-yellow-400">
+            {totalPrice}
+            <span className="ml-1 text-[11px] font-medium text-yellow-200/75">USDT</span>
+          </p>
+        </div>
+        <div className="text-right text-[11px] leading-5 text-white/50">
+          <p>商品价 {currentPrice.toFixed(2)}</p>
+          <p>工时费 {handicraftFee.toFixed(2)}</p>
+        </div>
       </div>
 
-      <div className="ml-4 min-w-0 flex-1">
-        <div className="text-right text-[11px] text-white/45">
-          商品 {currentPrice.toFixed(2)} + 工费 {handicraftFee.toFixed(2)}
+      <div className="flex items-center gap-3">
+        <div className="flex shrink-0 items-center overflow-hidden rounded-xl border border-yellow-500/25 bg-black/30">
+          <button type="button" onClick={onDecrease} disabled={quantity <= 1} className="flex h-11 w-11 items-center justify-center text-lg text-yellow-400 disabled:text-white/30">-</button>
+          <span className="flex h-11 w-14 items-center justify-center border-x border-yellow-500/15 text-sm font-semibold text-white">{quantity}</span>
+          <button type="button" onClick={onIncrease} disabled={quantity >= stock} className="flex h-11 w-11 items-center justify-center text-lg text-yellow-400 disabled:text-white/30">+</button>
         </div>
+
         <button
           type="button"
           onClick={onBuy}
           disabled={!canBuy}
-          className="mt-2 w-full rounded-lg bg-gradient-to-r from-yellow-400 to-amber-500 py-3 text-center text-base font-bold text-black shadow disabled:bg-white/20 disabled:text-white/50 disabled:shadow-none"
+          className="flex h-11 flex-1 items-center justify-center rounded-xl bg-gradient-to-r from-yellow-400 to-amber-500 px-6 text-center text-base font-bold text-black shadow disabled:bg-white/20 disabled:text-white/50 disabled:shadow-none"
         >
-          立即购买 · {totalPrice} USDT
+          立即购买
         </button>
       </div>
     </div>

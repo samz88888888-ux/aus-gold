@@ -7,12 +7,13 @@ import type { AppPage, PageParams } from '../../../figma/types'
 
 type AddressFormProps = {
   title: string
+  from?: string
   initial?: Partial<AddressFormData>
   onSubmit: (data: AddressFormData) => Promise<void>
   onNavigate: (page: AppPage, params?: PageParams) => void
 }
 
-export function AddressForm({ title, initial, onSubmit, onNavigate }: AddressFormProps) {
+export function AddressForm({ title, from, initial, onSubmit, onNavigate }: AddressFormProps) {
   const [form, setForm] = useState<AddressFormData>({
     real_name: initial?.real_name ?? '',
     phone: initial?.phone ?? '',
@@ -35,7 +36,7 @@ export function AddressForm({ title, initial, onSubmit, onNavigate }: AddressFor
     setSubmitting(true)
     try {
       await onSubmit(form)
-      onNavigate('address')
+      onNavigate('address', { from })
     } catch {
       setNoticeMessage('操作失败，请重试')
     }
@@ -44,8 +45,8 @@ export function AddressForm({ title, initial, onSubmit, onNavigate }: AddressFor
 
   return (
     <PageContainer>
-      <PageNavBar title={title} onBack={() => onNavigate('address')} />
-      <div className="space-y-4 px-4 pb-32 pt-4">
+      <PageNavBar title={title} onBack={() => onNavigate('address', { from })} />
+      <div className="space-y-4 px-4 pb-[calc(156px+env(safe-area-inset-bottom))] pt-4">
         <Field label="收货人" value={form.real_name} placeholder="请输入收货人姓名"
           onChange={v => update('real_name', v)} />
         <Field label="手机号码" value={form.phone} placeholder="请输入手机号码" type="tel" maxLength={11}
@@ -61,14 +62,27 @@ export function AddressForm({ title, initial, onSubmit, onNavigate }: AddressFor
 
         <div className="flex items-center justify-between rounded-xl border border-white/10 bg-white/5 px-4 py-3">
           <span className="text-sm text-white/70">设为默认地址</span>
-          <button type="button" onClick={() => update('is_default', form.is_default === 1 ? 0 : 1)}
-            className={`relative h-6 w-11 rounded-full transition-colors ${form.is_default === 1 ? 'bg-amber-500' : 'bg-white/20'}`}>
-            <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${form.is_default === 1 ? 'translate-x-5.5' : 'translate-x-0.5'}`} />
+          <button
+            type="button"
+            role="switch"
+            aria-checked={form.is_default === 1}
+            onClick={() => update('is_default', form.is_default === 1 ? 0 : 1)}
+            className={`relative inline-flex h-7 w-12 items-center rounded-full border transition-colors ${
+              form.is_default === 1
+                ? 'border-amber-400/65 bg-amber-400/90 shadow-[0_0_16px_rgba(251,191,36,0.25)]'
+                : 'border-white/10 bg-white/10'
+            }`}
+          >
+            <span
+              className={`block h-5.5 w-5.5 rounded-full bg-white shadow-[0_2px_10px_rgba(0,0,0,0.28)] transition-transform ${
+                form.is_default === 1 ? 'translate-x-[22px]' : 'translate-x-0.5'
+              }`}
+            />
           </button>
         </div>
       </div>
 
-      <div className="fixed bottom-[62px] left-1/2 w-full max-w-[430px] -translate-x-1/2 border-t border-white/10 bg-[#0a0a1a]/95 px-4 py-3 backdrop-blur">
+      <div className="fixed bottom-[76px] left-1/2 z-40 w-full max-w-[430px] -translate-x-1/2 border-t border-white/10 bg-[#0a0a1a]/95 px-4 py-3 pb-[calc(12px+env(safe-area-inset-bottom))] backdrop-blur">
         <button type="button" onClick={handleSubmit} disabled={submitting}
           className="w-full rounded-xl bg-gradient-to-r from-yellow-300 to-amber-500 py-3 text-sm font-bold text-black disabled:opacity-50">
           {submitting ? '提交中...' : '保存'}

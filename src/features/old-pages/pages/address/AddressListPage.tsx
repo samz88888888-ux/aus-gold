@@ -47,7 +47,7 @@ export function AddressListPage({ from, onNavigate }: AddressListPageProps) {
   return (
     <PageContainer>
       <PageNavBar title="收货地址" onBack={() => onNavigate(from === 'shopOrderConfirm' ? 'shopOrderConfirm' : 'shop')} />
-      <div className="px-4 py-4 pb-28">
+      <div className="px-4 py-4 pb-[calc(156px+env(safe-area-inset-bottom))]">
         {loading ? (
           <p className="py-20 text-center text-sm text-white/40">加载中...</p>
         ) : list.length === 0 ? (
@@ -72,12 +72,24 @@ export function AddressListPage({ from, onNavigate }: AddressListPageProps) {
                 </div>
                 <div className="mt-3 flex items-center justify-between border-t border-white/5 pt-3">
                   <button type="button" onClick={(e) => { e.stopPropagation(); handleSetDefault(item.id) }}
-                    className={`flex items-center gap-1.5 text-xs ${item.is_default === 1 ? 'text-amber-400' : 'text-white/40'}`}>
-                    <span className={`inline-block h-4 w-4 rounded-full border-2 ${item.is_default === 1 ? 'border-amber-400 bg-amber-400' : 'border-white/30'}`} />
+                    className={`flex items-center gap-2 text-xs ${item.is_default === 1 ? 'text-amber-300' : 'text-white/45'}`}>
+                    <span
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full border transition-colors ${
+                        item.is_default === 1
+                          ? 'border-amber-400/60 bg-amber-400/90 shadow-[0_0_14px_rgba(251,191,36,0.28)]'
+                          : 'border-white/10 bg-white/10'
+                      }`}
+                    >
+                      <span
+                        className={`block h-5 w-5 rounded-full bg-white shadow-[0_2px_8px_rgba(0,0,0,0.3)] transition-transform ${
+                          item.is_default === 1 ? 'translate-x-5' : 'translate-x-0.5'
+                        }`}
+                      />
+                    </span>
                     设为默认
                   </button>
                   <div className="flex gap-3">
-                    <button type="button" onClick={(e) => { e.stopPropagation(); onNavigate('addressEdit', { id: item.id }) }}
+                    <button type="button" onClick={(e) => { e.stopPropagation(); onNavigate('addressEdit', { id: item.id, from }) }}
                       className="text-xs text-white/50 hover:text-white">编辑</button>
                     <button type="button" onClick={(e) => { e.stopPropagation(); setDeleteTarget(item.id) }}
                       className="text-xs text-red-400/70 hover:text-red-400">删除</button>
@@ -89,8 +101,8 @@ export function AddressListPage({ from, onNavigate }: AddressListPageProps) {
         )}
       </div>
 
-      <div className="fixed bottom-[62px] left-1/2 w-full max-w-[430px] -translate-x-1/2 border-t border-white/10 bg-[#0a0a1a]/95 px-4 py-3 backdrop-blur">
-        <button type="button" onClick={() => onNavigate('addressAdd')}
+      <div className="fixed bottom-[76px] left-1/2 z-40 w-full max-w-[430px] -translate-x-1/2 border-t border-white/10 bg-[#0a0a1a]/95 px-4 py-3 pb-[calc(12px+env(safe-area-inset-bottom))] backdrop-blur">
+        <button type="button" onClick={() => onNavigate('addressAdd', { from })}
           className="w-full rounded-xl bg-gradient-to-r from-yellow-300 to-amber-500 py-3 text-sm font-bold text-black">
           新增收货地址
         </button>

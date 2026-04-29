@@ -6,6 +6,8 @@ import type { SubscriptionPlanApi, OrderListItem } from '../services/api'
 import { TopNavigation } from '../components/shared'
 import type { CopyText, LanguageOption, SubscriptionPlan, SubscriptionPlanId } from '../types'
 import { assetUrl } from '../utils/assets'
+import { formatUnits, getChainConfig, getCurrentChainHexId, getErc20Balance, parseUnits, switchOrAddChain } from '../../old-pages/services/evm'
+import usdtCoinIcon from '../../../assets/coin/usdt-coin.png'
 
 const ICON_MAP: Record<string, string> = {
   ops: assetUrl('/figma/subscription-icon-ops.webp'),
@@ -31,6 +33,10 @@ function formatPlanAmount(price: string, priceDisplay: string): string {
   })} U`
 }
 
+function normalizeAmountValue(amountText: string): string {
+  return amountText.replace(/[^0-9.,]/g, '').replace(/,/g, '').trim()
+}
+
 function apiToLocal(p: SubscriptionPlanApi): SubscriptionPlan {
   return {
     id: p.slug as SubscriptionPlanId,
@@ -45,6 +51,14 @@ function apiToLocal(p: SubscriptionPlanApi): SubscriptionPlan {
     reinvest: p.reinvest_display,
     timeBonus: p.time_bonus_display,
     purchased: p.purchased,
+    currency: p.currency
+      ? {
+          name: p.currency.name,
+          contractAddress: p.currency.contract_address,
+          decimals: p.currency.decimals,
+          chainId: p.currency.chain_id,
+        }
+      : undefined,
   }
 }
 
@@ -358,72 +372,90 @@ export function SubscriptionCenterScreen({
 
 /* ────────────────────── Confirm Bottom Sheet ────────────────────── */
 
-const USDT_CONTRACT = '0x55d398326f99059fF775485246999027B3197955'
-const BALANCE_OF_SELECTOR = '0x70a08231'
-
-function useUsdtBalance(walletAddress: string | null, isOpen: boolean) {
+function usePlanTokenBalance(
+  walletAddress: string | null,
+  plan: SubscriptionPlan | null,
+  isOpen: boolean,
+) {
   const [balance, setBalance] = useState<string | null>(null)
   const [balanceRaw, setBalanceRaw] = useState<bigint>(0n)
   const [loading, setLoading] = useState(false)
+  const [chainMatched, setChainMatched] = useState(false)
+  const [refreshTick, setRefreshTick] = useState(0)
+
+  const tokenAddress = plan?.currency?.contractAddress?.trim() ?? ''
+  const tokenDecimals = plan?.currency?.decimals ?? 18
+  const chainId = plan?.currency?.chainId ?? null
 
   useEffect(() => {
-    if (!walletAddress || !isOpen || !window.ethereum) {
+    const ethereum = window.ethereum
+    if (!isOpen || !ethereum?.on) {
+      return
+    }
+
+    const handleChainChanged = () => {
+      setRefreshTick((value) => value + 1)
+    }
+
+    const handleAccountsChanged = () => {
+      setRefreshTick((value) => value + 1)
+    }
+
+    ethereum.on('chainChanged', handleChainChanged)
+    ethereum.on('accountsChanged', handleAccountsChanged)
+    return () => {
+      ethereum.removeListener?.('chainChanged', handleChainChanged)
+      ethereum.removeListener?.('accountsChanged', handleAccountsChanged)
+    }
+  }, [isOpen])
+
+  useEffect(() => {
+    if (!walletAddress || !isOpen || !window.ethereum || !tokenAddress || !chainId) {
       setBalance(null)
       setBalanceRaw(0n)
+      setChainMatched(false)
       return
     }
 
     let cancelled = false
     setLoading(true)
+    setChainMatched(false)
 
-    const paddedAddr = walletAddress.slice(2).toLowerCase().padStart(64, '0')
-    const data = `${BALANCE_OF_SELECTOR}${paddedAddr}`
-
-    window.ethereum
-      .request({
-        method: 'eth_call',
-        params: [{ to: USDT_CONTRACT, data }, 'latest'],
-      } as { method: string })
-      .then((result) => {
+    Promise.all([
+      getCurrentChainHexId(),
+      getErc20Balance(tokenAddress, walletAddress),
+    ])
+      .then(([currentChainHexId, raw]) => {
         if (cancelled) return
-        const hex = String(result)
-        const raw = BigInt(hex)
-        if (!cancelled) setBalanceRaw(raw)
-        const decimals = 10n ** 18n
-        const integer = raw / decimals
-        const fraction = raw % decimals
-        const intStr = integer.toLocaleString('en-US')
-        const fracStr = String(fraction).padStart(18, '0').slice(0, 2)
-        setBalance(`${intStr}.${fracStr}`)
+        const targetChainHexId = getChainConfig(chainId as 56 | 399 | 9777).chainHexId.toLowerCase()
+        const matched = currentChainHexId === targetChainHexId
+        setChainMatched(matched)
+        setBalanceRaw(raw)
+        const formatted = Number(formatUnits(raw, tokenDecimals, 2)).toLocaleString('en-US', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })
+        setBalance(formatted)
       })
       .catch(() => {
-        if (!cancelled) { setBalance(null); setBalanceRaw(0n) }
+        if (!cancelled) {
+          setBalance(null)
+          setBalanceRaw(0n)
+          setChainMatched(false)
+        }
       })
       .finally(() => {
         if (!cancelled) setLoading(false)
       })
 
     return () => { cancelled = true }
-  }, [walletAddress, isOpen])
+  }, [walletAddress, isOpen, tokenAddress, tokenDecimals, chainId, refreshTick])
 
-  return { balance, balanceRaw, loading }
+  return { balance, balanceRaw, loading, chainMatched }
 }
 
 const APPROVE_SELECTOR = '0x095ea7b3'
 const MAX_UINT256 = 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
-
-function parseAmountToWei(amountText: string, decimals = 18): bigint {
-  const normalized = amountText.replace(/[^0-9.]/g, '').trim()
-  if (!normalized) {
-    return 0n
-  }
-
-  const [integerPart, decimalPart = ''] = normalized.split('.')
-  const safeIntegerPart = integerPart || '0'
-  const paddedDecimalPart = decimalPart.padEnd(decimals, '0').slice(0, decimals)
-
-  return BigInt(`${safeIntegerPart}${paddedDecimalPart}`)
-}
 
 function SubscribeConfirmSheet({
   plan,
@@ -441,9 +473,15 @@ function SubscribeConfirmSheet({
   onError: (msg: string) => void
 }) {
   const isOpen = plan !== null
-  const { balance, balanceRaw, loading } = useUsdtBalance(walletAddress, isOpen)
+  const { balance, balanceRaw, loading, chainMatched } = usePlanTokenBalance(walletAddress, plan, isOpen)
   const [paying, setPaying] = useState(false)
   const [statusText, setStatusText] = useState('')
+  const [switchingChain, setSwitchingChain] = useState(false)
+
+  const paymentCurrencyName = plan?.currency?.name || 'USDT'
+  const paymentChainId = plan?.currency?.chainId ?? 9777
+  const paymentChainConfig = getChainConfig(paymentChainId as 56 | 399 | 9777)
+  const paymentTokenDecimals = plan?.currency?.decimals ?? 18
 
   let balanceDisplay: string
   if (!walletAddress) balanceDisplay = '--'
@@ -451,12 +489,25 @@ function SubscribeConfirmSheet({
   else if (balance !== null) balanceDisplay = balance
   else balanceDisplay = '0.00'
 
-  const priceWei = plan ? parseAmountToWei(plan.amount) : 0n
-  const insufficient = walletAddress && !loading && balanceRaw < priceWei
-  const canPay = !paying && !!walletAddress && !insufficient
+  const priceWei = plan ? parseUnits(normalizeAmountValue(plan.amount), paymentTokenDecimals) : 0n
+  const insufficient = walletAddress && chainMatched && !loading && balanceRaw < priceWei
+  const canPay = !paying && !!walletAddress && chainMatched && !insufficient
+
+  const handleSwitchChain = async () => {
+    if (switchingChain) return
+    try {
+      setSwitchingChain(true)
+      await switchOrAddChain(paymentChainId as 56 | 399 | 9777)
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : '切换网络失败'
+      onError(msg)
+    } finally {
+      setSwitchingChain(false)
+    }
+  }
 
   const handlePay = async () => {
-    if (!plan || !walletAddress || !authToken || !window.ethereum || paying || insufficient) return
+    if (!plan || !walletAddress || !authToken || !window.ethereum || paying || insufficient || !chainMatched) return
 
     try {
       setPaying(true)
@@ -551,19 +602,19 @@ function SubscribeConfirmSheet({
             <div className={`${softCardClass} px-4 py-3.5`}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#26a17b]">
-                    <span className="text-[12px] font-bold text-white">₮</span>
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#26a17b]/10">
+                    <img src={usdtCoinIcon} alt="USDT" className="h-7 w-7 object-contain" />
                   </div>
                   <div>
-                    <p className="text-[14px] font-semibold text-black">USDT</p>
-                    <p className="text-[10px] text-black/40">BEP-20</p>
+                    <p className="text-[14px] font-semibold text-black">{paymentCurrencyName}</p>
+                    <p className="text-[10px] text-black/40">{paymentChainConfig.chainName}</p>
                   </div>
                 </div>
                 <div className="text-right">
                   <p className="text-[10px] text-black/40">鏈上餘額</p>
                   <p className="text-[15px] font-bold tabular-nums text-black">
                     {balanceDisplay}
-                    <span className="ml-1 text-[11px] font-normal text-black/40">USDT</span>
+                    <span className="ml-1 text-[11px] font-normal text-black/40">{paymentCurrencyName}</span>
                   </p>
                 </div>
               </div>
@@ -572,6 +623,21 @@ function SubscribeConfirmSheet({
                 <p className="mt-2.5 text-[11px] text-amber-400/80">
                   請先連接錢包以查看餘額
                 </p>
+              )}
+              {walletAddress && !loading && !chainMatched && (
+                <div className="mt-2.5 flex items-center justify-between gap-3 rounded-[12px] border border-amber-300/35 bg-amber-50 px-3 py-2.5">
+                  <p className="text-[11px] leading-5 text-amber-700">
+                    当前网络不符合，请切换到 {paymentChainConfig.chainName}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={handleSwitchChain}
+                    disabled={switchingChain || paying}
+                    className="shrink-0 rounded-full bg-black px-3 py-1 text-[11px] font-semibold text-[#fce596] disabled:opacity-50"
+                  >
+                    {switchingChain ? '切换中…' : `切换到${paymentChainConfig.chainName}`}
+                  </button>
+                </div>
               )}
               {insufficient && (
                 <p className="mt-2.5 text-[11px] text-red-400/90">
@@ -586,7 +652,13 @@ function SubscribeConfirmSheet({
               disabled={!canPay}
               className="mt-5 h-[52px] w-full rounded-[14px] bg-black text-[17px] font-bold tracking-wide text-[#fce596] shadow-[0_8px_20px_rgba(0,0,0,0.18)] transition-all active:scale-[0.98] active:brightness-95 disabled:opacity-50"
             >
-              {paying ? statusText || '處理中…' : insufficient ? '餘額不足' : `確認支付 · ${plan.amount}`}
+              {paying
+                ? statusText || '處理中…'
+                : !chainMatched && walletAddress
+                  ? `请先切换到 ${paymentChainConfig.chainName}`
+                  : insufficient
+                    ? '餘額不足'
+                    : `確認支付 · ${plan.amount}`}
             </button>
 
             <p className="mt-3 text-center text-[10px] text-black/30">

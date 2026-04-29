@@ -31,7 +31,6 @@ import { OldPageHeaderProvider } from '../old-pages/components/OldPageHeaderProv
 import { UnpaidOrderReminderModal } from '../old-pages/components/payment/UnpaidOrderReminderModal'
 import { fetchPreOrderTips } from '../old-pages/services/api'
 import {
-  BSC_CHAIN_ID,
   clearAuth,
   connectWallet,
   getChainDisplayName,
@@ -39,9 +38,10 @@ import {
   getInviteCodeFromUrl,
   getSavedAddress,
   getSavedToken,
-  isBscNetwork,
+  isPythiaNetwork,
+  PYTHIA_CHAIN_ID,
   signAndLogin,
-  switchToBscNetwork,
+  switchToPythiaNetwork,
   switchWalletAccount,
 } from './services/auth'
 import { getMarquee } from './services/api'
@@ -201,11 +201,11 @@ export function NavigationShowcase() {
   }, [copy, showError])
 
   const continueWithConnectedWallet = useCallback(async (address: string) => {
-    const onBsc = await isBscNetwork()
+    const onPythia = await isPythiaNetwork()
     const chainId = await getCurrentChainId()
     setCurrentChainId(chainId)
 
-    if (!onBsc) {
+    if (!onPythia) {
       setPendingNetworkAddress(address)
       setIsNetworkSheetOpen(true)
       return
@@ -283,16 +283,16 @@ export function NavigationShowcase() {
     }
   }, [copy, continueWithConnectedWallet, showError])
 
-  const handleSwitchToBsc = useCallback(async () => {
+  const handleSwitchToPythia = useCallback(async () => {
     try {
       setIsSwitchingNetwork(true)
-      await switchToBscNetwork()
+      await switchToPythiaNetwork()
       const chainId = await getCurrentChainId()
       setCurrentChainId(chainId)
       setFeedbackMessage(copy.networkReady)
       setIsNetworkSheetOpen(false)
 
-      if (pendingNetworkAddress && chainId?.toLowerCase() === BSC_CHAIN_ID) {
+      if (pendingNetworkAddress && chainId?.toLowerCase() === PYTHIA_CHAIN_ID) {
         setIsConnectingWallet(true)
         await doSignIn(pendingNetworkAddress)
         setPendingNetworkAddress(null)
@@ -334,7 +334,7 @@ export function NavigationShowcase() {
       : copy.wallet
 
   const chainName = getChainDisplayName(currentChainId)
-  const isCurrentChainBsc = currentChainId?.toLowerCase() === BSC_CHAIN_ID
+  const isCurrentChainPythia = currentChainId?.toLowerCase() === PYTHIA_CHAIN_ID
 
   const navigateToPage = (page: AppPage, params?: PageParams) => {
     setCurrentPage(page)
@@ -495,7 +495,7 @@ export function NavigationShowcase() {
               onSelectPlan={selectSubscriptionPlan}
               onSubscribe={(planId) => {
                 setActiveSubscriptionPlan(planId)
-                setFeedbackMessage(copy.purchaseQueued)
+                setFeedbackMessage(copy.paymentSuccess)
               }}
               onFeedback={setFeedbackMessage}
             />
@@ -541,9 +541,9 @@ export function NavigationShowcase() {
               ) : currentPage === 'address' ? (
                 <AddressListPage from={pageParams.from} onNavigate={navigateToPage} />
               ) : currentPage === 'addressAdd' ? (
-                <AddressAddPage onNavigate={navigateToPage} />
+                <AddressAddPage from={pageParams.from} onNavigate={navigateToPage} />
               ) : currentPage === 'addressEdit' ? (
-                <AddressEditPage addressId={pageParams.id ?? ''} onNavigate={navigateToPage} />
+                <AddressEditPage addressId={pageParams.id ?? ''} from={pageParams.from} onNavigate={navigateToPage} />
               ) : null}
             </OldPageHeaderProvider>
           ) : null}
@@ -595,11 +595,11 @@ export function NavigationShowcase() {
             isOpen={isWalletSheetOpen}
             walletAddress={walletAddress}
             chainName={chainName}
-            isBscNetwork={isCurrentChainBsc}
+            isTargetNetwork={isCurrentChainPythia}
             onClose={() => setIsWalletSheetOpen(false)}
             onCopyWallet={handleCopyWallet}
             onSwitch={handleWalletSwitch}
-            onSwitchNetwork={handleSwitchToBsc}
+            onSwitchNetwork={handleSwitchToPythia}
             onDisconnect={handleWalletDisconnect}
             isSwitchingNetwork={isSwitchingNetwork}
           />
@@ -609,7 +609,7 @@ export function NavigationShowcase() {
             isOpen={isNetworkSheetOpen}
             chainName={chainName}
             onClose={() => { setIsNetworkSheetOpen(false); setPendingNetworkAddress(null) }}
-            onSwitchNetwork={handleSwitchToBsc}
+            onSwitchNetwork={handleSwitchToPythia}
             isSwitching={isSwitchingNetwork}
           />
 

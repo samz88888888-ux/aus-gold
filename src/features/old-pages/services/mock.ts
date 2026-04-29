@@ -153,11 +153,20 @@ export const preOrderPaymentInfo: PreOrderPaymentInfo = {
 export const preOrderPayResponse: PreOrderPayResponse = {
   amount: '425',
   order_no: 'PO20250420001',
+  recharge_contract: '0x5dbc6048b3fa0646d6af061fdba6d0c55c437fb8',
+  tx_data: '0x123456',
+  amount_wei: '425000000000000000000',
   currency: {
     name: 'NADI',
     chain_id: 399,
     contract_address: '0x1000000000000000000000000000000000000000',
     decimals: 18,
+  },
+  web3: {
+    method: 'buy_gold',
+    recharge_contract: '0x5dbc6048b3fa0646d6af061fdba6d0c55c437fb8',
+    tx_data: '0x123456',
+    amount_wei: '425000000000000000000',
   },
 }
 

@@ -390,7 +390,7 @@ export function WalletSheet({
   isOpen,
   walletAddress,
   chainName,
-  isBscNetwork,
+  isTargetNetwork,
   onClose,
   onCopyWallet,
   onSwitch,
@@ -402,7 +402,7 @@ export function WalletSheet({
   isOpen: boolean
   walletAddress: string | null
   chainName: string
-  isBscNetwork: boolean
+  isTargetNetwork: boolean
   onClose: () => void
   onCopyWallet: () => void
   onSwitch: () => void
@@ -444,7 +444,7 @@ export function WalletSheet({
         </div>
 
         <div className={`rounded-2xl border px-4 py-3 ${
-          isBscNetwork
+          isTargetNetwork
             ? 'border-emerald-400/20 bg-emerald-400/6'
             : 'border-amber-400/20 bg-[#fff8e8]'
         }`}>
@@ -455,14 +455,14 @@ export function WalletSheet({
             </div>
             <span
               className={`rounded-full px-2.5 py-1 text-[10px] font-semibold ${
-                isBscNetwork ? 'bg-emerald-400/15 text-emerald-700' : 'bg-amber-400/15 text-amber-700'
+                isTargetNetwork ? 'bg-emerald-400/15 text-emerald-700' : 'bg-amber-400/15 text-amber-700'
               }`}
             >
-              {isBscNetwork ? copy.networkBscName : copy.networkUnsupported}
+              {isTargetNetwork ? copy.networkTargetName : copy.networkUnsupported}
             </span>
           </div>
 
-          {!isBscNetwork ? (
+          {!isTargetNetwork ? (
             <button
               type="button"
               onClick={() => { onSwitchNetwork(); onClose() }}

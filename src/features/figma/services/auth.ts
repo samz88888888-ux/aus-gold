@@ -2,18 +2,18 @@ import { getLoginMessage, checkIsRegistered, login } from './api'
 
 const TOKEN_KEY = 'mcg_token'
 const ADDRESS_KEY = 'mcg_address'
-export const BSC_CHAIN_ID = '0x38'
+export const PYTHIA_CHAIN_ID = '0x2631'
 
-const BSC_NETWORK_PARAMS = {
-  chainId: BSC_CHAIN_ID,
-  chainName: 'BNB Smart Chain',
+const PYTHIA_NETWORK_PARAMS = {
+  chainId: PYTHIA_CHAIN_ID,
+  chainName: 'PYTHIA',
   nativeCurrency: {
-    name: 'BNB',
-    symbol: 'BNB',
+    name: 'PYTHIA',
+    symbol: 'PYTHIA',
     decimals: 18,
   },
-  rpcUrls: ['https://bsc-dataseed.binance.org/'],
-  blockExplorerUrls: ['https://bscscan.com'],
+  rpcUrls: ['https://rpc.pychain.vip'],
+  blockExplorerUrls: ['https://explorer.pychain.co'],
 }
 
 export function getChainDisplayName(chainId: string | null): string {
@@ -22,8 +22,8 @@ export function getChainDisplayName(chainId: string | null): string {
   }
 
   const normalized = chainId.toLowerCase()
-  if (normalized === BSC_CHAIN_ID) {
-    return 'BNB Smart Chain'
+  if (normalized === PYTHIA_CHAIN_ID) {
+    return 'PYTHIA'
   }
   if (normalized === '0x1') {
     return 'Ethereum'
@@ -91,12 +91,12 @@ export async function getCurrentChainId(): Promise<string | null> {
   return typeof chainId === 'string' ? chainId : null
 }
 
-export async function isBscNetwork(): Promise<boolean> {
+export async function isPythiaNetwork(): Promise<boolean> {
   const chainId = await getCurrentChainId()
-  return chainId?.toLowerCase() === BSC_CHAIN_ID
+  return chainId?.toLowerCase() === PYTHIA_CHAIN_ID
 }
 
-export async function switchToBscNetwork(): Promise<void> {
+export async function switchToPythiaNetwork(): Promise<void> {
   if (!window.ethereum) {
     throw new Error('NO_WALLET')
   }
@@ -104,14 +104,14 @@ export async function switchToBscNetwork(): Promise<void> {
   try {
     await window.ethereum.request({
       method: 'wallet_switchEthereumChain',
-      params: [{ chainId: BSC_CHAIN_ID }],
+      params: [{ chainId: PYTHIA_CHAIN_ID }],
     })
   } catch (error) {
     const err = error as { code?: number }
     if (err.code === 4902) {
       await window.ethereum.request({
         method: 'wallet_addEthereumChain',
-        params: [BSC_NETWORK_PARAMS],
+        params: [PYTHIA_NETWORK_PARAMS],
       })
       return
     }

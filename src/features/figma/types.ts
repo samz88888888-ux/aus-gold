@@ -70,6 +70,12 @@ export type SubscriptionPlan = {
   reinvest: string
   timeBonus: string
   purchased?: boolean
+  currency?: {
+    name?: string
+    contractAddress?: string
+    decimals?: number
+    chainId?: number
+  }
 }
 
 export type CopyText = {
@@ -100,7 +106,7 @@ export type CopyText = {
   partnersTitle: string
   contactTitle: string
   subscribeNow: string
-  purchaseQueued: string
+  paymentSuccess: string
   walletSwitch: string
   walletDisconnect: string
   walletDisconnected: string
@@ -110,7 +116,7 @@ export type CopyText = {
   networkSwitchDescription: string
   networkSwitchAction: string
   networkReady: string
-  networkBscName: string
+  networkTargetName: string
   communityTitle: string
   communityDesc: string
   inviteTitle: string

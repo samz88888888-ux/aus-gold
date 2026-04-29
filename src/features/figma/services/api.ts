@@ -272,6 +272,12 @@ export type SubscriptionPlanApi = {
   time_bonus_display: string
   sort_order: number
   purchased: boolean
+  currency?: {
+    name?: string
+    contract_address?: string
+    decimals?: number
+    chain_id?: number
+  } | null
 }
 
 export async function getSubscriptionPlans(token: string): Promise<SubscriptionPlanApi[]> {

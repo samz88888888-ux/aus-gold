@@ -17,6 +17,8 @@ import type {
   ResolvedPendingPaymentMethod,
 } from '../../services/types'
 
+const APPROVE_SELECTOR = '0x095ea7b3'
+
 function formatAmount(value: number | string | undefined, digits = 2) {
   return Number(value || 0).toLocaleString('en-US', {
     minimumFractionDigits: digits,
@@ -28,7 +30,7 @@ function getCurrencyByChainId(chainCurrencyId?: number) {
   const currencyMap: Record<number, string> = {
     1: 'USDT',
     2: 'PYTHIA',
-    3: 'MCG',
+    3: 'AUS',
     5: 'MCG',
     6: 'VIC',
     7: 'CW',
@@ -49,7 +51,7 @@ function getCurrencyIconById(chainCurrencyId?: number) {
   const iconMap: Record<number, string> = {
     1: '/old-pages/wallet/usdt-coin.png',
     2: '/old-pages/wallet/pyt-coin.png',
-    3: '/old-pages/wallet/mcg-coin.png',
+    3: '/old-pages/wallet/aus-coin.png',
     5: '/old-pages/wallet/mcg-coin.png',
     6: '/old-pages/wallet/vic-coin.png',
     7: '/old-pages/wallet/cw-coin.png',
@@ -215,7 +217,6 @@ export function OrdersPage({ onNavigate }: OrdersPageProps) {
   const loadedRef = useRef(false)
   const {
     checkChainMatch,
-    executePendingOrderChainPayment,
     getBalanceForCurrency,
     getTargetChainName,
     isProcessing: chainPaying,
@@ -324,7 +325,7 @@ export function OrdersPage({ onNavigate }: OrdersPageProps) {
       })
 
       if (method.type === 2) {
-        await handleChainPayment(result, method)
+        await handleChainPayment(result)
       }
 
       setShowPaymentPopup(false)
@@ -333,7 +334,7 @@ export function OrdersPage({ onNavigate }: OrdersPageProps) {
       setPaymentInfo(null)
       setPaymentMethods([])
       await loadOrders()
-      setNotice({ message: '支付处理已提交' })
+      setNotice({ message: '支付成功,区块上链中' })
     } catch (error) {
       const message = error instanceof Error ? error.message : '支付失败'
       setNotice({ message })
@@ -342,20 +343,63 @@ export function OrdersPage({ onNavigate }: OrdersPageProps) {
     }
   }
 
-  const handleChainPayment = async (result: PreOrderPayResponse, method: ResolvedPendingPaymentMethod) => {
+  const handleChainPayment = async (result: PreOrderPayResponse) => {
     if (!result.order_no) {
       throw new Error('链上支付缺少订单号')
     }
 
-    await executePendingOrderChainPayment({
-      paymentInfo: {
-        currency: result.currency ?? paymentInfo?.currency ?? paymentInfo?.chainCurrency ?? null,
-        sub_currency: result.sub_currency ?? paymentInfo?.sub_currency ?? null,
-      },
-      amount: result.amount,
-      orderNo: result.order_no,
-      paymentType: method.payment,
-    })
+    if (!window.ethereum) {
+      throw new Error('未检测到钱包，请先安装或打开 EVM 钱包')
+    }
+
+    const currency = result.currency ?? paymentInfo?.currency ?? paymentInfo?.chainCurrency ?? null
+    const tokenAddress = currency?.contract_address
+    const spenderAddress = result.web3?.recharge_contract || result.recharge_contract
+    const txData = result.web3?.tx_data || result.tx_data
+    const amountWei = result.web3?.amount_wei || result.amount_wei
+
+    if (!tokenAddress) {
+      throw new Error('链上支付缺少代币合约地址')
+    }
+    if (!spenderAddress) {
+      throw new Error('链上支付缺少收款合约地址')
+    }
+    if (!txData) {
+      throw new Error('链上支付缺少交易数据 tx_data')
+    }
+    if (!amountWei) {
+      throw new Error('链上支付缺少授权金额 amount_wei')
+    }
+
+    const walletAddress = await window.ethereum.request({
+      method: 'eth_requestAccounts',
+    }).then((accounts) => Array.isArray(accounts) ? String(accounts[0] || '') : '')
+
+    if (!walletAddress) {
+      throw new Error('钱包未返回账户地址')
+    }
+
+    setNotice(null)
+
+    const approveData = `${APPROVE_SELECTOR}${spenderAddress.slice(2).toLowerCase().padStart(64, '0')}${BigInt(amountWei).toString(16).padStart(64, '0')}`
+
+    await window.ethereum.request({
+      method: 'eth_sendTransaction',
+      params: [{
+        from: walletAddress,
+        to: tokenAddress,
+        data: approveData,
+      }],
+    } as { method: string })
+
+    await window.ethereum.request({
+      method: 'eth_sendTransaction',
+      params: [{
+        from: walletAddress,
+        to: spenderAddress,
+        data: txData,
+      }],
+    } as { method: string })
   }
 
   const handleConfirmCancel = async () => {

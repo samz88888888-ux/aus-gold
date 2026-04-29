@@ -8,10 +8,11 @@ import type { AppPage, PageParams } from '../../../figma/types'
 
 type AddressEditPageProps = {
   addressId: string | number
+  from?: string
   onNavigate: (page: AppPage, params?: PageParams) => void
 }
 
-export function AddressEditPage({ addressId, onNavigate }: AddressEditPageProps) {
+export function AddressEditPage({ addressId, from, onNavigate }: AddressEditPageProps) {
   const [address, setAddress] = useState<AddressItem | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -19,11 +20,12 @@ export function AddressEditPage({ addressId, onNavigate }: AddressEditPageProps)
     fetchAddressDetail(Number(addressId)).then(data => { setAddress(data ?? null); setLoading(false) }).catch(() => setLoading(false))
   }, [addressId])
 
-  if (loading) return <PageContainer><PageNavBar title="编辑地址" onBack={() => onNavigate('address')} /><p className="py-20 text-center text-sm text-white/40">加载中...</p></PageContainer>
-  if (!address) return <PageContainer><PageNavBar title="编辑地址" onBack={() => onNavigate('address')} /><p className="py-20 text-center text-sm text-white/40">地址不存在</p></PageContainer>
+  if (loading) return <PageContainer><PageNavBar title="编辑地址" onBack={() => onNavigate('address', { from })} /><p className="py-20 text-center text-sm text-white/40">加载中...</p></PageContainer>
+  if (!address) return <PageContainer><PageNavBar title="编辑地址" onBack={() => onNavigate('address', { from })} /><p className="py-20 text-center text-sm text-white/40">地址不存在</p></PageContainer>
 
   return (
     <AddressForm title="编辑地址" initial={address}
+      from={from}
       onSubmit={data => updateAddress(address.id, data)} onNavigate={onNavigate} />
   )
 }

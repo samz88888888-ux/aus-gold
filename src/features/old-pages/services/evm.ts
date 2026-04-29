@@ -58,8 +58,8 @@ const CHAIN_CONFIGS: Record<SupportedChainId, ChainConfig> = {
       symbol: 'PYTHIA',
       decimals: 18,
     },
-    rpcUrls: ['https://rpc-pythia.naaidepin.co/'],
-    blockExplorerUrls: ['https://explorer.naaidepin.co'],
+    rpcUrls: ['https://rpc.pychain.vip'],
+    blockExplorerUrls: ['https://explorer.pychain.co'],
   },
 }
 
