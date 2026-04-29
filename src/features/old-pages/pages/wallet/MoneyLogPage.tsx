@@ -112,14 +112,14 @@ export function MoneyLogPage({ onNavigate }: MoneyLogPageProps) {
             <h2 className="text-[15px] font-semibold text-white">{currentTabLabel} 资金记录</h2>
             <p className="mt-1 text-[11px] text-white/42">按资金类型筛选日志记录</p>
           </div>
-          <button
+          {/* <button
             type="button"
             onClick={() => setShowFilter(true)}
             className="inline-flex items-center gap-2 rounded-full border border-[#fbd005]/30 bg-[#1b1c25] px-3.5 py-1.5 text-xs text-white"
           >
             {currentFilterLabel}
             <span className="text-[10px] text-white/65">筛选</span>
-          </button>
+          </button> */}
         </div>
 
         {list.length === 0 ? (
