@@ -79,10 +79,6 @@ export function MoneyLogPage({ onNavigate }: MoneyLogPageProps) {
     () => TABS.find((item) => item.key === selectedTab)?.label ?? 'USDT',
     [selectedTab],
   )
-  const currentFilterLabel = useMemo(
-    () => FILTERS.find((item) => item.key === selectedFilter)?.label ?? '全部',
-    [selectedFilter],
-  )
 
   return (
     <PageContainer bgClass="bg-[#05060a]">
