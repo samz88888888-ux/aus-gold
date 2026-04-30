@@ -6,7 +6,7 @@ import type { SubscriptionPlanApi, OrderListItem } from '../services/api'
 import { TopNavigation } from '../components/shared'
 import type { CopyText, LanguageOption, SubscriptionPlan, SubscriptionPlanId } from '../types'
 import { assetUrl } from '../utils/assets'
-import { formatUnits, getChainConfig, getCurrentChainHexId, getErc20Balance, parseUnits, switchOrAddChain } from '../../old-pages/services/evm'
+import { formatUnits, getChainConfig, getCurrentChainHexId, getErc20Allowance, getErc20Balance, parseUnits, switchOrAddChain, waitForReceipt } from '../../old-pages/services/evm'
 import usdtCoinIcon from '../../../assets/coin/usdt-coin.png'
 
 const ICON_MAP: Record<string, string> = {
@@ -456,6 +456,7 @@ function usePlanTokenBalance(
 
 const APPROVE_SELECTOR = '0x095ea7b3'
 const MAX_UINT256 = 'ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
+const MANUAL_GAS_LIMIT_HEX = '0xf4240'
 
 function SubscribeConfirmSheet({
   plan,
@@ -515,16 +516,28 @@ function SubscribeConfirmSheet({
       setStatusText('正在生成訂單…')
       const order = await getOrder(authToken, plan.id)
 
-      setStatusText('授權 USDT…')
-      const approveData = `${APPROVE_SELECTOR}${order.recharge_contract.slice(2).toLowerCase().padStart(64, '0')}${MAX_UINT256}`
-      await window.ethereum.request({
-        method: 'eth_sendTransaction',
-        params: [{
-          from: walletAddress,
-          to: order.usdt_contract,
-          data: approveData,
-        }],
-      } as { method: string })
+      const requiredAllowance = BigInt(order.amount_wei)
+      const currentAllowance = await getErc20Allowance(order.usdt_contract, walletAddress, order.recharge_contract)
+
+      if (currentAllowance < requiredAllowance) {
+        setStatusText('授權 USDT…')
+        const approveData = `${APPROVE_SELECTOR}${order.recharge_contract.slice(2).toLowerCase().padStart(64, '0')}${MAX_UINT256}`
+        const approveTxHash = await window.ethereum.request({
+          method: 'eth_sendTransaction',
+          params: [{
+            from: walletAddress,
+            to: order.usdt_contract,
+            data: approveData,
+            gas: MANUAL_GAS_LIMIT_HEX,
+          }],
+        } as { method: string }) as string
+
+        setStatusText('等待授權確認…')
+        const approveReceipt = await waitForReceipt(approveTxHash)
+        if (!approveReceipt || (approveReceipt as { status?: string }).status === '0x0') {
+          throw new Error('授权交易失败，请稍后重试')
+        }
+      }
 
       setStatusText('發送交易…')
       const txHash = await window.ethereum.request({
@@ -533,11 +546,17 @@ function SubscribeConfirmSheet({
           from: walletAddress,
           to: order.recharge_contract,
           data: order.tx_data,
+          gas: MANUAL_GAS_LIMIT_HEX,
         }],
       } as { method: string }) as string
 
+      setStatusText('等待支付確認…')
+      const payReceipt = await waitForReceipt(txHash)
+      if (!payReceipt || (payReceipt as { status?: string }).status === '0x0') {
+        throw new Error('支付交易失败，请稍后重试')
+      }
+
       setStatusText('')
-      void txHash
       onSuccess(plan.id)
     } catch (err) {
       setStatusText('')

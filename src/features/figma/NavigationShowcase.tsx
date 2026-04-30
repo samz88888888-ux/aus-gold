@@ -108,6 +108,7 @@ export function NavigationShowcase() {
   useEffect(() => {
     const handleAuthExpired = (event: Event) => {
       const customEvent = event as CustomEvent<{ message?: string }>
+      autoConnectTriggeredRef.current = false
       clearAuth()
       setWalletAddress(null)
       setAuthToken(null)
@@ -176,10 +177,16 @@ export function NavigationShowcase() {
     const handleAccountsChanged = (...args: unknown[]) => {
       const accounts = Array.isArray(args[0]) ? args[0] : []
       const account = typeof accounts[0] === 'string' ? accounts[0] : null
-      if (!account || account !== walletAddress) {
+      if (!account || account.toLowerCase() !== walletAddress?.toLowerCase()) {
+        autoConnectTriggeredRef.current = false
         clearAuth()
         setWalletAddress(null)
         setAuthToken(null)
+        setPendingAddress(null)
+        setPendingNetworkAddress(null)
+        setIsInviteCodeSheetOpen(false)
+        setIsNetworkSheetOpen(false)
+        setIsWalletSheetOpen(false)
       }
     }
 
@@ -193,6 +200,37 @@ export function NavigationShowcase() {
     return () => {
       ethereum.removeListener?.('accountsChanged', handleAccountsChanged)
       ethereum.removeListener?.('chainChanged', handleChainChanged)
+    }
+  }, [walletAddress])
+
+  useEffect(() => {
+    const ethereum = window.ethereum
+    if (!ethereum?.request) return
+
+    const syncCurrentAccount = async () => {
+      try {
+        const accounts = await ethereum.request({ method: 'eth_accounts' }) as string[]
+        const currentAccount = typeof accounts?.[0] === 'string' ? accounts[0] : null
+        if (walletAddress && (!currentAccount || currentAccount.toLowerCase() !== walletAddress.toLowerCase())) {
+          autoConnectTriggeredRef.current = false
+          clearAuth()
+          setWalletAddress(null)
+          setAuthToken(null)
+          setPendingAddress(null)
+          setPendingNetworkAddress(null)
+          setIsInviteCodeSheetOpen(false)
+          setIsNetworkSheetOpen(false)
+          setIsWalletSheetOpen(false)
+        }
+      } catch {}
+    }
+
+    void syncCurrentAccount()
+    window.addEventListener('focus', syncCurrentAccount)
+    document.addEventListener('visibilitychange', syncCurrentAccount)
+    return () => {
+      window.removeEventListener('focus', syncCurrentAccount)
+      document.removeEventListener('visibilitychange', syncCurrentAccount)
     }
   }, [walletAddress])
 
@@ -393,6 +431,21 @@ export function NavigationShowcase() {
   }
 
   const activeBottomTab = getBottomTabKey(currentPage)
+  const requiresAuth = currentPage !== 'home'
+
+  useEffect(() => {
+    if (!authToken && requiresAuth) {
+      setCurrentPage('home')
+      setPageParams({})
+      setShowUnpaidOrderPopup(false)
+      setIsWalletSheetOpen(false)
+      setIsInviteCodeSheetOpen(false)
+      setIsNetworkSheetOpen(false)
+      setPendingAddress(null)
+      setPendingNetworkAddress(null)
+      setFeedbackMessage(copy.loginRequired)
+    }
+  }, [authToken, requiresAuth, copy.loginRequired])
 
   const oldPageRoutes: AppPage[] = [
     'ming',

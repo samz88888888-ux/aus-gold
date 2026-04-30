@@ -3,6 +3,13 @@ import { getLoginMessage, checkIsRegistered, login } from './api'
 const TOKEN_KEY = 'mcg_token'
 const ADDRESS_KEY = 'mcg_address'
 export const PYTHIA_CHAIN_ID = '0x2631'
+let sessionToken: string | null = null
+let sessionAddress: string | null = null
+
+if (typeof window !== 'undefined') {
+  window.localStorage.removeItem(TOKEN_KEY)
+  window.localStorage.removeItem(ADDRESS_KEY)
+}
 
 const PYTHIA_NETWORK_PARAMS = {
   chainId: PYTHIA_CHAIN_ID,
@@ -42,21 +49,25 @@ export function getChainDisplayName(chainId: string | null): string {
 }
 
 export function getSavedToken(): string | null {
-  return localStorage.getItem(TOKEN_KEY)
+  return sessionToken
 }
 
 export function getSavedAddress(): string | null {
-  return localStorage.getItem(ADDRESS_KEY)
+  return sessionAddress
 }
 
 export function clearAuth() {
-  localStorage.removeItem(TOKEN_KEY)
-  localStorage.removeItem(ADDRESS_KEY)
+  sessionToken = null
+  sessionAddress = null
+  if (typeof window !== 'undefined') {
+    window.localStorage.removeItem(TOKEN_KEY)
+    window.localStorage.removeItem(ADDRESS_KEY)
+  }
 }
 
 function saveAuth(token: string, address: string) {
-  localStorage.setItem(TOKEN_KEY, token)
-  localStorage.setItem(ADDRESS_KEY, address)
+  sessionToken = token
+  sessionAddress = address
 }
 
 export function getInviteCodeFromUrl(): string {

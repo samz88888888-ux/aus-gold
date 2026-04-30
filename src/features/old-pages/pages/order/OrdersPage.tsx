@@ -7,7 +7,7 @@ import { PendingOrderPaymentModal } from '../../components/payment/PendingOrderP
 import { PageContainer } from '../../components/PageContainer'
 import { PageNavBar } from '../../components/PageNavBar'
 import { useChainPayment } from '../../hooks/useChainPayment'
-import type { SupportedChainId } from '../../services/evm'
+import { getErc20Allowance, waitForReceipt, type SupportedChainId } from '../../services/evm'
 import { cancelPreOrder, fetchPreOrderList, fetchPreOrderPaymentInfo, payPreOrder } from '../../services/api'
 import type {
   PreOrderItem,
@@ -18,6 +18,7 @@ import type {
 } from '../../services/types'
 
 const APPROVE_SELECTOR = '0x095ea7b3'
+const MANUAL_GAS_LIMIT_HEX = '0xf4240'
 
 function formatAmount(value: number | string | undefined, digits = 2) {
   return Number(value || 0).toLocaleString('en-US', {
@@ -381,25 +382,42 @@ export function OrdersPage({ onNavigate }: OrdersPageProps) {
 
     setNotice(null)
 
-    const approveData = `${APPROVE_SELECTOR}${spenderAddress.slice(2).toLowerCase().padStart(64, '0')}${BigInt(amountWei).toString(16).padStart(64, '0')}`
+    const requiredAllowance = BigInt(amountWei)
+    const currentAllowance = await getErc20Allowance(tokenAddress, walletAddress, spenderAddress)
 
-    await window.ethereum.request({
-      method: 'eth_sendTransaction',
-      params: [{
-        from: walletAddress,
-        to: tokenAddress,
-        data: approveData,
-      }],
-    } as { method: string })
+    if (currentAllowance < requiredAllowance) {
+      const approveData = `${APPROVE_SELECTOR}${spenderAddress.slice(2).toLowerCase().padStart(64, '0')}${requiredAllowance.toString(16).padStart(64, '0')}`
 
-    await window.ethereum.request({
+      const approveTxHash = await window.ethereum.request({
+        method: 'eth_sendTransaction',
+        params: [{
+          from: walletAddress,
+          to: tokenAddress,
+          data: approveData,
+          gas: MANUAL_GAS_LIMIT_HEX,
+        }],
+      } as { method: string }) as string
+
+      const approveReceipt = await waitForReceipt(approveTxHash)
+      if (!approveReceipt || (approveReceipt as { status?: string }).status === '0x0') {
+        throw new Error('授权交易失败，请稍后重试')
+      }
+    }
+
+    const payTxHash = await window.ethereum.request({
       method: 'eth_sendTransaction',
       params: [{
         from: walletAddress,
         to: spenderAddress,
         data: txData,
+        gas: MANUAL_GAS_LIMIT_HEX,
       }],
-    } as { method: string })
+    } as { method: string }) as string
+
+    const payReceipt = await waitForReceipt(payTxHash)
+    if (!payReceipt || (payReceipt as { status?: string }).status === '0x0') {
+      throw new Error('支付交易失败，请稍后重试')
+    }
   }
 
   const handleConfirmCancel = async () => {
