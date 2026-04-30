@@ -46,6 +46,29 @@ type GatewayResponse = {
   data?: string
 }
 
+const AUTH_EXPIRED_EVENT = 'app:auth-expired'
+
+function dispatchAuthExpired(message: string) {
+  if (typeof window === 'undefined') return
+  window.dispatchEvent(new CustomEvent(AUTH_EXPIRED_EVENT, {
+    detail: { message },
+  }))
+}
+
+function assertBusinessSuccess<T>(json: ApiResponse<T>) {
+  if (json.code === 401) {
+    const message = json.message || '会话已过期，请重新登录。'
+    dispatchAuthExpired(message)
+    throw new Error(message)
+  }
+
+  if (json.code !== 200) {
+    throw new Error(json.message || `Request failed: ${json.code}`)
+  }
+
+  return json
+}
+
 function normalizeToken(token?: string | null): string | null {
   if (!token) return null
   return token.startsWith('Bearer ') ? token : `Bearer ${token}`
@@ -89,12 +112,7 @@ function decryptGatewayData(value: string, handshake: string): string {
 
 async function parseJsonResponse<T>(res: Response): Promise<ApiResponse<T>> {
   const json = (await res.json()) as ApiResponse<T>
-
-  if (json.code !== 200) {
-    throw new Error(json.message || `Request failed: ${json.code}`)
-  }
-
-  return json
+  return assertBusinessSuccess(json)
 }
 
 async function requestDirect<T>(
@@ -169,11 +187,7 @@ async function requestViaGateway<T>(
   }
 
   const innerJson = JSON.parse(decrypted) as ApiResponse<T>
-  if (innerJson.code !== 200) {
-    throw new Error(innerJson.message || `Request failed: ${innerJson.code}`)
-  }
-
-  return innerJson
+  return assertBusinessSuccess(innerJson)
 }
 
 async function request<T>(
@@ -318,3 +332,4 @@ export async function getOrderList(token: string): Promise<{ list: OrderListItem
 }
 
 export { request }
+export { AUTH_EXPIRED_EVENT }

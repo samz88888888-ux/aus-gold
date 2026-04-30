@@ -21,7 +21,6 @@ function getDraft(pageState?: ShopOrderDraft | null) {
 
 export function ShopOrderConfirmPage({ pageState, addressId, onNavigate }: ShopOrderConfirmPageProps) {
   const [draft] = useState<ShopOrderDraft | null>(() => getDraft(pageState))
-  const [needDelivery, setNeedDelivery] = useState(true)
   const [remark, setRemark] = useState('')
   const [selectedAddress, setSelectedAddress] = useState<AddressItem | null>(null)
   const [submitting, setSubmitting] = useState(false)
@@ -33,6 +32,7 @@ export function ShopOrderConfirmPage({ pageState, addressId, onNavigate }: ShopO
     confirmText?: string
     onConfirm?: () => void
   } | null>(null)
+  const needDelivery = true
 
   useEffect(() => {
     let cancelled = false
@@ -133,7 +133,6 @@ export function ShopOrderConfirmPage({ pageState, addressId, onNavigate }: ShopO
     <PageContainer>
       <PageNavBar title="确认订单" onBack={() => onNavigate('shop')} />
       <div className="px-4 pb-52 pt-4">
-        <DeliveryToggle active={needDelivery} onChange={setNeedDelivery} />
         {needDelivery ? (
           <AddressCard address={selectedAddress} onSelect={() => onNavigate('address', { from: 'shopOrderConfirm' })} />
         ) : null}
@@ -177,23 +176,6 @@ export function ShopOrderConfirmPage({ pageState, addressId, onNavigate }: ShopO
         onConfirm={notice?.onConfirm}
       />
     </PageContainer>
-  )
-}
-
-function DeliveryToggle({ active, onChange }: { active: boolean; onChange: (value: boolean) => void }) {
-  return (
-    <div className="mb-4 grid grid-cols-2 overflow-hidden rounded-xl border border-yellow-500/20 bg-[#1e1e1e] shadow">
-      {[true, false].map((value) => (
-        <button
-          key={String(value)}
-          type="button"
-          onClick={() => onChange(value)}
-          className={`py-3 text-sm font-medium transition ${active === value ? 'bg-gradient-to-br from-yellow-400 to-amber-500 font-semibold text-black' : 'text-white/60'}`}
-        >
-          {value ? '需要发货' : '无需发货'}
-        </button>
-      ))}
-    </div>
   )
 }
 

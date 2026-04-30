@@ -45,6 +45,7 @@ import {
   switchWalletAccount,
 } from './services/auth'
 import { getMarquee } from './services/api'
+import { AUTH_EXPIRED_EVENT } from './services/api'
 import type { NoticeItem } from './services/api'
 import type { AppPage, LanguageCode, PageParams, SubscriptionPlanId } from './types'
 
@@ -103,6 +104,28 @@ export function NavigationShowcase() {
     const timeout = window.setTimeout(() => setFeedbackMessage(null), 2200)
     return () => window.clearTimeout(timeout)
   }, [feedbackMessage])
+
+  useEffect(() => {
+    const handleAuthExpired = (event: Event) => {
+      const customEvent = event as CustomEvent<{ message?: string }>
+      clearAuth()
+      setWalletAddress(null)
+      setAuthToken(null)
+      setPendingAddress(null)
+      setPendingNetworkAddress(null)
+      setIsInviteCodeSheetOpen(false)
+      setIsNetworkSheetOpen(false)
+      setIsWalletSheetOpen(false)
+      setCurrentPage('home')
+      setPageParams({})
+      setFeedbackMessage(customEvent.detail?.message || '会话已过期，请重新登录。')
+    }
+
+    window.addEventListener(AUTH_EXPIRED_EVENT, handleAuthExpired as EventListener)
+    return () => {
+      window.removeEventListener(AUTH_EXPIRED_EVENT, handleAuthExpired as EventListener)
+    }
+  }, [])
 
   useEffect(() => {
     getMarquee()
