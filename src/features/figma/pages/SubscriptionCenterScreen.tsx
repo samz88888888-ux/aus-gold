@@ -855,12 +855,12 @@ function PlanCard({
 
         <PrimaryStats power={plan.power} level={plan.level} />
 
-        {(plan.reinvest !== '-' || plan.timeBonus !== '-') && (
+        {/* {(plan.reinvest !== '-' || plan.timeBonus !== '-') && (
           <div className="mt-3 flex gap-2">
             {plan.reinvest !== '-' && <SecondaryBadge label="復投" value={plan.reinvest} />}
             {plan.timeBonus !== '-' && <SecondaryBadge label="時間" value={plan.timeBonus} />}
           </div>
-        )}
+        )} */}
 
         <div className="flex-1" />
 
@@ -942,10 +942,10 @@ function PrimaryStats({ power, level }: { power: string; level: string }) {
           <div className="flex h-10 items-center justify-center rounded-[10px] border border-[#fbd005]/25 bg-[#fbd005]/10 px-4">
             <span className="text-[18px] font-extrabold text-[#d7ab1e]">{level}</span>
           </div>
-          <div>
+          {/* <div>
             <p className="text-[10px] uppercase tracking-wider text-black/35">等級</p>
             <p className="text-[12px] font-medium text-black/70">Level {level}</p>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

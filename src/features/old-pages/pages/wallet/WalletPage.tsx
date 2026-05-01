@@ -110,11 +110,13 @@ export function WalletPage({ onNavigate }: WalletPageProps) {
           </button>
           <button
             type="button"
-            onClick={() => setNotice('敬请期待')}
+            onClick={() => {
+              window.location.href = BRIDGE_URL
+            }}
             className="flex flex-col items-center gap-1.5 rounded-xl bg-[#1b1c25] px-2 py-3 active:opacity-80"
           >
-            <img src={transferIcon} alt="划转" className="h-9 w-9 object-contain" />
-            <span className="text-xs text-white/90">划转</span>
+            <img src={transferIcon} alt="闪兑" className="h-9 w-9 object-contain" />
+            <span className="text-xs text-white/90">闪兑</span>
           </button>
           <button
             type="button"
