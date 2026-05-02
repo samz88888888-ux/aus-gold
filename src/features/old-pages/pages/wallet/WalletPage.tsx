@@ -39,6 +39,7 @@ function shortAddress(addr: string) {
 }
 
 const TOKEN_ICON = '/old-pages/wallet/usdt-coin.png'
+const AUS_TOKEN_ICON = '/old-pages/wallet/aus-coin.png'
 const BRIDGE_URL = 'https://bridge.pychain.co/bridge'
 
 export function WalletPage({ onNavigate }: WalletPageProps) {
@@ -73,16 +74,24 @@ export function WalletPage({ onNavigate }: WalletPageProps) {
 
       <div
         className="min-h-[calc(100vh-48px)] bg-top bg-no-repeat px-4 pb-24 pt-3"
-        style={{ backgroundImage: `url(${walletBackground})`, backgroundSize: '100% 100%' }}
+        style={{
+          backgroundImage: `url(${walletBackground})`,
+          backgroundSize: '100% 100%',
+        }}
       >
         <section
           className="relative overflow-hidden rounded-2xl px-4 pb-5 pt-4"
-          style={{ backgroundImage: `url(${fundBackground})`, backgroundSize: '100% 100%' }}
+          style={{
+            backgroundImage: `url(${fundBackground})`,
+            backgroundSize: '100% 100%',
+          }}
         >
           <p className="text-[14px] text-[#112342]">我的资产</p>
           <div className="mt-1.5 flex items-end gap-1">
             <span className="text-[24px] font-bold text-[#10223f]">$</span>
-            <span className="text-[30px] font-extrabold leading-none text-[#10223f]">{fmtUsd(totalAssets)}</span>
+            <span className="text-[30px] font-extrabold leading-none text-[#10223f]">
+              {fmtUsd(totalAssets)}
+            </span>
           </div>
           <div className="mt-3 inline-flex items-center rounded-full bg-[#0d1f3c]/10 px-3 py-1 text-[11px] text-[#10223f]">
             账户 {shortAddress(address)}
@@ -97,7 +106,11 @@ export function WalletPage({ onNavigate }: WalletPageProps) {
             }}
             className="flex flex-col items-center gap-1.5 rounded-xl bg-[#1b1c25] px-2 py-3 active:opacity-80"
           >
-            <img src={rechargeIcon} alt="跨链桥" className="h-9 w-9 object-contain" />
+            <img
+              src={rechargeIcon}
+              alt="跨链桥"
+              className="h-9 w-9 object-contain"
+            />
             <span className="text-xs text-white/90">跨链桥</span>
           </button>
           <button
@@ -105,7 +118,11 @@ export function WalletPage({ onNavigate }: WalletPageProps) {
             onClick={() => onNavigate('withdraw')}
             className="flex flex-col items-center gap-1.5 rounded-xl bg-[#1b1c25] px-2 py-3 active:opacity-80"
           >
-            <img src={withdrawIcon} alt="提现" className="h-9 w-9 object-contain" />
+            <img
+              src={withdrawIcon}
+              alt="提现"
+              className="h-9 w-9 object-contain"
+            />
             <span className="text-xs text-white/90">提现</span>
           </button>
           <button
@@ -115,7 +132,11 @@ export function WalletPage({ onNavigate }: WalletPageProps) {
             }}
             className="flex flex-col items-center gap-1.5 rounded-xl bg-[#1b1c25] px-2 py-3 active:opacity-80"
           >
-            <img src={transferIcon} alt="闪兑" className="h-9 w-9 object-contain" />
+            <img
+              src={transferIcon}
+              alt="闪兑"
+              className="h-9 w-9 object-contain"
+            />
             <span className="text-xs text-white/90">闪兑</span>
           </button>
           <button
@@ -123,7 +144,11 @@ export function WalletPage({ onNavigate }: WalletPageProps) {
             onClick={() => onNavigate('moneyLog')}
             className="flex flex-col items-center gap-1.5 rounded-xl bg-[#1b1c25] px-2 py-3 active:opacity-80"
           >
-            <img src={moneyLogIcon} alt="资金记录" className="h-9 w-9 object-contain" />
+            <img
+              src={moneyLogIcon}
+              alt="资金记录"
+              className="h-9 w-9 object-contain"
+            />
             <span className="text-xs text-white/90">资金记录</span>
           </button>
         </section>
@@ -131,11 +156,13 @@ export function WalletPage({ onNavigate }: WalletPageProps) {
         <section className="mt-5">
           <div className="mb-2 flex items-center justify-between">
             <h2 className="text-sm font-medium text-white/78">我的代币</h2>
-            {loading ? <span className="text-xs text-white/45">加载中...</span> : null}
+            {loading ? (
+              <span className="text-xs text-white/45">加载中...</span>
+            ) : null}
           </div>
           <div className="space-y-3">
             <TokenRow name="USDT" amount={fmt(usdt)} />
-            <TokenRow name="USDT(挖矿)" amount={fmt(usdtMine)} />
+            <TokenRow name="股权算力值" amount={fmt(usdtMine)} icon={AUS_TOKEN_ICON} />
           </div>
         </section>
       </div>
@@ -149,12 +176,20 @@ export function WalletPage({ onNavigate }: WalletPageProps) {
   )
 }
 
-function TokenRow({ name, amount }: { name: string; amount: string }) {
+function TokenRow({
+  name,
+  amount,
+  icon = TOKEN_ICON,
+}: {
+  name: string
+  amount: string
+  icon?: string
+}) {
   return (
     <div className="flex items-center justify-between rounded-2xl bg-[#1e1e1e] px-4 py-3.5">
       <div className="flex items-center gap-3">
         <div className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10">
-          <img src={TOKEN_ICON} alt={name} className="h-7 w-7 object-contain" />
+          <img src={icon} alt={name} className="h-7 w-7 object-contain" />
         </div>
         <div className="flex flex-col">
           <span className="text-[14px] font-semibold text-white">{name}</span>

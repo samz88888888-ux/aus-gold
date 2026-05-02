@@ -333,7 +333,9 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
             <div className="relative">
               <div className="flex items-center justify-between gap-3">
                 <div className="inline-flex items-center rounded-full border border-[#fbd005]/18 bg-[linear-gradient(180deg,rgba(251,208,5,0.14),rgba(251,208,5,0.06))] px-3 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
-                  <span className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#ffe08a]/84">Withdraw</span>
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#ffe08a]/84">
+                    Withdraw
+                  </span>
                 </div>
                 <button
                   type="button"
@@ -345,22 +347,36 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
               </div>
 
               <div className="mt-4">
-                <h2 className="text-[19px] font-black leading-none tracking-[-0.02em] text-white">灵活提现 AUS / USDT</h2>
+                <h2 className="text-[19px] font-black leading-none tracking-[-0.02em] text-white">
+                  灵活提现 AUS / USDT
+                </h2>
                 <p className="mt-3 max-w-[280px] text-[11px] leading-5 text-white/55">
-                  USDT 可直接申请提现，USDT挖矿会按价格自动换算为 AUS，并按选定天数逐日到账。
+                  USDT
+                  可直接申请提现，1股权算力值🟰1usdt，按照Aus实时价格进行兑换，并按照选定天数逐日到账
                 </p>
               </div>
             </div>
 
             <div className="relative mt-5 grid grid-cols-2 gap-3">
-              <MetricCard label="钱包账户" value={shortAddress(address)} highlight={false} />
-              <MetricCard label={selectedCurrency === 'USDT' ? '可提 USDT' : '可提 USDT挖矿'} value={fmt(available)} />
+              <MetricCard
+                label="钱包账户"
+                value={shortAddress(address)}
+                highlight={false}
+              />
+              <MetricCard
+                label={
+                  selectedCurrency === 'USDT' ? '可提 USDT' : '可提 USDT挖矿'
+                }
+                value={fmt(available)}
+              />
             </div>
           </section>
 
           <section className="mt-4 flex-1 rounded-[28px] border border-white/8 bg-[linear-gradient(180deg,rgba(26,27,34,0.95),rgba(14,15,21,0.98))] p-4 shadow-[0_18px_42px_rgba(0,0,0,0.2)]">
             {pageLoading ? (
-              <div className="flex h-full min-h-[360px] items-center justify-center text-sm text-white/45">提现配置加载中...</div>
+              <div className="flex h-full min-h-[360px] items-center justify-center text-sm text-white/45">
+                提现配置加载中...
+              </div>
             ) : (
               <div className="flex h-full flex-col">
                 <div className="space-y-4">
@@ -373,11 +389,23 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
                     >
                       <span className="flex items-center gap-3">
                         <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#fbd005]/10">
-                          <img src={selectedCurrency === 'USDT' ? TOKEN_ICON : AUS_ICON} alt={selectedCoinMeta.label} className="h-7 w-7 object-contain" />
+                          <img
+                            src={
+                              selectedCurrency === 'USDT'
+                                ? TOKEN_ICON
+                                : AUS_ICON
+                            }
+                            alt={selectedCoinMeta.label}
+                            className="h-7 w-7 object-contain"
+                          />
                         </span>
                         <span>
-                          <span className="block text-[15px] font-semibold text-white">{selectedCoinMeta.label}</span>
-                          <span className="mt-0.5 block text-[11px] text-white/45">{selectedCoinMeta.subtitle}</span>
+                          <span className="block text-[15px] font-semibold text-white">
+                            {selectedCoinMeta.label}
+                          </span>
+                          <span className="mt-0.5 block text-[11px] text-white/45">
+                            {selectedCoinMeta.subtitle}
+                          </span>
                         </span>
                       </span>
                       <span className="text-[11px] text-[#ffe08a]">切换</span>
@@ -388,15 +416,22 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
                     <div className="flex items-center justify-between">
                       <p className="text-[12px] text-white/48">提现数量</p>
                       <span className="text-[11px] text-white/38">
-                        限额 {fmt(minWithdraw)} - {fmt(maxWithdraw)} {selectedCoinMeta.label}
+                        限额 {fmt(minWithdraw)} - {fmt(maxWithdraw)}{' '}
+                        {selectedCoinMeta.label}
                       </span>
                     </div>
                     <div className="mt-2 rounded-[24px] border border-white/10 bg-white/4 px-4 py-4">
                       <div className="flex items-center gap-3">
                         <input
                           value={amount}
-                          onChange={(e) => setAmount(e.target.value.replace(/[^\d.]/g, ''))}
-                          placeholder={selectedCurrency === 'USDT' ? '输入 USDT 数量' : '输入 USDT挖矿 数量'}
+                          onChange={(e) =>
+                            setAmount(e.target.value.replace(/[^\d.]/g, ''))
+                          }
+                          placeholder={
+                            selectedCurrency === 'USDT'
+                              ? '输入 USDT 数量'
+                              : '输入 USDT挖矿 数量'
+                          }
                           inputMode="decimal"
                           className="w-full bg-transparent text-[24px] font-black text-white outline-none placeholder:text-white/18"
                         />
@@ -409,8 +444,13 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
                         </button>
                       </div>
                       <div className="mt-3 flex items-center justify-between text-[11px] text-white/40">
-                        <span>可用余额 {fmt(available)} {selectedCoinMeta.label}</span>
-                        <span>当日可申请 {selectedConfig?.daily_max_withdraw ?? '--'} 次</span>
+                        <span>
+                          可用余额 {fmt(available)} {selectedCoinMeta.label}
+                        </span>
+                        <span>
+                          当日可申请{' '}
+                          {selectedConfig?.daily_max_withdraw ?? '--'} 次
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -419,27 +459,56 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
                     <div>
                       <p className="text-[12px] text-white/48">到账天数</p>
                       <div className="mt-2 grid grid-cols-3 gap-2">
-                        {(config?.usdt_mine_config.day_list ?? []).map((item) => {
-                          const active = String(item.id) === selectedDayId
-                          return (
-                            <button
-                              key={item.id}
-                              type="button"
-                              onClick={() => setSelectedDayId(String(item.id))}
-                              className={`rounded-2xl border px-3 py-3 text-left transition ${active ? 'border-[#fbd005]/55 bg-[#fbd005]/10 text-[#ffe08a]' : 'border-white/10 bg-white/4 text-white/78'}`}
-                            >
-                              <span className="block text-[15px] font-bold">{item.day} 天</span>
-                              <span className="mt-1 block text-[11px] text-inherit/75">手续费 {item.fee_rate}%</span>
-                            </button>
-                          )
-                        })}
+                        {(config?.usdt_mine_config.day_list ?? []).map(
+                          (item) => {
+                            const active = String(item.id) === selectedDayId
+                            return (
+                              <button
+                                key={item.id}
+                                type="button"
+                                onClick={() =>
+                                  setSelectedDayId(String(item.id))
+                                }
+                                className={`rounded-2xl border px-3 py-3 text-left transition ${active ? 'border-[#fbd005]/55 bg-[#fbd005]/10 text-[#ffe08a]' : 'border-white/10 bg-white/4 text-white/78'}`}
+                              >
+                                <span className="block text-[15px] font-bold">
+                                  {item.day} 天
+                                </span>
+                                <span className="mt-1 block text-[11px] text-inherit/75">
+                                  手续费 {item.fee_rate}%
+                                </span>
+                              </button>
+                            )
+                          }
+                        )}
                       </div>
                     </div>
                   ) : null}
 
                   <div className="grid grid-cols-2 gap-3">
-                    <MetricCard label={selectedCurrency === 'USDT' ? '预计到账 USDT' : '预计总到账 AUS'} value={fmt(selectedCurrency === 'USDT' ? actualUsdtAmount : actualAusAmount)} />
-                    <MetricCard label={selectedCurrency === 'USDT' ? '手续费' : '预计每日到账 AUS'} value={fmt(selectedCurrency === 'USDT' ? feeAmount : dailyAusAmount)} highlight={selectedCurrency === 'USDT_MINE'} />
+                    <MetricCard
+                      label={
+                        selectedCurrency === 'USDT'
+                          ? '预计到账 USDT'
+                          : '预计总到账 AUS'
+                      }
+                      value={fmt(
+                        selectedCurrency === 'USDT'
+                          ? actualUsdtAmount
+                          : actualAusAmount
+                      )}
+                    />
+                    <MetricCard
+                      label={
+                        selectedCurrency === 'USDT'
+                          ? '手续费'
+                          : '预计每日到账 AUS'
+                      }
+                      value={fmt(
+                        selectedCurrency === 'USDT' ? feeAmount : dailyAusAmount
+                      )}
+                      highlight={selectedCurrency === 'USDT_MINE'}
+                    />
                   </div>
 
                   <div className="rounded-[22px] border border-[#fbd005]/12 bg-[#0f1118] px-4 py-3">
@@ -467,7 +536,11 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
                     onClick={() => void handleSubmit()}
                     className="w-full rounded-[22px] bg-gradient-to-r from-[#fff3a6] via-[#fbd005] to-[#e7a700] py-4 text-[15px] font-black text-[#1b1400] shadow-[0_18px_34px_rgba(251,208,5,0.22)] disabled:opacity-55"
                   >
-                    {submitting ? '提交中...' : selectedCurrency === 'USDT' ? '提交 USDT 提现' : '提交 USDT挖矿 提现'}
+                    {submitting
+                      ? '提交中...'
+                      : selectedCurrency === 'USDT'
+                        ? '提交 USDT 提现'
+                        : '提交 USDT挖矿 提现'}
                   </button>
                 </div>
               </div>
@@ -476,7 +549,11 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
         </div>
       </div>
 
-      <BottomPopup visible={showCurrencyPicker} onClose={() => setShowCurrencyPicker(false)} title="选择提现币种">
+      <BottomPopup
+        visible={showCurrencyPicker}
+        onClose={() => setShowCurrencyPicker(false)}
+        title="选择提现币种"
+      >
         <div className="space-y-2">
           {COINS.map((coin) => {
             const active = coin.key === selectedCurrency
@@ -492,11 +569,21 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
                 className={`flex w-full items-center gap-3 rounded-2xl border px-4 py-3 text-left ${active ? 'border-[#fbd005]/60 bg-[#fbd005]/10' : 'border-white/10 bg-white/5'}`}
               >
                 <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/6">
-                  <img src={coin.key === 'USDT' ? TOKEN_ICON : AUS_ICON} alt={coin.label} className="h-7 w-7 object-contain" />
+                  <img
+                    src={coin.key === 'USDT' ? TOKEN_ICON : AUS_ICON}
+                    alt={coin.label}
+                    className="h-7 w-7 object-contain"
+                  />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className={`block text-sm font-semibold ${active ? 'text-[#ffe08a]' : 'text-white/88'}`}>{coin.label}</span>
-                  <span className="mt-0.5 block text-[11px] text-white/45">{coin.subtitle}</span>
+                  <span
+                    className={`block text-sm font-semibold ${active ? 'text-[#ffe08a]' : 'text-white/88'}`}
+                  >
+                    {coin.label}
+                  </span>
+                  <span className="mt-0.5 block text-[11px] text-white/45">
+                    {coin.subtitle}
+                  </span>
                 </span>
               </button>
             )
@@ -504,7 +591,11 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
         </div>
       </BottomPopup>
 
-      <BottomPopup visible={showRecords} onClose={() => setShowRecords(false)} title="提现记录">
+      <BottomPopup
+        visible={showRecords}
+        onClose={() => setShowRecords(false)}
+        title="提现记录"
+      >
         <div className="space-y-4">
           <div className="flex flex-wrap gap-2">
             {RECORD_FILTERS.map((filter) => {
@@ -524,7 +615,9 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
 
           <div className="max-h-[62vh] space-y-3 overflow-y-auto pr-1">
             {displayRecords.length === 0 && !recordLoading ? (
-              <div className="rounded-2xl border border-white/8 bg-white/4 py-12 text-center text-sm text-white/45">暂无提现记录</div>
+              <div className="rounded-2xl border border-white/8 bg-white/4 py-12 text-center text-sm text-white/45">
+                暂无提现记录
+              </div>
             ) : null}
 
             {displayRecords.map((item) => (
@@ -556,39 +649,76 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
       >
         {!selectedRecord ? null : selectedRecord.coin_type !== 2 ? (
           <div className="space-y-3">
-            <MetricCard label="订单编号" value={selectedRecord.no} highlight={false} />
-            <MetricCard label="实际到账" value={`${fmt(selectedRecord.real_ac_amount)} ${getRealCurrencyName(selectedRecord.real_coin_id)}`} />
-            <MetricCard label="创建时间" value={selectedRecord.created_at} highlight={false} />
+            <MetricCard
+              label="订单编号"
+              value={selectedRecord.no}
+              highlight={false}
+            />
+            <MetricCard
+              label="实际到账"
+              value={`${fmt(selectedRecord.real_ac_amount)} ${getRealCurrencyName(selectedRecord.real_coin_id)}`}
+            />
+            <MetricCard
+              label="创建时间"
+              value={selectedRecord.created_at}
+              highlight={false}
+            />
           </div>
         ) : (
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
-              <MetricCard label="提现 USDT挖矿" value={fmt(selectedRecord.num)} />
-              <MetricCard label="总到账 AUS" value={fmt(selectedRecord.real_ac_amount)} highlight />
+              <MetricCard
+                label="提现 USDT挖矿"
+                value={fmt(selectedRecord.num)}
+              />
+              <MetricCard
+                label="总到账 AUS"
+                value={fmt(selectedRecord.real_ac_amount)}
+                highlight
+              />
             </div>
 
             <div className="max-h-[60vh] space-y-3 overflow-y-auto pr-1">
               {detailLoading ? (
-                <div className="rounded-2xl border border-white/8 bg-white/4 py-12 text-center text-sm text-white/45">到账明细加载中...</div>
+                <div className="rounded-2xl border border-white/8 bg-white/4 py-12 text-center text-sm text-white/45">
+                  到账明细加载中...
+                </div>
               ) : detailList.length === 0 ? (
-                <div className="rounded-2xl border border-white/8 bg-white/4 py-12 text-center text-sm text-white/45">暂无到账明细</div>
+                <div className="rounded-2xl border border-white/8 bg-white/4 py-12 text-center text-sm text-white/45">
+                  暂无到账明细
+                </div>
               ) : (
                 detailList.map((item, index) => (
-                  <div key={item.id} className="rounded-[20px] border border-white/8 bg-white/4 p-4">
+                  <div
+                    key={item.id}
+                    className="rounded-[20px] border border-white/8 bg-white/4 p-4"
+                  >
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <p className="text-[14px] font-semibold text-white">第 {index + 1} 笔自动到账</p>
-                        <p className="mt-1 text-[11px] text-white/42">{item.push_time || '--'}</p>
+                        <p className="text-[14px] font-semibold text-white">
+                          第 {index + 1} 笔自动到账
+                        </p>
+                        <p className="mt-1 text-[11px] text-white/42">
+                          {item.push_time || '--'}
+                        </p>
                       </div>
-                      <span className={`whitespace-nowrap rounded-full border px-2.5 py-1 text-[10px] font-semibold ${getRecordStatusMeta(item.status).className}`}>
+                      <span
+                        className={`whitespace-nowrap rounded-full border px-2.5 py-1 text-[10px] font-semibold ${getRecordStatusMeta(item.status).className}`}
+                      >
                         {getRecordStatusMeta(item.status).label}
                       </span>
                     </div>
 
                     <div className="mt-3 grid grid-cols-2 gap-2">
                       <DetailValue label="USDT 数量" value={fmt(item.num)} />
-                      <DetailValue label="到账 AUS" value={fmt(item.real_ac_amount)} />
-                      <DetailValue label="手续费 AUS" value={fmt(item.real_fee_amount)} />
+                      <DetailValue
+                        label="到账 AUS"
+                        value={fmt(item.real_ac_amount)}
+                      />
+                      <DetailValue
+                        label="手续费 AUS"
+                        value={fmt(item.real_fee_amount)}
+                      />
                       <DetailValue label="订单号" value={item.ordernum} />
                     </div>
                   </div>

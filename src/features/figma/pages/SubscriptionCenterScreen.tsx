@@ -205,23 +205,6 @@ export function SubscriptionCenterScreen({
       />
 
       <div className="relative z-10 flex min-h-screen flex-col px-4 pb-10 pt-[70px] text-[#171717]">
-        <section className={`${sectionCardClass} px-5 py-5`}>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-[#d7ab1e]">
-            Premium Subscription
-          </p>
-          <h1 className="mt-2 text-[28px] font-black tracking-[0.02em] text-black">{copy.subscriptionCenter}</h1>
-          <p className="mt-2 text-[13px] leading-[22px] text-black/58">
-            選擇最適合你的節點方案，獲得對應算力、等級權益與長期生態分紅資格。
-          </p>
-          <div className="mt-4 flex items-center gap-2">
-            <span className="rounded-full border border-[#fad933]/30 bg-[#fad933]/14 px-3 py-1 text-[10px] font-semibold text-[#c58b1f]">
-              已上線 {plans.length} 種方案
-            </span>
-            {/* <span className="rounded-full border border-black/8 bg-black px-3 py-1 text-[10px] font-semibold text-[#fce596]">
-              同步首頁新版視覺
-            </span> */}
-          </div>
-        </section>
 
         <div className="mt-6">
           <div className="mb-4 flex items-center justify-between">
@@ -855,13 +838,6 @@ function PlanCard({
 
         <PrimaryStats power={plan.power} level={plan.level} />
 
-        {/* {(plan.reinvest !== '-' || plan.timeBonus !== '-') && (
-          <div className="mt-3 flex gap-2">
-            {plan.reinvest !== '-' && <SecondaryBadge label="復投" value={plan.reinvest} />}
-            {plan.timeBonus !== '-' && <SecondaryBadge label="時間" value={plan.timeBonus} />}
-          </div>
-        )} */}
-
         <div className="flex-1" />
 
         <button
@@ -947,20 +923,6 @@ function PrimaryStats({ power, level }: { power: string; level: string }) {
             <p className="text-[12px] font-medium text-black/70">Level {level}</p>
           </div> */}
         </div>
-      </div>
-    </div>
-  )
-}
-
-/* ────────────────────── Secondary badge ────────────────────── */
-
-function SecondaryBadge({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex flex-1 items-center gap-2.5 rounded-[12px] border border-[#fbd005]/12 bg-[#fbd005]/8 px-3 py-2.5">
-      <div className="h-[6px] w-[6px] shrink-0 rounded-full bg-[#fbd005]/70" />
-      <div className="min-w-0">
-        <p className="text-[9px] uppercase tracking-wider text-black/35">{label}</p>
-        <p className="mt-0.5 truncate text-[12px] font-semibold text-black/90">{value}</p>
       </div>
     </div>
   )
