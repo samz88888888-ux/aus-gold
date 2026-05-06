@@ -10,7 +10,6 @@ import { fetchRechargeAddress } from '../../services/api'
 import type { RechargeAddressData } from '../../services/types'
 
 import walletBackground from '../../../../assets/wallet/wallet-bg-index.png'
-import fundBackground from '../../../../assets/wallet/wallet-bg.png'
 
 type RechargePageProps = {
   onNavigate: (page: AppPage, params?: PageParams) => void

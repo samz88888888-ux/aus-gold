@@ -178,6 +178,8 @@ export const machineOrderList: GoldOrderItem[] = [
 export const userInfoData: UserInfo = {
   code: 'A8B2C1', name: 'User_0x3f...a1b2', wallet_address: '0x3f4e5d6c7b8a9012345678901234567890a1b2c3',
   zhi_num: 12, team_num: 156, me_performance: 25000, team_performance: 380000,
+  self_yeji: 25000,
+  team_yeji: 380000,
   level_id: 3, level_name: 'VIP3', valid_user_power: 1250.5, power: 0, gold_order_status: false,
   usdt: '1240.360000',
   usdt_mine: '82.150000',
@@ -407,11 +409,11 @@ export const withdrawMinerDetailList: WithdrawMinerDetailItem[] = [
 ]
 
 export const teamList: TeamMember[] = [
-  { id: 1, address: '0x1234...5678', zhi_num: 5, team_num: 23, created_at: '2025-01-15', level_name: 'VIP1', performance: 8500 },
-  { id: 2, address: '0xabcd...ef01', zhi_num: 8, team_num: 45, created_at: '2025-02-20', level_name: 'VIP2', performance: 15200 },
-  { id: 3, address: '0x9876...5432', zhi_num: 3, team_num: 12, created_at: '2025-03-10', level_name: 'VIP1', performance: 5600 },
-  { id: 4, address: '0xfedc...ba98', zhi_num: 15, team_num: 89, created_at: '2024-12-05', level_name: 'VIP3', performance: 42000 },
-  { id: 5, address: '0x2468...1357', zhi_num: 2, team_num: 8, created_at: '2025-04-01', level_name: 'VIP1', performance: 3200 },
+  { id: 1, address: '0x1234...5678', zhi_num: 5, team_num: 23, created_at: '2025-01-15', level_name: 'VIP1', performance: 8500, total_yeji: 8500 },
+  { id: 2, address: '0xabcd...ef01', zhi_num: 8, team_num: 45, created_at: '2025-02-20', level_name: 'VIP2', performance: 15200, total_yeji: 15200 },
+  { id: 3, address: '0x9876...5432', zhi_num: 3, team_num: 12, created_at: '2025-03-10', level_name: 'VIP1', performance: 5600, total_yeji: 5600 },
+  { id: 4, address: '0xfedc...ba98', zhi_num: 15, team_num: 89, created_at: '2024-12-05', level_name: 'VIP3', performance: 42000, total_yeji: 42000 },
+  { id: 5, address: '0x2468...1357', zhi_num: 2, team_num: 8, created_at: '2025-04-01', level_name: 'VIP1', performance: 3200, total_yeji: 3200 },
 ]
 
 export const addressList: AddressItem[] = [
