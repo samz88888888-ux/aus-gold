@@ -96,6 +96,39 @@ function normalizeBannerList(data: Array<Partial<BannerItem>>): BannerItem[] {
   }))
 }
 
+function normalizeCategoryList(data: Array<Partial<GoldCategory> & { icon?: string }>): GoldCategory[] {
+  return data.map((item, index) => ({
+    id: typeof item.id === 'number' ? item.id : index + 1,
+    name: typeof item.name === 'string' ? item.name : '',
+    image: typeof item.image === 'string' && item.image
+      ? item.image
+      : (typeof item.icon === 'string' ? item.icon : ''),
+  }))
+}
+
+function normalizeProductList(data: Array<Partial<GoldProduct> & { img?: string }>): GoldProduct[] {
+  return data.map((item) => {
+    const image = typeof item.image === 'string' && item.image
+      ? item.image
+      : (typeof item.img === 'string' ? item.img : '')
+
+    return {
+      id: typeof item.id === 'number' ? item.id : 0,
+      name: typeof item.name === 'string' ? item.name : '',
+      price: typeof item.price === 'string' ? item.price : String(item.price ?? '0'),
+      image,
+      description: typeof item.description === 'string' ? item.description : '',
+      stock: typeof item.stock === 'number' ? item.stock : Number(item.stock ?? 0),
+      sales: typeof item.sales === 'number' ? item.sales : Number(item.sales ?? 0),
+      category_id: typeof item.category_id === 'number' ? item.category_id : Number(item.category_id ?? 0),
+      is_purchased: Boolean(item.is_purchased),
+      weight: typeof item.weight === 'string' ? item.weight : String(item.weight ?? ''),
+      purity: typeof item.purity === 'string' ? item.purity : String(item.purity ?? ''),
+      img: image,
+    }
+  })
+}
+
 function normalizePaymentMethods(data: unknown): PaymentMethod[] {
   if (!Array.isArray(data)) return []
   return data
@@ -260,14 +293,24 @@ export async function fetchMallBlock(params?: QueryParams): Promise<GroupItem[]>
 }
 
 export async function fetchCategoryList(params?: QueryParams): Promise<GoldCategory[]> {
-  return withMockFallback(async () => (await apiGet<GoldCategory[]>('/gold/categoryList', params)).data, () => mock.categoryList)
+  return withMockFallback(
+    async () => {
+      const data = (await apiGet<Array<Partial<GoldCategory> & { icon?: string }>>('/gold/categoryList', params)).data
+      return normalizeCategoryList(data)
+    },
+    () => mock.categoryList,
+  )
 }
 
 export async function fetchProductList(params?: QueryParams): Promise<PagedList<GoldProduct>> {
   return withMockFallback(
     async () => {
-      const data = (await apiGet<PagedList<GoldProduct> | GoldProduct[]>('/gold/goodsList', params)).data
-      return normalizePagedList(data)
+      const data = (await apiGet<PagedList<Partial<GoldProduct> & { img?: string }> | Array<Partial<GoldProduct> & { img?: string }>>('/gold/goodsList', params)).data
+      const normalized = normalizePagedList(data)
+      return {
+        ...normalized,
+        list: normalizeProductList(normalized.list),
+      }
     },
     () => ({ list: mock.productList, total: mock.productList.length, current_page: 1, last_page: 1 }),
   )
