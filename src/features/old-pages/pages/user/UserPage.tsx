@@ -33,7 +33,7 @@ async function copyText(text: string) {
 // --- Stat icon card (small, side-by-side) ---
 function StatCard({ icon, label, value }: { icon: string; label: string; value: string | number }) {
   return (
-    <div className="flex gap-[23px] rounded-[10px] bg-[#1e1e1e] px-3.5 py-4" style={{ width: 168, height: 122 }}>
+    <div className="flex h-[122px] w-full gap-[23px] rounded-[10px] bg-[#1e1e1e] px-3.5 py-4">
       <div className="flex flex-col gap-1.5">
         <span className="text-sm text-white/70">{label}</span>
         <span className="text-[22px] font-bold leading-5">{value}</span>
@@ -139,20 +139,46 @@ export function UserPage({ onNavigate }: UserPageProps) {
       <div className="relative z-10 -mt-[30px] px-[15px] pb-[120px]">
         {/* invite cards */}
         <div className="flex flex-col gap-[14px]">
-          <InviteCard icon="/old-pages/team/user-invite-code.png" label="邀请码" value={userInfo?.code || '--'} onCopy={() => void handleCopy(userInfo?.code || '')} />
-          <InviteCard icon="/old-pages/team/user-invite-user.png" label="邀请链接" value={inviteLink} onCopy={() => void handleCopy(inviteLink)} />
+          <InviteCard
+            icon="/old-pages/team/user-invite-code.png"
+            label="邀请码"
+            value={userInfo?.code || '--'}
+            onCopy={() => void handleCopy(userInfo?.code || '')}
+          />
+          <InviteCard
+            icon="/old-pages/team/user-invite-user.png"
+            label="邀请链接"
+            value={inviteLink}
+            onCopy={() => void handleCopy(inviteLink)}
+          />
         </div>
 
         {/* stat cards row */}
-        <div className="mt-[14px] flex justify-center gap-[9px]">
-          <StatCard icon="/old-pages/team/user-share.svg" label="直推人数" value={fmtNum(userInfo?.zhi_num)} />
-          <StatCard icon="/old-pages/team/user-team.svg" label="团队人数" value={fmtNum(userInfo?.team_num)} />
+        <div className="mt-[14px] grid grid-cols-2 gap-[9px]">
+          <StatCard
+            icon="/old-pages/team/user-share.svg"
+            label="直推人数"
+            value={fmtNum(userInfo?.zhi_num)}
+          />
+          <StatCard
+            icon="/old-pages/team/user-team.svg"
+            label="团队人数"
+            value={fmtNum(userInfo?.team_num)}
+          />
         </div>
 
         {/* performance rows */}
         <div className="mt-[14px] flex flex-col gap-[15px]">
-          <PerfRow icon="/old-pages/team/team-mark.svg" label="个人业绩" value={userInfo?.me_performance ?? 0} />
-          <PerfRow icon="/old-pages/team/team-perform.svg" label="团队业绩" value={userInfo?.team_performance ?? 0} />
+          <PerfRow
+            icon="/old-pages/team/team-mark.svg"
+            label="个人业绩"
+            value={userInfo?.self_yeji ?? 0}
+          />
+          <PerfRow
+            icon="/old-pages/team/team-perform.svg"
+            label="团队业绩"
+            value={userInfo?.team_yeji ?? 0}
+          />
         </div>
 
         {/* team list */}
@@ -162,7 +188,9 @@ export function UserPage({ onNavigate }: UserPageProps) {
             <span>业绩</span>
           </div>
           {teamList.length === 0 ? (
-            <div className="py-10 text-center text-sm text-white/40">暂无团队成员</div>
+            <div className="py-10 text-center text-sm text-white/40">
+              暂无团队成员
+            </div>
           ) : (
             <div className="mt-3 flex flex-col gap-5">
               {teamList.map((m) => (
@@ -172,9 +200,13 @@ export function UserPage({ onNavigate }: UserPageProps) {
                       {(m.address || '?')[0]}
                     </div>
                     <span className="text-sm">{truncateAddr(m.address)}</span>
-                    <span className="rounded-full bg-[#fbd005] px-1.5 py-0.5 text-[11px] font-medium text-[#0d1c3d]">{m.level_name}</span>
+                    <span className="rounded-full bg-[#fbd005] px-1.5 py-0.5 text-[11px] font-medium text-[#0d1c3d]">
+                      {m.level_name}
+                    </span>
                   </div>
-                  <span className="text-sm font-medium">{fmtNum(m.performance)}U</span>
+                  <span className="text-sm font-medium">
+                    {fmtNum(m.total_yeji)}U
+                  </span>
                 </div>
               ))}
             </div>

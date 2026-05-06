@@ -269,6 +269,8 @@ export type UserInfo = {
   team_num: number
   me_performance: number
   team_performance: number
+  self_yeji: number
+  team_yeji: number
   level_id: number
   level_name: string
   valid_user_power: number
@@ -393,6 +395,7 @@ export type TeamMember = {
   created_at: string
   level_name: string
   performance: number
+  total_yeji: number
 }
 
 export type UnionMiningConfig = {
