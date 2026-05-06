@@ -38,6 +38,7 @@ export type AppPage =
   | 'shopOrderRelease'
   | 'shopOrderConfirm'
   | 'wallet'
+  | 'recharge'
   | 'moneyLog'
   | 'withdraw'
   | 'orders'

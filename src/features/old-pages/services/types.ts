@@ -379,6 +379,12 @@ export type WithdrawMinerDetailResponse = {
   total: number
 }
 
+export type RechargeAddressMap = Record<string, string>
+
+export type RechargeAddressData = {
+  USDT?: RechargeAddressMap
+}
+
 export type TeamMember = {
   id: number
   address: string

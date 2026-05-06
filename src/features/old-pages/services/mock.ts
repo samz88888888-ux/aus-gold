@@ -6,6 +6,7 @@ import type {
   UserInfo, TeamMember, UnionMiningConfig,
   WalletMoneyLogItem,
   AddressItem,
+  RechargeAddressData,
   WithdrawConfigData,
   WithdrawMinerDetailItem,
   WithdrawRecordItem,
@@ -240,6 +241,13 @@ export const walletMoneyLogList: WalletMoneyLogItem[] = [
     remark: '提币扣除',
   },
 ]
+
+export const rechargeAddressData: RechargeAddressData = {
+  USDT: {
+    BSC: '0xA52B6Dc8EE4e6925c7DFBC8Ca00777Cda39f3020',
+    TRON: 'TVxyWPywe4bdn3LVRDoi4PMuUTHLTPrZ1t',
+  },
+}
 
 export const withdrawConfigData: WithdrawConfigData = {
   usdt_config: {

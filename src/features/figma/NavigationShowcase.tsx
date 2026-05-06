@@ -20,6 +20,7 @@ import { ShopOrderListPage } from '../old-pages/pages/shop/ShopOrderListPage'
 import { ShopOrderReleasePage } from '../old-pages/pages/shop/ShopOrderReleasePage'
 import { ShopOrderConfirmPage } from '../old-pages/pages/shop/ShopOrderConfirmPage'
 import { WalletPage } from '../old-pages/pages/wallet/WalletPage'
+import { RechargePage } from '../old-pages/pages/wallet/RechargePage'
 import { MoneyLogPage } from '../old-pages/pages/wallet/MoneyLogPage'
 import { WithdrawPage } from '../old-pages/pages/wallet/WithdrawPage'
 import { OrdersPage } from '../old-pages/pages/order/OrdersPage'
@@ -425,7 +426,7 @@ export function NavigationShowcase() {
       || page === 'addressAdd'
       || page === 'addressEdit'
     ) return 'shop'
-    if (page === 'wallet' || page === 'moneyLog' || page === 'withdraw') return 'wallet'
+    if (page === 'wallet' || page === 'recharge' || page === 'moneyLog' || page === 'withdraw') return 'wallet'
     if (page === 'user') return 'user'
     return null
   }
@@ -457,6 +458,7 @@ export function NavigationShowcase() {
     'shopOrderRelease',
     'shopOrderConfirm',
     'wallet',
+    'recharge',
     'moneyLog',
     'withdraw',
     'orders',
@@ -487,6 +489,7 @@ export function NavigationShowcase() {
     shopOrderList: { page: 'shop' },
     shopOrderRelease: { page: 'shop' },
     shopOrderConfirm: { page: 'shop' },
+    recharge: { page: 'wallet' },
     moneyLog: { page: 'wallet' },
     withdraw: { page: 'wallet' },
     address: { page: 'shop' },
@@ -606,6 +609,8 @@ export function NavigationShowcase() {
                 <ShopOrderConfirmPage pageState={pageParams.state as import('../old-pages/services/types').ShopOrderDraft | null} addressId={pageParams.address_id} onNavigate={navigateToPage} />
               ) : currentPage === 'wallet' ? (
                 <WalletPage onNavigate={navigateToPage} />
+              ) : currentPage === 'recharge' ? (
+                <RechargePage onNavigate={navigateToPage} />
               ) : currentPage === 'moneyLog' ? (
                 <MoneyLogPage onNavigate={navigateToPage} />
               ) : currentPage === 'withdraw' ? (

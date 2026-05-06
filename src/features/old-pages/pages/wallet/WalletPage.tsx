@@ -86,12 +86,24 @@ export function WalletPage({ onNavigate }: WalletPageProps) {
             backgroundSize: '100% 100%',
           }}
         >
-          <p className="text-[14px] text-[#112342]">我的资产</p>
-          <div className="mt-1.5 flex items-end gap-1">
-            <span className="text-[24px] font-bold text-[#10223f]">$</span>
-            <span className="text-[30px] font-extrabold leading-none text-[#10223f]">
-              {fmtUsd(totalAssets)}
-            </span>
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-[14px] text-[#112342]">我的资产</p>
+              <div className="mt-1.5 flex items-end gap-1">
+                <span className="text-[24px] font-bold text-[#10223f]">$</span>
+                <span className="text-[30px] font-extrabold leading-none text-[#10223f]">
+                  {fmtUsd(totalAssets)}
+                </span>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => onNavigate('recharge')}
+              className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-[#10223f] px-3.5 py-2 text-[12px] font-semibold text-white shadow-[0_10px_24px_rgba(16,34,63,0.24)] transition duration-200 active:scale-[0.98]"
+            >
+              <span className="text-[15px] leading-none">+</span>
+              <span>充值</span>
+            </button>
           </div>
           <div className="mt-3 inline-flex items-center rounded-full bg-[#0d1f3c]/10 px-3 py-1 text-[11px] text-[#10223f]">
             账户 {shortAddress(address)}

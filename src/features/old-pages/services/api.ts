@@ -28,6 +28,7 @@ import type {
   PaymentMethod,
   WalletMoneyLogItem,
   GoldSkuInfo,
+  RechargeAddressData,
   WithdrawApplyPayload,
   WithdrawConfigData,
   WithdrawMinerDetailResponse,
@@ -394,6 +395,13 @@ export async function fetchWalletMoneyLog(logKind: 'usdt' | 'usdtMine', params?:
         last_page: 1,
       }, logKind === 'usdt' ? 'USDT' : 'USDT挖矿')
     },
+  )
+}
+
+export async function fetchRechargeAddress(): Promise<RechargeAddressData> {
+  return withMockFallback(
+    async () => (await apiGet<RechargeAddressData>('/recharge/address')).data,
+    () => mock.rechargeAddressData,
   )
 }
 
