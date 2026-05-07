@@ -80,6 +80,29 @@ function InviteCard({ icon, label, value, onCopy }: { icon: string; label: strin
   )
 }
 
+function UserLevelCard({ levelId }: { levelId?: number }) {
+  const levelText = typeof levelId === 'number' ? `T${Math.max(levelId - 1, 0)}` : '--'
+
+  return (
+    <div className="relative overflow-hidden rounded-[16px] border border-[#f6d36b]/30 bg-[linear-gradient(135deg,#2a220f_0%,#151515_48%,#2e2106_100%)] px-4 py-4 shadow-[0_10px_30px_rgba(235,165,0,0.18)]">
+      <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-[#f6d36b]/10 blur-2xl" />
+      <div className="absolute -bottom-8 left-8 h-20 w-20 rounded-full bg-[#eba500]/10 blur-2xl" />
+      <div className="relative flex items-center justify-between gap-4">
+        <div className="flex flex-col">
+          <span className="text-sm text-[#f7e7b0]/70">当前用户等级</span>
+          <div className="mt-2 flex items-end gap-2">
+            <span className="text-[30px] font-black leading-none text-[#ffe28a]">{levelText}</span>
+            <span className="mb-1 text-xs tracking-[0.2em] text-[#f7e7b0]/60">LEVEL</span>
+          </div>
+        </div>
+        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-[14px] border border-[#ffe28a]/25 bg-[linear-gradient(180deg,rgba(255,226,138,0.22)_0%,rgba(235,165,0,0.12)_100%)]">
+          <span className="text-[22px] text-[#ffe28a]">✦</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 type UserPageProps = {
   onNavigate: (page: AppPage, params?: PageParams) => void
 }
@@ -151,6 +174,10 @@ export function UserPage({ onNavigate }: UserPageProps) {
             value={inviteLink}
             onCopy={() => void handleCopy(inviteLink)}
           />
+        </div>
+
+        <div className="mt-[14px]">
+          <UserLevelCard levelId={userInfo?.level_id} />
         </div>
 
         {/* stat cards row */}
