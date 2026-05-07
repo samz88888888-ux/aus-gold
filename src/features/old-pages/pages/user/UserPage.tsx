@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { NoticePopup } from '../../components/NoticePopup'
 import { PageContainer } from '../../components/PageContainer'
 import { PageNavBar } from '../../components/PageNavBar'
+import { useOldPagesCopy } from '../../i18n'
 import { fetchUserInfoOld, fetchTeamList } from '../../services/api'
 import type { UserInfo, TeamMember } from '../../services/types'
 import type { AppPage, PageParams } from '../../../figma/types'
@@ -80,6 +81,7 @@ function PerfRow({
 
 // --- Invite card ---
 function InviteCard({ icon, label, value, onCopy }: { icon: string; label: string; value: string; onCopy: () => void }) {
+  const copy = useOldPagesCopy()
   return (
     <div className="flex items-center gap-3.5 rounded-[14px] border border-white/20 bg-gradient-to-br from-[#fff193] to-[#eba500] px-2.5 py-2.5">
       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[10px] bg-black">
@@ -89,7 +91,7 @@ function InviteCard({ icon, label, value, onCopy }: { icon: string; label: strin
         <span className="text-sm text-[#0d1c3d]">{label}</span>
         <div className="flex items-center justify-between gap-2">
           <span className="truncate text-base font-bold text-[#0d1c3d]">{value}</span>
-          <button type="button" onClick={onCopy} className="shrink-0 active:opacity-60" aria-label="复制">
+          <button type="button" onClick={onCopy} className="shrink-0 active:opacity-60" aria-label={copy.copy}>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0d1c3d" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
             </svg>
@@ -101,6 +103,7 @@ function InviteCard({ icon, label, value, onCopy }: { icon: string; label: strin
 }
 
 function UserLevelCard({ levelId }: { levelId?: number }) {
+  const copy = useOldPagesCopy()
   const levelText = typeof levelId === 'number' ? `T${Math.max(levelId - 1, 0)}` : '--'
 
   return (
@@ -109,7 +112,7 @@ function UserLevelCard({ levelId }: { levelId?: number }) {
       <div className="absolute -bottom-8 left-8 h-20 w-20 rounded-full bg-[#eba500]/10 blur-2xl" />
       <div className="relative flex items-center justify-between gap-4">
         <div className="flex flex-col">
-          <span className="text-sm text-[#f7e7b0]/70">当前用户等级</span>
+          <span className="text-sm text-[#f7e7b0]/70">{copy.currentUserLevel}</span>
           <div className="mt-2 flex items-end gap-2">
             <span className="text-[30px] font-black leading-none text-[#ffe28a]">{levelText}</span>
             <span className="mb-1 text-xs tracking-[0.2em] text-[#f7e7b0]/60">LEVEL</span>
@@ -128,6 +131,7 @@ type UserPageProps = {
 }
 
 export function UserPage({ onNavigate }: UserPageProps) {
+  const copy = useOldPagesCopy()
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null)
   const [teamList, setTeamList] = useState<TeamMember[]>([])
   const [loading, setLoading] = useState(true)
@@ -150,16 +154,16 @@ export function UserPage({ onNavigate }: UserPageProps) {
   const handleCopy = async (text: string) => {
     if (!text || text === '--') return
     await copyText(text)
-    setNoticeMessage('复制成功')
+    setNoticeMessage(copy.copySuccess)
   }
 
   if (loading) {
     return (
       <PageContainer>
-        <PageNavBar title="我的团队" onBack={() => onNavigate('home')} />
+        <PageNavBar title={copy.myTeam} onBack={() => onNavigate('home')} />
         <div className="flex flex-col items-center gap-2 py-32">
           <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-amber-400" />
-          <span className="text-sm text-white/40">加载中...</span>
+          <span className="text-sm text-white/40">{copy.loading}</span>
         </div>
       </PageContainer>
     )
@@ -167,7 +171,7 @@ export function UserPage({ onNavigate }: UserPageProps) {
 
   return (
     <PageContainer>
-      <PageNavBar title="我的团队" onBack={() => onNavigate('home')} />
+      <PageNavBar title={copy.myTeam} onBack={() => onNavigate('home')} />
 
       {/* hero bg */}
       <div
@@ -184,13 +188,13 @@ export function UserPage({ onNavigate }: UserPageProps) {
         <div className="flex flex-col gap-[14px]">
           <InviteCard
             icon="/old-pages/team/user-invite-code.png"
-            label="邀请码"
+            label={copy.inviteCode}
             value={userInfo?.code || '--'}
             onCopy={() => void handleCopy(userInfo?.code || '')}
           />
           <InviteCard
             icon="/old-pages/team/user-invite-user.png"
-            label="邀请链接"
+            label={copy.inviteLink}
             value={inviteLink}
             onCopy={() => void handleCopy(inviteLink)}
           />
@@ -204,12 +208,12 @@ export function UserPage({ onNavigate }: UserPageProps) {
         <div className="mt-[14px] grid grid-cols-2 gap-[9px]">
           <StatCard
             icon="/old-pages/team/user-share.svg"
-            label="直推人数"
+            label={copy.directMembers}
             value={fmtNum(userInfo?.zhi_num)}
           />
           <StatCard
             icon="/old-pages/team/user-team.svg"
-            label="团队人数"
+            label={copy.teamMembers}
             value={fmtNum(userInfo?.team_num)}
           />
         </div>
@@ -218,14 +222,14 @@ export function UserPage({ onNavigate }: UserPageProps) {
         <div className="mt-[14px] flex flex-col gap-[15px]">
           <PerfRow
             icon="/old-pages/team/team-mark.svg"
-            label="个人业绩"
+            label={copy.personalPerformance}
             value={userInfo?.self_yeji ?? 0}
           />
           <PerfRow
             icon="/old-pages/team/team-perform.svg"
-            label="团队业绩"
+            label={copy.teamPerformance}
             value={userInfo?.team_yeji ?? 0}
-            extraLabel="小区业绩"
+            extraLabel={copy.districtPerformance}
             extraValue={userInfo?.small_yeji ?? 0}
           />
         </div>
@@ -233,12 +237,12 @@ export function UserPage({ onNavigate }: UserPageProps) {
         {/* team list */}
         <div className="mt-[14px] rounded-[14px] bg-[#1e1e1e] px-[13px] pb-[26px] pt-[18px]">
           <div className="flex items-center justify-between text-xs text-[#9fa0a3]">
-            <span>成员</span>
-            <span>业绩</span>
+            <span>{copy.members}</span>
+            <span>{copy.performance}</span>
           </div>
           {teamList.length === 0 ? (
             <div className="py-10 text-center text-sm text-white/40">
-              暂无团队成员
+              {copy.noTeamMembers}
             </div>
           ) : (
             <div className="mt-3 flex flex-col gap-5">

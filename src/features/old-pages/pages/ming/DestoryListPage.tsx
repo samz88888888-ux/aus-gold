@@ -3,33 +3,34 @@ import { useEffect, useState } from 'react'
 import type { AppPage, PageParams } from '../../../figma/types'
 import { PageContainer } from '../../components/PageContainer'
 import { PageNavBar } from '../../components/PageNavBar'
+import { useOldPagesCopy } from '../../i18n'
 import { fetchMachineList } from '../../services/api'
 import type { MachineItem } from '../../services/types'
-
-const TAB_LIST = [
-  { text: '激活设备', type: 1 },
-  { text: '销毁矿机', type: 2 },
-  { text: '联合矿机', type: 4 },
-  { text: '节点矿机', type: 3 },
-]
 
 type DestoryListPageProps = {
   onNavigate: (page: AppPage, params?: PageParams) => void
 }
 
 export function DestoryListPage({ onNavigate }: DestoryListPageProps) {
+  const copy = useOldPagesCopy()
+  const tabList = [
+    { text: copy.deviceActivated, type: 1 },
+    { text: copy.destroyedMiner, type: 2 },
+    { text: copy.unionMiner, type: 4 },
+    { text: copy.nodeMiner, type: 3 },
+  ]
   const [activeTab, setActiveTab] = useState(2)
   const [list, setList] = useState<MachineItem[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const tab = TAB_LIST.find((t) => t.type === activeTab)
+    const tab = tabList.find((t) => t.type === activeTab)
     if (!tab) return
 
     fetchMachineList({ page: 1, page_size: 50, machine_type: tab.type })
       .then((data) => setList(Array.isArray(data) ? data : []))
       .finally(() => setLoading(false))
-  }, [activeTab])
+  }, [activeTab, tabList])
 
   const handleTabChange = (type: number) => {
     if (type === activeTab) return
@@ -39,7 +40,7 @@ export function DestoryListPage({ onNavigate }: DestoryListPageProps) {
 
   return (
     <PageContainer bgClass="bg-[#050505]">
-      <PageNavBar title="我的礦機" onBack={() => onNavigate('ming')} />
+      <PageNavBar title={copy.myMiningMachines} onBack={() => onNavigate('ming')} />
 
       <div className="relative overflow-hidden px-4 pb-10 pt-4">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-[320px] bg-[radial-gradient(circle_at_top,rgba(251,208,5,0.2),rgba(251,208,5,0.04)_42%,transparent_72%)]" />
@@ -48,11 +49,11 @@ export function DestoryListPage({ onNavigate }: DestoryListPageProps) {
           <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#f6c640]">
             My Mining Machines
           </p>
-          <h2 className="mt-1 text-[22px] font-black text-white">設備列表</h2>
-          <p className="mt-2 text-xs text-white/55">按設備類型查看當前礦機收益與狀態</p>
+          <h2 className="mt-1 text-[22px] font-black text-white">{copy.deviceList}</h2>
+          <p className="mt-2 text-xs text-white/55">{copy.deviceListDescription}</p>
 
           <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
-            {TAB_LIST.map((tab) => {
+            {tabList.map((tab) => {
               const active = activeTab === tab.type
               return (
                 <button
@@ -75,11 +76,11 @@ export function DestoryListPage({ onNavigate }: DestoryListPageProps) {
 
         <section className="relative mt-4 space-y-3">
           {loading ? (
-            <p className="py-10 text-center text-sm text-white/35">加载中...</p>
+            <p className="py-10 text-center text-sm text-white/35">{copy.loading}</p>
           ) : list.length === 0 ? (
-            <p className="py-10 text-center text-sm text-white/30">暂无矿机</p>
+            <p className="py-10 text-center text-sm text-white/30">{copy.noMachines}</p>
           ) : (
-            list.map((item) => <MachineCard key={item.id} item={item} />)
+            list.map((item) => <MachineCard key={item.id} item={item} copy={copy} />)
           )}
         </section>
       </div>
@@ -95,7 +96,7 @@ function fmt(v: string | number | undefined) {
   })
 }
 
-function MachineCard({ item }: { item: MachineItem }) {
+function MachineCard({ item, copy }: { item: MachineItem; copy: ReturnType<typeof useOldPagesCopy> }) {
   const isActive = item.status === 'active' || item.status === '1'
 
   return (
@@ -120,15 +121,15 @@ function MachineCard({ item }: { item: MachineItem }) {
                   : 'border-white/10 bg-white/[0.02] text-white/45',
               ].join(' ')}
             >
-              {item.status_text || (isActive ? '运行中' : '已过期')}
+              {item.status_text || (isActive ? copy.running : copy.expired)}
             </span>
           </div>
 
           <div className="mt-2 grid grid-cols-2 gap-2">
-            <InfoTile label="算力" value={`${fmt(item.power)}T`} />
-            <InfoTile label="日收益" value={fmt(item.daily_income)} />
-            <InfoTile label="总收益" value={fmt(item.total_income)} />
-            <InfoTile label="到期时间" value={item.expire_at} />
+            <InfoTile label={copy.power} value={`${fmt(item.power)}T`} />
+            <InfoTile label={copy.dailyIncome} value={fmt(item.daily_income)} />
+            <InfoTile label={copy.totalIncome} value={fmt(item.total_income)} />
+            <InfoTile label={copy.expireTime} value={item.expire_at} />
           </div>
         </div>
       </div>

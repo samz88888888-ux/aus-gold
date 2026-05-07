@@ -5,6 +5,7 @@ import { NoticePopup } from '../../components/NoticePopup'
 import { DestroyAmountModal, type DestroyAmountSubmitPayload } from '../../components/payment/DestroyAmountModal'
 import { PreOrderPaymentMethodModal } from '../../components/payment/PreOrderPaymentMethodModal'
 import { PageContainer } from '../../components/PageContainer'
+import { useOldPagesCopy } from '../../i18n'
 import { createPreOrder, fetchDestoryInfo, fetchUserInfoOld } from '../../services/api'
 import type { DestoryInfo, PaymentMethod, UserInfo } from '../../services/types'
 
@@ -21,6 +22,7 @@ type MingPageProps = {
 }
 
 export function MingPage({ onNavigate }: MingPageProps) {
+  const copy = useOldPagesCopy()
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null)
   const [destoryInfo, setDestoryInfo] = useState<DestoryInfo | null>(null)
   const [showAmountModal, setShowAmountModal] = useState(false)
@@ -65,14 +67,14 @@ export function MingPage({ onNavigate }: MingPageProps) {
 
       if (Number(payload.amount) < Number(latestInfo.min_amount)) {
         setNotice({
-          message: `最低销毁数量为 ${Number(latestInfo.min_amount).toFixed(2)} USDT`,
+          message: `${copy.destroyMinAmount} ${Number(latestInfo.min_amount).toFixed(2)} USDT`,
         })
         return
       }
 
       const nextMethods = payload.paymentType === 'naau' ? latestInfo.naau_payment : latestInfo.payment
       if (!nextMethods || nextMethods.length === 0) {
-        setNotice({ message: '暂无可用支付方式' })
+        setNotice({ message: copy.noPaymentMethods })
         return
       }
 
@@ -81,7 +83,7 @@ export function MingPage({ onNavigate }: MingPageProps) {
       setShowAmountModal(false)
       setShowPaymentModal(true)
     } catch (error) {
-      const message = error instanceof Error ? error.message : '获取支付方式失败'
+      const message = error instanceof Error ? error.message : copy.fetchPaymentMethodsFailed
       setNotice({ message })
     }
   }
@@ -101,15 +103,15 @@ export function MingPage({ onNavigate }: MingPageProps) {
 
       setShowPaymentModal(false)
       setNotice({
-        message: '下单成功，请前往待支付订单完成支付',
-        confirmText: '前往订单',
+        message: copy.orderCreated,
+        confirmText: copy.goToOrders,
         onConfirm: () => {
           setNotice(null)
           onNavigate('orders')
         },
       })
     } catch (error) {
-      const message = error instanceof Error ? error.message : '销毁下单失败'
+      const message = error instanceof Error ? error.message : copy.createDestroyOrderFailed
       setNotice({ message })
     } finally {
       setSubmitting(false)
@@ -143,7 +145,7 @@ export function MingPage({ onNavigate }: MingPageProps) {
                 </p>
                 <div className="mt-3 flex items-center gap-2">
                   <img src="/old-pages/ming/ming-power-light.png" alt="" className="h-4 w-4" />
-                  <span className="text-[13px] font-medium text-white/72">累計算力 (T)</span>
+                  <span className="text-[13px] font-medium text-white/72">{copy.cumulativePower}</span>
                 </div>
               </div>
 
@@ -152,7 +154,7 @@ export function MingPage({ onNavigate }: MingPageProps) {
                 onClick={() => onNavigate('mingLog')}
                 className="inline-flex h-9 items-center rounded-full border border-[#f7c931]/25 bg-black/45 px-3.5 text-[11px] font-semibold text-white shadow-[0_8px_18px_rgba(0,0,0,0.28)] backdrop-blur"
               >
-                算力日志
+                {copy.miningLog}
               </button>
             </div>
 
@@ -173,9 +175,9 @@ export function MingPage({ onNavigate }: MingPageProps) {
           <div className="mb-4 flex items-center justify-between gap-3">
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#f6c640]">Mining Engine</p>
-              <h2 className="mt-1 text-[22px] font-black text-white">核心算力區</h2>
+              <h2 className="mt-1 text-[22px] font-black text-white">{copy.coreMiningZone}</h2>
             </div>
-            <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-medium text-white/48">Live Preview</div>
+            <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-medium text-white/48">{copy.livePreview}</div>
           </div>
 
           <div className="overflow-hidden rounded-[26px] border border-[#f7c931]/15 bg-black/70 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
@@ -185,8 +187,8 @@ export function MingPage({ onNavigate }: MingPageProps) {
           </div>
 
           <div className="mt-4 grid grid-cols-2 gap-3">
-            <InfoTile label="最低銷毀" value={`${fmt(destoryInfo?.min_amount)} USDT`} />
-            <InfoTile label={`${destoryInfo?.currency?.name || 'MCG'} 價格`} value={`${fmt(destoryInfo?.price)} USDT`} />
+            <InfoTile label={copy.destroyMinAmount} value={`${fmt(destoryInfo?.min_amount)} USDT`} />
+            <InfoTile label={`${destoryInfo?.currency?.name || 'MCG'} ${copy.currentPrice}`} value={`${fmt(destoryInfo?.price)} USDT`} />
           </div>
         </section>
 
@@ -197,9 +199,9 @@ export function MingPage({ onNavigate }: MingPageProps) {
           <div className="relative flex items-center justify-between gap-3">
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#f6c640]">Quick Access</p>
-              <h2 className="mt-1 text-[20px] font-black text-white">快捷操作</h2>
+              <h2 className="mt-1 text-[20px] font-black text-white">{copy.quickAction}</h2>
             </div>
-            <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-medium text-white/48">Main Action</div>
+            <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-medium text-white/48">{copy.quickAccess}</div>
           </div>
 
           <div className="relative mt-4">
@@ -207,9 +209,10 @@ export function MingPage({ onNavigate }: MingPageProps) {
               className="w-full"
               variant="primary"
               icon={<ArrowBadgeIcon />}
-              label="銷毀挖礦"
-              description="輸入 USDT 金額後自動換算支付幣種，建立待支付訂單後前往完成鏈上或餘額支付。"
-              badge={`最低銷毀 ${fmt(destoryInfo?.min_amount)} USDT`}
+              label={copy.destroyMining}
+              description={copy.destroyMiningDescription}
+              badge={`${copy.destroyMinAmount} ${fmt(destoryInfo?.min_amount)} USDT`}
+              actionText={copy.confirmDestroy}
               onClick={() => setShowAmountModal(true)}
             />
           </div>
@@ -229,7 +232,7 @@ export function MingPage({ onNavigate }: MingPageProps) {
 
       <PreOrderPaymentMethodModal
         visible={showPaymentModal}
-        title={submitting ? '正在创建订单...' : '选择支付方式'}
+        title={submitting ? copy.createOrderLoading : copy.choosePaymentMethod}
         orderAmount={destroyAmount}
         paymentMethods={paymentMethods}
         onClose={() => {
@@ -258,6 +261,7 @@ function ActionButton({
   label,
   description,
   badge,
+  actionText,
   onClick,
 }: {
   className?: string
@@ -266,6 +270,7 @@ function ActionButton({
   label: string
   description: string
   badge?: string
+  actionText: string
   onClick: () => void
 }) {
   const primary = variant === 'primary'
@@ -297,7 +302,7 @@ function ActionButton({
             {badge}
           </span>
           <div className={`inline-flex items-center gap-2 text-[11px] font-semibold ${primary ? 'text-[#ffe08a]' : 'text-white/52'}`}>
-            立即銷毀
+            {actionText}
             <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M5 12h14" />
               <path d="m13 6 6 6-6 6" />

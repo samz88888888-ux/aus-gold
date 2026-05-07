@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { PageContainer } from '../../components/PageContainer'
 import { PageNavBar } from '../../components/PageNavBar'
+import { useOldPagesCopy } from '../../i18n'
 import { fetchOrderReleaseList } from '../../services/api'
 import type { OrderReleaseItem } from '../../services/types'
 import type { AppPage, PageParams } from '../../../figma/types'
@@ -12,6 +13,7 @@ type ShopOrderReleasePageProps = {
 }
 
 export function ShopOrderReleasePage({ groupId, status, onNavigate }: ShopOrderReleasePageProps) {
+  const copy = useOldPagesCopy()
   const [records, setRecords] = useState<OrderReleaseItem[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -33,20 +35,20 @@ export function ShopOrderReleasePage({ groupId, status, onNavigate }: ShopOrderR
 
   return (
     <PageContainer>
-      <PageNavBar title="待释放记录" onBack={() => onNavigate('shop')} />
+      <PageNavBar title={copy.releaseRecord} onBack={() => onNavigate('shop')} />
       <div className="px-4 pb-20 pt-4">
         {loading ? (
           <div className="flex flex-col items-center py-20">
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-yellow-400/20 border-t-yellow-400" />
-            <span className="mt-3 text-sm text-white/60">加载中...</span>
+            <span className="mt-3 text-sm text-white/60">{copy.loading}</span>
           </div>
         ) : records.length === 0 ? (
           <div className="flex flex-col items-center py-20">
-            <span className="text-base font-semibold text-white">暂无释放记录</span>
+            <span className="text-base font-semibold text-white">{copy.noReleaseRecords}</span>
           </div>
         ) : (
           <div className="space-y-3">
-            {records.map(r => <ReleaseCard key={r.id} item={r} />)}
+            {records.map(r => <ReleaseCard key={r.id} item={r} releaseAmountLabel={copy.releaseAmount} releaseDateLabel={copy.releaseDate} />)}
           </div>
         )}
       </div>
@@ -54,7 +56,7 @@ export function ShopOrderReleasePage({ groupId, status, onNavigate }: ShopOrderR
   )
 }
 
-function ReleaseCard({ item }: { item: OrderReleaseItem }) {
+function ReleaseCard({ item, releaseAmountLabel, releaseDateLabel }: { item: OrderReleaseItem; releaseAmountLabel: string; releaseDateLabel: string }) {
   const isReleased = item.status === 'released'
   const badgeClass = isReleased
     ? 'border-green-500/40 bg-green-500/15 text-green-400'
@@ -69,11 +71,11 @@ function ReleaseCard({ item }: { item: OrderReleaseItem }) {
       <div className="text-sm font-semibold text-white">{item.goods_name}</div>
       <div className="mt-2 grid grid-cols-2 gap-px overflow-hidden rounded-lg bg-yellow-500/10">
         <div className="flex flex-col items-center bg-black/30 py-2.5">
-          <span className="text-[10px] text-white/60">释放金额</span>
+          <span className="text-[10px] text-white/60">{releaseAmountLabel}</span>
           <span className="mt-1 text-sm font-bold text-yellow-400">{item.release_amount}</span>
         </div>
         <div className="flex flex-col items-center bg-black/30 py-2.5">
-          <span className="text-[10px] text-white/60">释放日期</span>
+          <span className="text-[10px] text-white/60">{releaseDateLabel}</span>
           <span className="mt-1 text-sm font-bold text-white">{item.release_date}</span>
         </div>
       </div>

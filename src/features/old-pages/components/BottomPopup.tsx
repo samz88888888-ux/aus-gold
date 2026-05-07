@@ -1,4 +1,5 @@
 import { useEffect, useRef, type ReactNode } from 'react'
+import { useOldPagesCopy } from '../i18n'
 
 type BottomPopupProps = {
   visible: boolean
@@ -8,6 +9,7 @@ type BottomPopupProps = {
 }
 
 export function BottomPopup({ visible, onClose, title, children }: BottomPopupProps) {
+  const copy = useOldPagesCopy()
   const contentRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -20,7 +22,7 @@ export function BottomPopup({ visible, onClose, title, children }: BottomPopupPr
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center">
-      <button type="button" className="absolute inset-0 bg-black/60" onClick={onClose} aria-label="关闭" />
+      <button type="button" className="absolute inset-0 bg-black/60" onClick={onClose} aria-label={copy.closeDialog} />
       <div ref={contentRef} className="relative w-full max-w-[430px] animate-[slideUp_0.3s_ease] rounded-t-2xl bg-[#1a1a2e] px-4 pb-6 pt-4">
         {title && (
           <div className="mb-4 flex items-center justify-between">

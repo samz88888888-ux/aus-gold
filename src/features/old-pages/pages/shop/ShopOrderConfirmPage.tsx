@@ -5,6 +5,7 @@ import { NoticePopup } from '../../components/NoticePopup'
 import { PreOrderPaymentMethodModal } from '../../components/payment/PreOrderPaymentMethodModal'
 import { PageContainer } from '../../components/PageContainer'
 import { PageNavBar } from '../../components/PageNavBar'
+import { useOldPagesCopy } from '../../i18n'
 import { createPreOrder, fetchAddressList } from '../../services/api'
 import { clearShopOrderDraft, getShopOrderDraft } from '../../services/shopOrderDraft'
 import type { AddressItem, PaymentMethod, ShopOrderDraft } from '../../services/types'
@@ -20,6 +21,7 @@ function getDraft(pageState?: ShopOrderDraft | null) {
 }
 
 export function ShopOrderConfirmPage({ pageState, addressId, onNavigate }: ShopOrderConfirmPageProps) {
+  const copy = useOldPagesCopy()
   const [draft] = useState<ShopOrderDraft | null>(() => getDraft(pageState))
   const [remark, setRemark] = useState('')
   const [selectedAddress, setSelectedAddress] = useState<AddressItem | null>(null)
@@ -68,10 +70,10 @@ export function ShopOrderConfirmPage({ pageState, addressId, onNavigate }: ShopO
   if (!draft) {
     return (
       <PageContainer>
-        <PageNavBar title="确认订单" onBack={() => onNavigate('shop')} />
+        <PageNavBar title={copy.confirmOrder} onBack={() => onNavigate('shop')} />
         <div className="flex flex-col items-center py-32 text-white/60">
-          <span>订单数据不存在</span>
-          <button type="button" onClick={() => onNavigate('shop')} className="mt-4 rounded-lg bg-yellow-400/20 px-6 py-2 text-sm text-yellow-400">返回商城</button>
+          <span>{copy.orderDataMissing}</span>
+          <button type="button" onClick={() => onNavigate('shop')} className="mt-4 rounded-lg bg-yellow-400/20 px-6 py-2 text-sm text-yellow-400">{copy.backToShop}</button>
         </div>
       </PageContainer>
     )
@@ -79,13 +81,13 @@ export function ShopOrderConfirmPage({ pageState, addressId, onNavigate }: ShopO
 
   const handleSubmit = () => {
     if (needDelivery && !selectedAddress) {
-      setNotice({ message: '请选择收货地址' })
+      setNotice({ message: copy.selectShippingAddress })
       return
     }
 
     const methods = needDelivery ? draft.product.payment : draft.product.no_payment
     if (!methods || methods.length === 0) {
-      setNotice({ message: '暂无可用支付方式' })
+      setNotice({ message: copy.noPaymentMethods })
       return
     }
 
@@ -114,15 +116,15 @@ export function ShopOrderConfirmPage({ pageState, addressId, onNavigate }: ShopO
       clearShopOrderDraft()
       setShowPaymentPopup(false)
       setNotice({
-        message: '下单成功，请前往待支付订单完成支付',
-        confirmText: '前往订单',
+        message: copy.orderCreated,
+        confirmText: copy.goToOrders,
         onConfirm: () => {
           setNotice(null)
           onNavigate('orders')
         },
       })
     } catch (error) {
-      const message = error instanceof Error ? error.message : '创建订单失败'
+      const message = error instanceof Error ? error.message : copy.orderCreateFailed
       setNotice({ message })
     } finally {
       setSubmitting(false)
@@ -131,7 +133,7 @@ export function ShopOrderConfirmPage({ pageState, addressId, onNavigate }: ShopO
 
   return (
     <PageContainer>
-      <PageNavBar title="确认订单" onBack={() => onNavigate('shop')} />
+      <PageNavBar title={copy.confirmOrder} onBack={() => onNavigate('shop')} />
       <div className="px-4 pb-52 pt-4">
         {needDelivery ? (
           <AddressCard address={selectedAddress} onSelect={() => onNavigate('address', { from: 'shopOrderConfirm' })} />
@@ -142,7 +144,7 @@ export function ShopOrderConfirmPage({ pageState, addressId, onNavigate }: ShopO
 
       <div className="fixed bottom-[62px] left-1/2 z-40 flex w-full max-w-[430px] -translate-x-1/2 items-center justify-between border-t border-white/10 bg-[#0a0a1a]/95 px-4 py-3 shadow-[0_-4px_12px_rgba(0,0,0,0.4)] backdrop-blur">
         <div>
-          <div className="text-xs text-white/60">商品金额</div>
+          <div className="text-xs text-white/60">{copy.productAmount}</div>
           <div className="text-xl font-bold text-yellow-400">{draft.totalPrice} <span className="text-xs font-medium">USDT</span></div>
         </div>
         <button
@@ -151,7 +153,7 @@ export function ShopOrderConfirmPage({ pageState, addressId, onNavigate }: ShopO
           disabled={!canSubmit}
           className="rounded-lg bg-gradient-to-r from-yellow-400 to-amber-500 px-8 py-3 text-base font-bold text-black shadow disabled:opacity-50"
         >
-          {submitting ? '提交中...' : '立即支付 →'}
+          {submitting ? copy.submitting : copy.payNow}
         </button>
       </div>
 
@@ -159,7 +161,7 @@ export function ShopOrderConfirmPage({ pageState, addressId, onNavigate }: ShopO
         visible={showPaymentPopup}
         orderAmount={draft.totalPrice}
         paymentMethods={paymentMethods}
-        title={submitting ? '正在创建订单...' : '选择支付方式'}
+        title={submitting ? copy.createOrderLoading : copy.choosePaymentMethod}
         onClose={() => {
           if (submitting) return
           setShowPaymentPopup(false)
@@ -180,6 +182,7 @@ export function ShopOrderConfirmPage({ pageState, addressId, onNavigate }: ShopO
 }
 
 function AddressCard({ address, onSelect }: { address: AddressItem | null; onSelect: () => void }) {
+  const copy = useOldPagesCopy()
   if (!address) {
     return (
       <button
@@ -187,7 +190,7 @@ function AddressCard({ address, onSelect }: { address: AddressItem | null; onSel
         onClick={onSelect}
         className="mb-4 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-yellow-500/30 bg-[#1e1e1e] p-4 text-sm text-yellow-400/70"
       >
-        <span>+ 选择收货地址</span>
+        <span>{copy.chooseAddress}</span>
       </button>
     )
   }
@@ -212,12 +215,13 @@ function AddressCard({ address, onSelect }: { address: AddressItem | null; onSel
 }
 
 function ProductCard({ draft }: { draft: ShopOrderDraft }) {
+  const copy = useOldPagesCopy()
   return (
     <div className="mb-4 flex gap-3 rounded-xl border border-yellow-500/20 bg-[#1e1e1e] p-4 shadow">
       <img src={draft.product.img} alt={draft.product.name} className="h-20 w-20 shrink-0 rounded-xl border border-yellow-500/20 bg-black/30 object-cover" />
       <div className="flex flex-1 flex-col justify-between">
         <div className="text-sm font-semibold text-white">{draft.product.name}</div>
-        <div className="text-xs text-white/55">{draft.selectedSkuValue || '默认规格'}</div>
+        <div className="text-xs text-white/55">{draft.selectedSkuValue || copy.defaultSpec}</div>
         <div className="flex items-center justify-between">
           <span className="text-base font-bold text-yellow-400">{Number(draft.price).toFixed(2)} <span className="text-xs font-medium">USDT</span></span>
           <div className="text-sm text-white/60">x{draft.quantity}</div>
@@ -228,14 +232,15 @@ function ProductCard({ draft }: { draft: ShopOrderDraft }) {
 }
 
 function RemarkSection({ value, onChange }: { value: string; onChange: (value: string) => void }) {
+  const copy = useOldPagesCopy()
   return (
     <div className="rounded-xl border border-yellow-500/20 bg-[#1e1e1e] p-4 shadow">
-      <div className="mb-2 text-sm font-semibold text-yellow-400">备注信息</div>
+      <div className="mb-2 text-sm font-semibold text-yellow-400">{copy.remarkInfo}</div>
       <textarea
         value={value}
         onChange={(event) => onChange(event.target.value)}
         maxLength={200}
-        placeholder="选填，请输入备注信息"
+        placeholder={copy.remarkPlaceholder}
         className="h-20 w-full resize-none rounded-lg border border-yellow-500/20 bg-black/30 p-3 text-sm text-white outline-none placeholder:text-white/30 focus:border-yellow-500/40"
       />
     </div>

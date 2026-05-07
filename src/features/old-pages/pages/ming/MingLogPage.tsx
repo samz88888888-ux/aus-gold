@@ -3,24 +3,25 @@ import { useEffect, useState } from 'react'
 import type { AppPage, PageParams } from '../../../figma/types'
 import { PageContainer } from '../../components/PageContainer'
 import { PageNavBar } from '../../components/PageNavBar'
+import { useOldPagesCopy } from '../../i18n'
 import { fetchMiningLog } from '../../services/api'
 import type { MiningLogItem } from '../../services/types'
-
-const TYPE_OPTIONS = [
-  { text: '全部', value: 0 },
-  { text: '激活设备', value: 1 },
-  { text: '销毁挖矿', value: 2 },
-  { text: '减少收益', value: 3 },
-  { text: '购买节点', value: 4 },
-  { text: '联合挖矿', value: 5 },
-  { text: '转移算力', value: 6 },
-]
 
 type MingLogPageProps = {
   onNavigate: (page: AppPage, params?: PageParams) => void
 }
 
 export function MingLogPage({ onNavigate }: MingLogPageProps) {
+  const copy = useOldPagesCopy()
+  const typeOptions = [
+    { text: copy.all, value: 0 },
+    { text: copy.deviceActivated, value: 1 },
+    { text: copy.destroyMining, value: 2 },
+    { text: copy.reduceIncome, value: 3 },
+    { text: copy.buyNode, value: 4 },
+    { text: copy.unionMiner, value: 5 },
+    { text: copy.transferPower, value: 6 },
+  ]
   const [list, setList] = useState<MiningLogItem[]>([])
   const [page, setPage] = useState(1)
   const [total, setTotal] = useState(0)
@@ -57,7 +58,7 @@ export function MingLogPage({ onNavigate }: MingLogPageProps) {
   const finished = list.length >= total && total > 0
   return (
     <PageContainer bgClass="bg-[#050505]">
-      <PageNavBar title="算力日志" onBack={() => onNavigate('ming')} />
+      <PageNavBar title={copy.miningLogTitle} onBack={() => onNavigate('ming')} />
 
       <div className="relative overflow-hidden px-4 pb-10 pt-4">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-[300px] bg-[radial-gradient(circle_at_top,rgba(251,208,5,0.2),rgba(251,208,5,0.04)_42%,transparent_72%)]" />
@@ -87,11 +88,12 @@ export function MingLogPage({ onNavigate }: MingLogPageProps) {
 
         <section className="mt-4 space-y-3">
           {list.map((item) => (
-            <LogCard key={item.id} item={item} />
+            <LogCard key={item.id} item={item} unknownType={copy.unknownType} />
           ))}
         </section>
 
         <LoadStatus
+          copy={copy}
           loading={loading}
           finished={finished}
           hasData={list.length > 0}
@@ -101,6 +103,8 @@ export function MingLogPage({ onNavigate }: MingLogPageProps) {
 
       <FilterSheet
         visible={showFilter}
+        title={copy.filterType}
+        options={typeOptions}
         selected={selectedType}
         onSelect={(value) => {
           setSelectedType(value)
@@ -112,9 +116,9 @@ export function MingLogPage({ onNavigate }: MingLogPageProps) {
   )
 }
 
-function LogCard({ item }: { item: MiningLogItem }) {
+function LogCard({ item, unknownType }: { item: MiningLogItem; unknownType: string }) {
   const isPositive = item.power >= 0
-  const typeText = item.msg || '未知类型'
+  const typeText = item.msg || unknownType
 
   return (
     <article className="rounded-[20px] border border-white/8 bg-[linear-gradient(160deg,rgba(25,25,25,0.95),rgba(10,10,10,0.95))] p-4 shadow-[0_10px_26px_rgba(0,0,0,0.24)]">
@@ -153,26 +157,28 @@ function fmt(value: number | string | undefined) {
 }
 
 function LoadStatus({
+  copy,
   loading,
   finished,
   hasData,
   onLoadMore,
 }: {
+  copy: ReturnType<typeof useOldPagesCopy>
   loading: boolean
   finished: boolean
   hasData: boolean
   onLoadMore: () => void
 }) {
   if (loading) {
-    return <p className="py-7 text-center text-[13px] text-white/35">加载中...</p>
+    return <p className="py-7 text-center text-[13px] text-white/35">{copy.loading}</p>
   }
 
   if (!hasData) {
-    return <p className="py-20 text-center text-[13px] text-white/30">暂无记录</p>
+    return <p className="py-20 text-center text-[13px] text-white/30">{copy.noRecords}</p>
   }
 
   if (finished) {
-    return <p className="py-7 text-center text-[13px] text-white/30">没有更多了</p>
+    return <p className="py-7 text-center text-[13px] text-white/30">{copy.noMore}</p>
   }
 
   return (
@@ -181,18 +187,22 @@ function LoadStatus({
       onClick={onLoadMore}
       className="mt-4 w-full rounded-[16px] border border-[#f6c640]/20 bg-[#f6c640]/10 py-3 text-[13px] font-semibold text-[#f6c640] transition active:scale-[0.99]"
     >
-      加载更多
+      {copy.loadMore}
     </button>
   )
 }
 
 function FilterSheet({
   visible,
+  title,
+  options,
   selected,
   onSelect,
   onClose,
 }: {
   visible: boolean
+  title: string
+  options: Array<{ text: string; value: number }>
   selected: number
   onSelect: (v: number) => void
   onClose: () => void
@@ -210,7 +220,7 @@ function FilterSheet({
 
         <div className="px-5 pb-8 pt-2">
           <div className="flex items-center justify-between">
-            <h2 className="text-[18px] font-black text-white">篩選類型</h2>
+            <h2 className="text-[18px] font-black text-white">{title}</h2>
             <button
               type="button"
               onClick={onClose}
@@ -224,7 +234,7 @@ function FilterSheet({
           </div>
 
           <div className="mt-4 grid grid-cols-2 gap-2.5">
-            {TYPE_OPTIONS.map((opt) => {
+            {options.map((opt) => {
               const active = opt.value === selected
               return (
                 <button

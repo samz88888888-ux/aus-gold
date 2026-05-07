@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { PageContainer } from '../../components/PageContainer'
 import { PageNavBar } from '../../components/PageNavBar'
+import { useOldPagesCopy } from '../../i18n'
 import {
   fetchMallBanner, fetchTodayGoldPrice, fetchCategoryList,
   fetchProductList, fetchMallBlock,
@@ -13,6 +14,7 @@ type ShopPageProps = {
 }
 
 export function ShopPage({ onNavigate }: ShopPageProps) {
+  const copy = useOldPagesCopy()
   const [banners, setBanners] = useState<BannerItem[]>([])
   const [goldPrice, setGoldPrice] = useState<GoldPrice | null>(null)
   const [categories, setCategories] = useState<GoldCategory[]>([])
@@ -63,18 +65,18 @@ export function ShopPage({ onNavigate }: ShopPageProps) {
 
   return (
     <PageContainer>
-      <PageNavBar title="商城" onBack={() => onNavigate('home')} />
+      <PageNavBar title={copy.shop} onBack={() => onNavigate('home')} />
       {/* Banner */}
       <BannerSection banners={banners} goldPrice={goldPrice} />
       {/* Quick actions */}
-      <QuickActions onNavigate={onNavigate} blockId={selectedBlockId} />
+      <QuickActions copy={copy} onNavigate={onNavigate} blockId={selectedBlockId} />
       {/* Categories */}
       <CategoryTabs categories={categories} selectedId={selectedCatId} onSelect={selectCategory} />
       {/* Products */}
-      {loading ? <LoadingSpinner /> : (
+      {loading ? <LoadingSpinner text={copy.loading} /> : (
         products.length > 0
-          ? <ProductGrid products={products} onTap={id => onNavigate('shopDetail', { id })} />
-          : <EmptyState />
+          ? <ProductGrid copy={copy} products={products} onTap={id => onNavigate('shopDetail', { id })} />
+          : <EmptyState copy={copy} />
       )}
       <div className="h-20" />
     </PageContainer>
@@ -100,13 +102,13 @@ function BannerSection({ banners, goldPrice }: { banners: BannerItem[]; goldPric
   )
 }
 
-function QuickActions({ onNavigate, blockId }: { onNavigate: (page: AppPage, params?: PageParams) => void; blockId: number | null }) {
+function QuickActions({ copy, onNavigate, blockId }: { copy: ReturnType<typeof useOldPagesCopy>; onNavigate: (page: AppPage, params?: PageParams) => void; blockId: number | null }) {
   const qs = blockId ? String(blockId) : undefined
   return (
     <div className="mx-4 mt-4 space-y-3">
       {[
-        { label: '我的订单', sub: '查看购买记录', page: 'shopOrderList' as AppPage },
-        { label: '待释放记录', sub: '查看释放历史', page: 'shopOrderRelease' as AppPage },
+        { label: copy.myOrders, sub: copy.viewPurchaseRecords, page: 'shopOrderList' as AppPage },
+        { label: copy.pendingReleaseRecords, sub: copy.viewReleaseHistory, page: 'shopOrderRelease' as AppPage },
       ].map(a => (
         <button key={a.page} type="button" onClick={() => onNavigate(a.page, { group_id: qs })}
           className="flex w-full items-center gap-3 rounded-2xl border border-yellow-500/20 bg-[#1e1e1e] p-3 text-left shadow-md transition active:scale-[0.98]">
@@ -139,7 +141,7 @@ function CategoryTabs({ categories, selectedId, onSelect }: { categories: GoldCa
   )
 }
 
-function ProductGrid({ products, onTap }: { products: GoldProduct[]; onTap: (id: number) => void }) {
+function ProductGrid({ copy, products, onTap }: { copy: ReturnType<typeof useOldPagesCopy>; products: GoldProduct[]; onTap: (id: number) => void }) {
   return (
     <div className="mx-4 mt-5 grid grid-cols-2 gap-3">
       {products.map(p => (
@@ -150,7 +152,7 @@ function ProductGrid({ products, onTap }: { products: GoldProduct[]; onTap: (id:
           </div>
           <div className="p-3">
             <div className="truncate text-sm font-semibold text-white">{p.name}</div>
-            <div className="mt-1 text-xs text-white/60">库存 {p.stock} · {p.weight}</div>
+            <div className="mt-1 text-xs text-white/60">{copy.inventory} {p.stock} · {p.weight}</div>
             <div className="mt-1.5 text-base font-bold text-yellow-400">{p.price} <span className="text-xs font-medium">USDT</span></div>
           </div>
         </button>
@@ -159,21 +161,21 @@ function ProductGrid({ products, onTap }: { products: GoldProduct[]; onTap: (id:
   )
 }
 
-function LoadingSpinner() {
+function LoadingSpinner({ text }: { text: string }) {
   return (
     <div className="flex flex-col items-center justify-center py-20">
       <div className="h-8 w-8 animate-spin rounded-full border-2 border-yellow-400/20 border-t-yellow-400" />
-      <span className="mt-3 text-sm text-white/60">加载中...</span>
+      <span className="mt-3 text-sm text-white/60">{text}</span>
     </div>
   )
 }
 
-function EmptyState() {
+function EmptyState({ copy }: { copy: ReturnType<typeof useOldPagesCopy> }) {
   return (
     <div className="mx-4 mt-8 flex flex-col items-center rounded-2xl border border-yellow-500/20 bg-[#1e1e1e] py-16">
       <svg className="h-20 w-20 text-yellow-400/60" viewBox="0 0 200 200" fill="none" stroke="currentColor" strokeWidth="3"><path d="M50 60L160 60L150 140L60 140Z" strokeLinejoin="round" /><circle cx="75" cy="155" r="8" /><circle cx="135" cy="155" r="8" /></svg>
-      <span className="mt-4 text-base font-semibold text-white">暂无商品</span>
-      <span className="mt-1 text-sm text-white/50">换个分类看看吧</span>
+      <span className="mt-4 text-base font-semibold text-white">{copy.noProducts}</span>
+      <span className="mt-1 text-sm text-white/50">{copy.tryAnotherCategory}</span>
     </div>
   )
 }

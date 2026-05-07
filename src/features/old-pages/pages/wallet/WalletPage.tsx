@@ -4,6 +4,7 @@ import type { AppPage, PageParams } from '../../../figma/types'
 import { NoticePopup } from '../../components/NoticePopup'
 import { PageContainer } from '../../components/PageContainer'
 import { PageNavBar } from '../../components/PageNavBar'
+import { useOldPagesCopy } from '../../i18n'
 import { fetchUserInfoOld } from '../../services/api'
 import type { UserInfo } from '../../services/types'
 
@@ -43,6 +44,7 @@ const AUS_TOKEN_ICON = '/old-pages/wallet/aus-coin.png'
 const BRIDGE_URL = 'https://bridge.pychain.co/bridge'
 
 export function WalletPage({ onNavigate }: WalletPageProps) {
+  const copy = useOldPagesCopy()
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null)
   const [loading, setLoading] = useState(true)
   const [notice, setNotice] = useState<string | null>(null)
@@ -70,7 +72,7 @@ export function WalletPage({ onNavigate }: WalletPageProps) {
 
   return (
     <PageContainer bgClass="bg-[#05060a]">
-      <PageNavBar title="钱包" onBack={() => onNavigate('home')} />
+      <PageNavBar title={copy.walletPageTitle} onBack={() => onNavigate('home')} />
 
       <div
         className="min-h-[calc(100vh-48px)] bg-top bg-no-repeat px-4 pb-24 pt-3"
@@ -88,7 +90,7 @@ export function WalletPage({ onNavigate }: WalletPageProps) {
         >
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-[14px] text-[#112342]">我的资产</p>
+              <p className="text-[14px] text-[#112342]">{copy.myAssets}</p>
               <div className="mt-1.5 flex items-end gap-1">
                 <span className="text-[24px] font-bold text-[#10223f]">$</span>
                 <span className="text-[30px] font-extrabold leading-none text-[#10223f]">
@@ -102,11 +104,11 @@ export function WalletPage({ onNavigate }: WalletPageProps) {
               className="inline-flex cursor-pointer items-center gap-1.5 rounded-full bg-[#10223f] px-3.5 py-2 text-[12px] font-semibold text-white shadow-[0_10px_24px_rgba(16,34,63,0.24)] transition duration-200 active:scale-[0.98]"
             >
               <span className="text-[15px] leading-none">+</span>
-              <span>充值</span>
+              <span>{copy.recharge}</span>
             </button>
           </div>
           <div className="mt-3 inline-flex items-center rounded-full bg-[#0d1f3c]/10 px-3 py-1 text-[11px] text-[#10223f]">
-            账户 {shortAddress(address)}
+            {copy.account} {shortAddress(address)}
           </div>
         </section>
 
@@ -120,10 +122,10 @@ export function WalletPage({ onNavigate }: WalletPageProps) {
           >
             <img
               src={rechargeIcon}
-              alt="跨链桥"
+              alt={copy.bridge}
               className="h-9 w-9 object-contain"
             />
-            <span className="text-xs text-white/90">跨链桥</span>
+            <span className="text-xs text-white/90">{copy.bridge}</span>
           </button>
           <button
             type="button"
@@ -132,10 +134,10 @@ export function WalletPage({ onNavigate }: WalletPageProps) {
           >
             <img
               src={withdrawIcon}
-              alt="提现"
+              alt={copy.withdraw}
               className="h-9 w-9 object-contain"
             />
-            <span className="text-xs text-white/90">提现</span>
+            <span className="text-xs text-white/90">{copy.withdraw}</span>
           </button>
           <button
             type="button"
@@ -146,10 +148,10 @@ export function WalletPage({ onNavigate }: WalletPageProps) {
           >
             <img
               src={transferIcon}
-              alt="闪兑"
+              alt={copy.swap}
               className="h-9 w-9 object-contain"
             />
-            <span className="text-xs text-white/90">闪兑</span>
+            <span className="text-xs text-white/90">{copy.swap}</span>
           </button>
           <button
             type="button"
@@ -158,23 +160,23 @@ export function WalletPage({ onNavigate }: WalletPageProps) {
           >
             <img
               src={moneyLogIcon}
-              alt="资金记录"
+              alt={copy.moneyLog}
               className="h-9 w-9 object-contain"
             />
-            <span className="text-xs text-white/90">资金记录</span>
+            <span className="text-xs text-white/90">{copy.moneyLog}</span>
           </button>
         </section>
 
         <section className="mt-5">
           <div className="mb-2 flex items-center justify-between">
-            <h2 className="text-sm font-medium text-white/78">我的代币</h2>
+            <h2 className="text-sm font-medium text-white/78">{copy.myTokens}</h2>
             {loading ? (
-              <span className="text-xs text-white/45">加载中...</span>
+              <span className="text-xs text-white/45">{copy.loading}</span>
             ) : null}
           </div>
           <div className="space-y-3">
             <TokenRow name="USDT" amount={fmt(usdt)} />
-            <TokenRow name="股权算力值" amount={fmt(usdtMine)} icon={AUS_TOKEN_ICON} />
+            <TokenRow name={copy.equityPowerValue} amount={fmt(usdtMine)} icon={AUS_TOKEN_ICON} />
           </div>
         </section>
       </div>
@@ -197,6 +199,7 @@ function TokenRow({
   amount: string
   icon?: string
 }) {
+  const copy = useOldPagesCopy()
   return (
     <div className="flex items-center justify-between rounded-2xl bg-[#1e1e1e] px-4 py-3.5">
       <div className="flex items-center gap-3">
@@ -205,7 +208,7 @@ function TokenRow({
         </div>
         <div className="flex flex-col">
           <span className="text-[14px] font-semibold text-white">{name}</span>
-          <span className="text-[11px] text-white/55">当前余额</span>
+          <span className="text-[11px] text-white/55">{copy.currentBalance}</span>
         </div>
       </div>
       <span className="text-[14px] font-bold text-white">{amount}</span>

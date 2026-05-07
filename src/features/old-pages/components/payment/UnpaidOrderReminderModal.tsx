@@ -1,3 +1,5 @@
+import { useOldPagesCopy } from '../../i18n'
+
 type UnpaidOrderReminderModalProps = {
   visible: boolean
   onClose: () => void
@@ -9,6 +11,7 @@ export function UnpaidOrderReminderModal({
   onClose,
   onGoPayment,
 }: UnpaidOrderReminderModalProps) {
+  const copy = useOldPagesCopy()
   if (!visible) return null
 
   return (
@@ -35,8 +38,8 @@ export function UnpaidOrderReminderModal({
         </div>
 
         <div className="mt-5 text-center">
-          <h3 className="text-lg font-bold text-white">存在待支付订单</h3>
-          <p className="mt-2 text-sm leading-6 text-white/65">检测到你有未完成支付的预订单，可直接前往待支付订单继续支付。</p>
+          <h3 className="text-lg font-bold text-white">{copy.pendingPaymentOrderExists}</h3>
+          <p className="mt-2 text-sm leading-6 text-white/65">{copy.unpaidOrderHint}</p>
         </div>
 
         <button
@@ -44,7 +47,7 @@ export function UnpaidOrderReminderModal({
           onClick={onGoPayment}
           className="mt-6 w-full rounded-2xl bg-gradient-to-r from-[#fff193] to-[#eba500] py-3 text-sm font-bold text-black"
         >
-          去支付
+          {copy.goPay}
         </button>
       </div>
     </div>

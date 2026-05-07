@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { PageContainer } from '../../components/PageContainer'
 import { PageNavBar } from '../../components/PageNavBar'
+import { useOldPagesCopy } from '../../i18n'
 import { fetchGoldOrderList, fetchGoldProductConfirm } from '../../services/api'
 import type { GoldOrderItem } from '../../services/types'
 import type { AppPage, PageParams } from '../../../figma/types'
@@ -17,6 +18,7 @@ type ShopOrderListPageProps = {
 }
 
 export function ShopOrderListPage({ groupId, onNavigate }: ShopOrderListPageProps) {
+  const copy = useOldPagesCopy()
   const [orders, setOrders] = useState<GoldOrderItem[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -33,12 +35,12 @@ export function ShopOrderListPage({ groupId, onNavigate }: ShopOrderListPageProp
 
   const handleConfirm = async (id: number) => {
     await fetchGoldProductConfirm({ id })
-    setOrders(prev => prev.map(o => o.id === id ? { ...o, status: 3, status_text: '已完成' } : o))
+    setOrders(prev => prev.map(o => o.id === id ? { ...o, status: 3, status_text: copy.noticeConfirm } : o))
   }
 
   return (
     <PageContainer>
-      <PageNavBar title="我的订单" onBack={() => onNavigate('shop')} />
+      <PageNavBar title={copy.myOrders} onBack={() => onNavigate('shop')} />
       <div className="space-y-3 px-4 py-4">
         <button
           type="button"
@@ -53,8 +55,8 @@ export function ShopOrderListPage({ groupId, onNavigate }: ShopOrderListPageProp
               </svg>
             </div>
             <div className="flex flex-col">
-              <span className="text-sm font-semibold text-white">前往待支付订单</span>
-              <span className="text-xs text-white/45">快速查看并继续完成未支付订单</span>
+              <span className="text-sm font-semibold text-white">{copy.goToPendingOrders}</span>
+              <span className="text-xs text-white/45">{copy.continuePendingOrders}</span>
             </div>
           </div>
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 text-[#ffe28a]">
@@ -65,9 +67,9 @@ export function ShopOrderListPage({ groupId, onNavigate }: ShopOrderListPageProp
         </button>
 
         {loading ? (
-          <p className="py-20 text-center text-sm text-white/40">加载中...</p>
+          <p className="py-20 text-center text-sm text-white/40">{copy.loading}</p>
         ) : orders.length === 0 ? (
-          <p className="py-20 text-center text-sm text-white/40">暂无订单</p>
+          <p className="py-20 text-center text-sm text-white/40">{copy.noOrders}</p>
         ) : orders.map(o => (
           <div key={o.id} className="rounded-xl border border-white/10 bg-white/5 p-4">
             <div className="flex items-center justify-between">
@@ -78,7 +80,7 @@ export function ShopOrderListPage({ groupId, onNavigate }: ShopOrderListPageProp
               <img src={o.goods_image} alt={o.goods_name} className="h-16 w-16 rounded-lg bg-white/10 object-cover" />
               <div className="flex-1">
                 <p className="text-sm font-medium text-white">{o.goods_name}</p>
-                <p className="mt-1 text-xs text-white/50">重量: {o.weight} × {o.quantity}</p>
+                <p className="mt-1 text-xs text-white/50">{copy.weight}: {o.weight} × {o.quantity}</p>
                 <div className="mt-1 flex items-center justify-between">
                   <span className="text-xs text-white/50">{o.created_at}</span>
                   <span className="text-sm font-bold text-amber-400">¥{o.total_amount}</span>
@@ -87,10 +89,10 @@ export function ShopOrderListPage({ groupId, onNavigate }: ShopOrderListPageProp
             </div>
             {o.status === 2 && (
               <div className="mt-3 flex justify-end">
-                <button type="button" onClick={() => handleConfirm(o.id)} className="rounded-lg bg-gradient-to-r from-yellow-300 to-amber-500 px-4 py-1.5 text-xs font-bold text-black">确认收货</button>
+                <button type="button" onClick={() => handleConfirm(o.id)} className="rounded-lg bg-gradient-to-r from-yellow-300 to-amber-500 px-4 py-1.5 text-xs font-bold text-black">{copy.confirmReceipt}</button>
               </div>
             )}
-            {o.logistics_no && <p className="mt-2 text-xs text-white/40">物流单号: {o.logistics_no}</p>}
+            {o.logistics_no && <p className="mt-2 text-xs text-white/40">{copy.logisticsNo}: {o.logistics_no}</p>}
           </div>
         ))}
       </div>

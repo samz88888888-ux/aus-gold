@@ -31,6 +31,7 @@ import { AddressEditPage } from '../old-pages/pages/address/AddressEditPage'
 import { OldPageHeaderProvider } from '../old-pages/components/OldPageHeaderProvider'
 import { UnpaidOrderReminderModal } from '../old-pages/components/payment/UnpaidOrderReminderModal'
 import { fetchPreOrderTips } from '../old-pages/services/api'
+import { getOldPagesCopy } from '../old-pages/i18n'
 import {
   clearAuth,
   connectWallet,
@@ -92,6 +93,7 @@ export function NavigationShowcase() {
   const selectedLanguage =
     languageOptions.find((item) => item.code === selectedLanguageCode) ?? languageOptions[0]
   const copy = copyByLanguage[selectedLanguage.code]
+  const oldCopy = getOldPagesCopy(selectedLanguage.code)
 
   useEffect(() => {
     window.localStorage.setItem('mcg-language', selectedLanguageCode)
@@ -523,11 +525,11 @@ export function NavigationShowcase() {
     icon: string
     activeIcon: string
   }> = [
-    { key: 'home', label: '首页', page: 'home', icon: '/old-pages/footer/home.svg', activeIcon: '/old-pages/footer/home-active.svg' },
-    { key: 'ming', label: '算力', page: 'ming', icon: '/old-pages/footer/depin.svg', activeIcon: '/old-pages/footer/depin-active.svg' },
-    { key: 'shop', label: '商城', page: 'shop', icon: '/old-pages/footer/mall.svg', activeIcon: '/old-pages/footer/mall-active.svg' },
-    { key: 'wallet', label: '钱包', page: 'wallet', icon: '/old-pages/footer/wallet.svg', activeIcon: '/old-pages/footer/wallet-active.svg' },
-    { key: 'user', label: '邀请', page: 'user', icon: '/old-pages/footer/invite.svg', activeIcon: '/old-pages/footer/invite-active.svg' },
+    { key: 'home', label: oldCopy.tabHome, page: 'home', icon: '/old-pages/footer/home.svg', activeIcon: '/old-pages/footer/home-active.svg' },
+    { key: 'ming', label: oldCopy.tabMining, page: 'ming', icon: '/old-pages/footer/depin.svg', activeIcon: '/old-pages/footer/depin-active.svg' },
+    { key: 'shop', label: oldCopy.tabShop, page: 'shop', icon: '/old-pages/footer/mall.svg', activeIcon: '/old-pages/footer/mall-active.svg' },
+    { key: 'wallet', label: oldCopy.tabWallet, page: 'wallet', icon: '/old-pages/footer/wallet.svg', activeIcon: '/old-pages/footer/wallet-active.svg' },
+    { key: 'user', label: oldCopy.tabInvite, page: 'user', icon: '/old-pages/footer/invite.svg', activeIcon: '/old-pages/footer/invite-active.svg' },
   ]
 
   return (

@@ -4,6 +4,7 @@ import type { AppPage, PageParams } from '../../../figma/types'
 import { AgreementPopup } from '../../components/AgreementPopup'
 import { PageContainer } from '../../components/PageContainer'
 import { PageNavBar } from '../../components/PageNavBar'
+import { useOldPagesCopy } from '../../i18n'
 import { fetchProductDetail } from '../../services/api'
 import { saveShopOrderDraft } from '../../services/shopOrderDraft'
 import type { GoldProductDetail, GoldSkuInfo, ShopOrderDraft } from '../../services/types'
@@ -18,6 +19,7 @@ function toNumber(value: number | string | undefined) {
 }
 
 export function ShopDetailPage({ productId, onNavigate }: ShopDetailPageProps) {
+  const copy = useOldPagesCopy()
   const [product, setProduct] = useState<GoldProductDetail | null>(null)
   const [quantity, setQuantity] = useState(1)
   const [selectedSkuValue, setSelectedSkuValue] = useState<string | null>(null)
@@ -84,10 +86,10 @@ export function ShopDetailPage({ productId, onNavigate }: ShopDetailPageProps) {
   if (loading || !product) {
     return (
       <PageContainer>
-        <PageNavBar title="商品详情" onBack={() => onNavigate('shop')} />
+        <PageNavBar title={copy.productDetail} onBack={() => onNavigate('shop')} />
         <div className="flex flex-col items-center py-32">
           <div className="h-8 w-8 animate-spin rounded-full border-2 border-yellow-400/20 border-t-yellow-400" />
-          <span className="mt-3 text-sm text-white/60">加载中...</span>
+          <span className="mt-3 text-sm text-white/60">{copy.loading}</span>
         </div>
       </PageContainer>
     )
@@ -99,11 +101,12 @@ export function ShopDetailPage({ productId, onNavigate }: ShopDetailPageProps) {
 
   return (
     <PageContainer>
-      <PageNavBar title="商品详情" onBack={() => onNavigate('shop')} />
+      <PageNavBar title={copy.productDetail} onBack={() => onNavigate('shop')} />
       <GallerySection images={images} name={product.name} />
-      <InfoSection product={product} currentPrice={currentPrice} currentStock={currentStock} />
+      <InfoSection copy={copy} product={product} currentPrice={currentPrice} currentStock={currentStock} />
       {product.is_sku === 2 && product.sku_attr_value ? (
         <SkuSection
+          title={copy.specSelection}
           skuMap={product.sku_attr_value}
           selectedSkuValue={selectedSkuValue}
           onSelect={(value, skuInfo) => {
@@ -113,9 +116,10 @@ export function ShopDetailPage({ productId, onNavigate }: ShopDetailPageProps) {
           }}
         />
       ) : null}
-      <ContentSection html={product.content} />
+      <ContentSection title={copy.commodityDetail} html={product.content} />
       <div className="h-40" />
       <BottomBar
+        copy={copy}
         quantity={quantity}
         stock={currentStock}
         currentPrice={currentPrice}
@@ -163,10 +167,12 @@ function GallerySection({ images, name }: { images: string[]; name: string }) {
 }
 
 function InfoSection({
+  copy,
   product,
   currentPrice,
   currentStock,
 }: {
+  copy: ReturnType<typeof useOldPagesCopy>
   product: GoldProductDetail
   currentPrice: number
   currentStock: number
@@ -179,26 +185,28 @@ function InfoSection({
       </div>
       <h2 className="mt-2 text-lg font-semibold text-white">{product.name}</h2>
       <div className="mt-3 flex gap-6 text-sm">
-        <span className="text-white/50">库存 <span className="font-medium text-yellow-400">{currentStock}</span></span>
-        <span className="text-white/50">已售 <span className="font-medium text-yellow-400">{product.sales}</span></span>
-        <span className="text-white/50">工费 <span className="font-medium text-white">{toNumber(product.handicraft_fee).toFixed(2)}</span></span>
+        <span className="text-white/50">{copy.inventory} <span className="font-medium text-yellow-400">{currentStock}</span></span>
+        <span className="text-white/50">{copy.sold} <span className="font-medium text-yellow-400">{product.sales}</span></span>
+        <span className="text-white/50">{copy.handiworkFee} <span className="font-medium text-white">{toNumber(product.handicraft_fee).toFixed(2)}</span></span>
       </div>
     </div>
   )
 }
 
 function SkuSection({
+  title,
   skuMap,
   selectedSkuValue,
   onSelect,
 }: {
+  title: string
   skuMap: Record<string, GoldSkuInfo>
   selectedSkuValue: string | null
   onSelect: (value: string, skuInfo: GoldSkuInfo) => void
 }) {
   return (
     <div className="mx-4 mt-3 rounded-xl border border-yellow-500/20 bg-[#1e1e1e] p-4 shadow">
-      <h3 className="mb-3 text-base font-semibold text-yellow-400">规格选择</h3>
+      <h3 className="mb-3 text-base font-semibold text-yellow-400">{title}</h3>
       <div className="flex flex-wrap gap-2">
         {Object.entries(skuMap).map(([value, skuInfo]) => {
           const active = selectedSkuValue === value
@@ -220,16 +228,17 @@ function SkuSection({
   )
 }
 
-function ContentSection({ html }: { html?: string }) {
+function ContentSection({ title, html }: { title: string; html?: string }) {
   return (
     <div className="mx-4 mt-3 rounded-xl border border-yellow-500/20 bg-[#1e1e1e] p-4 shadow">
-      <h3 className="mb-3 text-base font-semibold text-yellow-400">商品详情</h3>
+      <h3 className="mb-3 text-base font-semibold text-yellow-400">{title}</h3>
       <div className="prose prose-invert prose-sm max-w-none text-white/80" dangerouslySetInnerHTML={{ __html: html ?? '' }} />
     </div>
   )
 }
 
 function BottomBar({
+  copy,
   quantity,
   stock,
   currentPrice,
@@ -240,6 +249,7 @@ function BottomBar({
   onIncrease,
   onBuy,
 }: {
+  copy: ReturnType<typeof useOldPagesCopy>
   quantity: number
   stock: number
   currentPrice: number
@@ -254,15 +264,15 @@ function BottomBar({
     <div className="fixed bottom-[76px] left-1/2 z-40 w-full max-w-[430px] -translate-x-1/2 border-t border-white/10 bg-[#0a0a1a]/95 px-4 py-3 pb-[calc(12px+env(safe-area-inset-bottom))] shadow-[0_-4px_12px_rgba(0,0,0,0.4)] backdrop-blur">
       <div className="mb-3 flex items-center justify-between rounded-2xl border border-yellow-500/15 bg-white/[0.04] px-3.5 py-2.5">
         <div>
-          <p className="text-[11px] uppercase tracking-[0.14em] text-yellow-400/70">Order Summary</p>
+          <p className="text-[11px] uppercase tracking-[0.14em] text-yellow-400/70">{copy.orderSummary}</p>
           <p className="mt-1 text-[15px] font-bold text-yellow-400">
             {totalPrice}
             <span className="ml-1 text-[11px] font-medium text-yellow-200/75">USDT</span>
           </p>
         </div>
         <div className="text-right text-[11px] leading-5 text-white/50">
-          <p>商品价 {currentPrice.toFixed(2)}</p>
-          <p>工时费 {handicraftFee.toFixed(2)}</p>
+          <p>{copy.commodityPrice} {currentPrice.toFixed(2)}</p>
+          <p>{copy.laborFee} {handicraftFee.toFixed(2)}</p>
         </div>
       </div>
 
@@ -279,7 +289,7 @@ function BottomBar({
           disabled={!canBuy}
           className="flex h-11 flex-1 items-center justify-center rounded-xl bg-gradient-to-r from-yellow-400 to-amber-500 px-6 text-center text-base font-bold text-black shadow disabled:bg-white/20 disabled:text-white/50 disabled:shadow-none"
         >
-          立即购买
+          {copy.buyNow}
         </button>
       </div>
     </div>

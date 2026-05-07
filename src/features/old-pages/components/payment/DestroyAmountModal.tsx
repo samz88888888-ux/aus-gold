@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 
 import { BottomPopup } from '../BottomPopup'
+import { useOldPagesCopy } from '../../i18n'
 
 export type DestroyAmountSubmitPayload = {
   amount: number
@@ -35,6 +36,7 @@ export function DestroyAmountModal({
   onClose,
   onSubmit,
 }: DestroyAmountModalProps) {
+  const copy = useOldPagesCopy()
   const [activeTab, setActiveTab] = useState<'nadi' | 'naau'>('nadi')
   const [usdtValue, setUsdtValue] = useState('')
   const [tokenValue, setTokenValue] = useState('')
@@ -81,39 +83,39 @@ export function DestroyAmountModal({
   }, [visible, currentPrice, lastInputType, tokenValue, usdtValue])
 
   const helperRows = useMemo(() => ([
-    { label: '最低销毁数量', value: `${Number(minAmount || 0).toFixed(2)} USDT` },
-    { label: '当前价格', value: `1U ≈ ${Number(currentPrice || 0).toFixed(6)} ${activeCurrency}` },
-  ]), [activeCurrency, currentPrice, minAmount])
+    { label: copy.destroyMinAmount, value: `${Number(minAmount || 0).toFixed(2)} USDT` },
+    { label: copy.currentPrice, value: `1U ≈ ${Number(currentPrice || 0).toFixed(6)} ${activeCurrency}` },
+  ]), [activeCurrency, copy.currentPrice, copy.destroyMinAmount, currentPrice, minAmount])
 
   return (
-    <BottomPopup visible={visible} onClose={onClose} title="销毁挖矿">
+    <BottomPopup visible={visible} onClose={onClose} title={copy.destroyMining}>
       {showNaauTab ? (
         <div className="mb-4 grid grid-cols-2 gap-2 rounded-xl bg-white/5 p-1">
-          <TabButton active={activeTab === 'nadi'} label="NADI 支付" onClick={() => setActiveTab('nadi')} />
-          <TabButton active={activeTab === 'naau'} label="NAAU 支付" onClick={() => setActiveTab('naau')} />
+          <TabButton active={activeTab === 'nadi'} label={copy.payWithNadi} onClick={() => setActiveTab('nadi')} />
+          <TabButton active={activeTab === 'naau'} label={copy.payWithNaau} onClick={() => setActiveTab('naau')} />
         </div>
       ) : null}
 
       <div className="space-y-3">
         <AmountInput
-          label="输入销毁金额"
+          label={copy.inputDestroyAmount}
           suffix="USDT"
           value={usdtValue}
           onChange={(value) => {
             setLastInputType('usdt')
             setUsdtValue(value)
           }}
-          placeholder="请输入 USDT 数量"
+          placeholder={copy.inputUsdtAmount}
         />
         <AmountInput
-          label="需支付数量"
+          label={copy.paymentAmount}
           suffix={activeCurrency}
           value={tokenValue}
           onChange={(value) => {
             setLastInputType('token')
             setTokenValue(value)
           }}
-          placeholder="自动换算支付数量"
+          placeholder={copy.autoConvertedPaymentAmount}
         />
       </div>
 
@@ -127,7 +129,7 @@ export function DestroyAmountModal({
       </div>
 
       {!isValid && usdtValue ? (
-        <p className="mt-3 text-xs text-red-300">最低销毁数量为 {Number(minAmount || 0).toFixed(2)} USDT</p>
+        <p className="mt-3 text-xs text-red-300">{copy.destroyMinAmount} {Number(minAmount || 0).toFixed(2)} USDT</p>
       ) : null}
 
       <button
@@ -144,7 +146,7 @@ export function DestroyAmountModal({
         disabled={!isValid}
         className="mt-5 w-full rounded-2xl bg-gradient-to-r from-[#fff193] to-[#eba500] py-3 text-sm font-bold text-black disabled:opacity-40"
       >
-        确认销毁
+        {copy.confirmDestroy}
       </button>
     </BottomPopup>
   )
