@@ -180,6 +180,7 @@ export const userInfoData: UserInfo = {
   zhi_num: 12, team_num: 156, me_performance: 25000, team_performance: 380000,
   self_yeji: 25000,
   team_yeji: 380000,
+  small_yeji: '86000.000000',
   level_id: 3, level_name: 'VIP3', valid_user_power: 1250.5, power: 0, gold_order_status: false,
   usdt: '1240.360000',
   usdt_mine: '82.150000',

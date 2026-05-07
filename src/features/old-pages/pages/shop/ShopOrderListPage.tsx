@@ -40,6 +40,30 @@ export function ShopOrderListPage({ groupId, onNavigate }: ShopOrderListPageProp
     <PageContainer>
       <PageNavBar title="我的订单" onBack={() => onNavigate('shop')} />
       <div className="space-y-3 px-4 py-4">
+        <button
+          type="button"
+          onClick={() => onNavigate('orders')}
+          className="flex w-full items-center justify-between rounded-[16px] border border-[#f6d36b]/15 bg-[linear-gradient(135deg,rgba(255,241,147,0.12)_0%,rgba(235,165,0,0.06)_45%,rgba(255,255,255,0.03)_100%)] px-4 py-3 text-left shadow-[0_12px_28px_rgba(0,0,0,0.18)] transition active:scale-[0.99]"
+        >
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] bg-[linear-gradient(180deg,#fff0a8_0%,#f2b31c_100%)] text-black shadow-[0_8px_18px_rgba(242,179,28,0.28)]">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M4 7.75H20M7 4.75H17M6.25 12H12.75M6.25 15.75H10.75" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                <path d="M5 5.5H19C20.1046 5.5 21 6.39543 21 7.5V17.5C21 18.6046 20.1046 19.5 19 19.5H5C3.89543 19.5 3 18.6046 3 17.5V7.5C3 6.39543 3.89543 5.5 5 5.5Z" stroke="currentColor" strokeWidth="1.8" />
+              </svg>
+            </div>
+            <div className="flex flex-col">
+              <span className="text-sm font-semibold text-white">前往待支付订单</span>
+              <span className="text-xs text-white/45">快速查看并继续完成未支付订单</span>
+            </div>
+          </div>
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 text-[#ffe28a]">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M9 6L15 12L9 18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+        </button>
+
         {loading ? (
           <p className="py-20 text-center text-sm text-white/40">加载中...</p>
         ) : orders.length === 0 ? (

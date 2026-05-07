@@ -44,15 +44,35 @@ function StatCard({ icon, label, value }: { icon: string; label: string; value: 
 }
 
 // --- Performance row ---
-function PerfRow({ icon, label, value }: { icon: string; label: string; value: string | number }) {
+function PerfRow({
+  icon,
+  label,
+  value,
+  extraLabel,
+  extraValue,
+}: {
+  icon: string
+  label: string
+  value: string | number
+  extraLabel?: string
+  extraValue?: string | number
+}) {
   return (
     <div className="flex items-center gap-3.5 rounded-[14px] bg-[#1e1e1e] px-3.5 py-2.5">
       <div className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-[10px] bg-gradient-to-b from-[#fff8c3] via-[#ff9a02] to-[#ffdf50]">
         <img src={icon} alt="" className="h-[22px] w-[22px]" />
       </div>
-      <div className="flex flex-col gap-0.5">
-        <span className="text-sm text-white/70">{label}</span>
-        <span className="text-lg font-bold leading-5">{fmtNum(value)}</span>
+      <div className="flex min-w-0 flex-1 items-center justify-between gap-3">
+        <div className="flex min-w-0 flex-col gap-0.5">
+          <span className="text-sm text-white/70">{label}</span>
+          <span className="text-lg font-bold leading-5">{fmtNum(value)}</span>
+        </div>
+        {extraLabel ? (
+          <div className="shrink-0 rounded-[12px] border border-[#f6d36b]/20 bg-[linear-gradient(180deg,rgba(255,241,147,0.12)_0%,rgba(235,165,0,0.08)_100%)] px-3 py-2 text-right shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]">
+            <div className="text-[11px] leading-4 text-[#f7e7b0]/70">{extraLabel}</div>
+            <div className="text-sm font-bold leading-4 text-[#ffe28a]">{fmtNum(extraValue)}</div>
+          </div>
+        ) : null}
       </div>
     </div>
   )
@@ -205,6 +225,8 @@ export function UserPage({ onNavigate }: UserPageProps) {
             icon="/old-pages/team/team-perform.svg"
             label="团队业绩"
             value={userInfo?.team_yeji ?? 0}
+            extraLabel="小区业绩"
+            extraValue={userInfo?.small_yeji ?? 0}
           />
         </div>
 

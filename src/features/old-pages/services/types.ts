@@ -271,6 +271,7 @@ export type UserInfo = {
   team_performance: number
   self_yeji: number
   team_yeji: number
+  small_yeji?: number | string
   level_id: number
   level_name: string
   valid_user_power: number
