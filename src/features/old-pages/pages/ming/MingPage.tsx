@@ -144,8 +144,14 @@ export function MingPage({ onNavigate }: MingPageProps) {
                   Mining Center
                 </p>
                 <div className="mt-3 flex items-center gap-2">
-                  <img src="/old-pages/ming/ming-power-light.png" alt="" className="h-4 w-4" />
-                  <span className="text-[13px] font-medium text-white/72">{copy.cumulativePower}</span>
+                  <img
+                    src="/old-pages/ming/ming-power-light.png"
+                    alt=""
+                    className="h-4 w-4"
+                  />
+                  <span className="text-[13px] font-medium text-white/72">
+                    {copy.cumulativePower}
+                  </span>
                 </div>
               </div>
 
@@ -160,7 +166,9 @@ export function MingPage({ onNavigate }: MingPageProps) {
 
             <div className="mt-5 flex items-end justify-between gap-4">
               <div>
-                <p className="text-[42px] font-black leading-none tracking-[-0.04em] text-white">{totalPower}</p>
+                <p className="text-[42px] font-black leading-none tracking-[-0.04em] text-white">
+                  {totalPower}
+                </p>
                 {/* <div className="mt-4 inline-flex items-center rounded-full bg-[linear-gradient(135deg,#ffec92_0%,#fbd005_55%,#d79712_100%)] px-3.5 py-1.5 shadow-[0_10px_24px_rgba(251,208,5,0.24)]">
                   <span className="text-[12px] font-black tracking-[0.02em] text-[#251600]">鎖倉算力：{lockedPower}</span>
                 </div> */}
@@ -174,21 +182,37 @@ export function MingPage({ onNavigate }: MingPageProps) {
 
           <div className="mb-4 flex items-center justify-between gap-3">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#f6c640]">Mining Engine</p>
-              <h2 className="mt-1 text-[22px] font-black text-white">{copy.coreMiningZone}</h2>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#f6c640]">
+                Mining Engine
+              </p>
+              <h2 className="mt-1 text-[22px] font-black text-white">
+                {copy.coreMiningZone}
+              </h2>
             </div>
-            <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-medium text-white/48">{copy.livePreview}</div>
+            <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-medium text-white/48">
+              {copy.livePreview}
+            </div>
           </div>
 
           <div className="overflow-hidden rounded-[26px] border border-[#f7c931]/15 bg-black/70 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
             <div className="aspect-[5/4] w-full">
-              <img src="https://augchain.s3.us-east-1.amazonaws.com/ming.gif" alt="mining preview" className="h-full w-full object-cover" />
+              <img
+                src="https://bridge-coin.s3.ap-east-1.amazonaws.com/ming.gif"
+                alt="mining preview"
+                className="h-full w-full object-cover"
+              />
             </div>
           </div>
 
           <div className="mt-4 grid grid-cols-2 gap-3">
-            <InfoTile label={copy.destroyMinAmount} value={`${fmt(destoryInfo?.min_amount)} USDT`} />
-            <InfoTile label={`${destoryInfo?.currency?.name || 'MCG'} ${copy.currentPrice}`} value={`${fmt(destoryInfo?.price)} USDT`} />
+            <InfoTile
+              label={copy.destroyMinAmount}
+              value={`${fmt(destoryInfo?.min_amount)} USDT`}
+            />
+            <InfoTile
+              label={`${destoryInfo?.currency?.name || 'MCG'} ${copy.currentPrice}`}
+              value={`${fmt(destoryInfo?.price)} USDT`}
+            />
           </div>
         </section>
 
@@ -198,10 +222,16 @@ export function MingPage({ onNavigate }: MingPageProps) {
 
           <div className="relative flex items-center justify-between gap-3">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#f6c640]">Quick Access</p>
-              <h2 className="mt-1 text-[20px] font-black text-white">{copy.quickAction}</h2>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-[#f6c640]">
+                Quick Access
+              </p>
+              <h2 className="mt-1 text-[20px] font-black text-white">
+                {copy.quickAction}
+              </h2>
             </div>
-            <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-medium text-white/48">{copy.quickAccess}</div>
+            <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-[10px] font-medium text-white/48">
+              {copy.quickAccess}
+            </div>
           </div>
 
           <div className="relative mt-4">
