@@ -245,6 +245,7 @@ type OldPagesCopy = {
   rechargeInstruction1: string
   rechargeInstruction2: string
   rechargeInstruction3: string
+  rechargeInstruction4: string
   usdtMiningLabel: string
   usdtWithdrawSubtitle: string
   usdtMiningWithdrawSubtitle: string
@@ -341,7 +342,8 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     livePreview: 'Live Preview',
     quickAccess: 'Quick Access',
     quickAction: '快捷操作',
-    destroyMiningDescription: '輸入 USDT 金額後自動換算支付幣種，建立待支付訂單後前往完成鏈上或餘額支付。',
+    destroyMiningDescription:
+      '輸入 USDT 金額後自動換算支付幣種，建立待支付訂單後前往完成鏈上或餘額支付。',
     createOrderLoading: '正在創建訂單...',
     choosePaymentMethod: '選擇支付方式',
     orderCreated: '下單成功，請前往待支付訂單完成支付',
@@ -404,7 +406,8 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     purchaseAgreement: '購買協議',
     agreeAndBuy: '同意並購買',
     pendingPaymentOrderExists: '存在待支付訂單',
-    unpaidOrderHint: '檢測到你有未完成支付的預訂單，可直接前往待支付訂單繼續支付。',
+    unpaidOrderHint:
+      '檢測到你有未完成支付的預訂單，可直接前往待支付訂單繼續支付。',
     goPay: '去支付',
     confirmOrder: '確認訂單',
     orderDataMissing: '訂單數據不存在',
@@ -533,11 +536,15 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     scanRechargeHint: '使用錢包或交易所掃碼，向該地址充值',
     copyAddress: '複製地址',
     noRechargeAddress: '暫無可用充值地址',
-    noRechargeAddressHint: '接口未返回 USDT 鏈地址時，這裡不會展示二維碼與地址信息。',
+    noRechargeAddressHint:
+      '接口未返回 USDT 鏈地址時，這裡不會展示二維碼與地址信息。',
     rechargeInstructions: '充值說明',
     rechargeInstruction1: '1. 僅支持向當前選中鏈的 USDT 地址充值。',
-    rechargeInstruction2: '2. 轉賬前請核對鏈類型與地址，避免因鏈不一致造成資產損失。',
-    rechargeInstruction3: '3. 到賬時間以鏈上確認速度為準，充值成功後資產會自動更新。',
+    rechargeInstruction2:
+      '2. 轉賬前請核對鏈類型與地址，避免因鏈不一致造成資產損失。',
+    rechargeInstruction3:
+      '3. 到賬時間以鏈上確認速度為準，充值成功後資產會自動更新。',
+    rechargeInstruction4: '4. 最低充值 1 USDT 起。',
     usdtMiningLabel: 'USDT挖礦',
     usdtWithdrawSubtitle: '輸入數量後直接提交提現申請',
     usdtMiningWithdrawSubtitle: '按價格兌換為 AUS，並按天分批釋放',
@@ -557,7 +564,8 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     withdrawExceedsBalance: '提現數量超過可用餘額',
     selectArrivalDays: '請選擇到賬天數',
     withdrawSubmitted: 'USDT 提現申請已提交',
-    withdrawMiningSubmitted: 'USDT挖礦提現申請已提交，可在記錄中查看分天到賬明細',
+    withdrawMiningSubmitted:
+      'USDT挖礦提現申請已提交，可在記錄中查看分天到賬明細',
     viewRecords: '查看記錄',
     withdrawSubmitFailed: '提現提交失敗',
     withdrawPageDesc: 'USDT / AUS 提現與分天釋放',
@@ -616,13 +624,16 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     amountToPay: 'Amount to pay',
     systemBalance: 'System balance',
     onChainPayment: 'On-chain payment',
-    networkMismatch: 'Current wallet network does not match. Switch to {{network}}',
+    networkMismatch:
+      'Current wallet network does not match. Switch to {{network}}',
     insufficientBalance: 'Insufficient balance. Available {{amount}}',
     availableBalance: 'Available balance: {{amount}}',
     switchChainRequired: 'Switch chain',
     payable: 'Payable',
-    serverBalancePaymentHint: 'The server will complete the system balance deduction.',
-    walletPaymentHint: 'After confirmation, the wallet will open for on-chain payment.',
+    serverBalancePaymentHint:
+      'The server will complete the system balance deduction.',
+    walletPaymentHint:
+      'After confirmation, the wallet will open for on-chain payment.',
     switchToNetwork: 'Switch to {{network}}',
     miningCenter: 'Mining Center',
     cumulativePower: 'Total Power (T)',
@@ -632,7 +643,8 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     livePreview: 'Live Preview',
     quickAccess: 'Quick Access',
     quickAction: 'Main Action',
-    destroyMiningDescription: 'Enter a USDT amount to auto-convert the payment token, then create a pending order and complete on-chain or balance payment.',
+    destroyMiningDescription:
+      'Enter a USDT amount to auto-convert the payment token, then create a pending order and complete on-chain or balance payment.',
     createOrderLoading: 'Creating order...',
     choosePaymentMethod: 'Choose payment method',
     orderCreated: 'Order created. Please complete payment in pending orders.',
@@ -642,7 +654,8 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     createDestroyOrderFailed: 'Failed to create destroy order',
     myMiningMachines: 'My Mining Machines',
     deviceList: 'Device List',
-    deviceListDescription: 'View current mining revenue and status by device type',
+    deviceListDescription:
+      'View current mining revenue and status by device type',
     deviceActivated: 'Activated Device',
     destroyedMiner: 'Destroyed Miner',
     unionMiner: 'Union Miner',
@@ -695,7 +708,8 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     purchaseAgreement: 'Purchase Agreement',
     agreeAndBuy: 'Agree and Buy',
     pendingPaymentOrderExists: 'Pending payment order found',
-    unpaidOrderHint: 'An unpaid pre-order was detected. You can go directly to pending orders to continue payment.',
+    unpaidOrderHint:
+      'An unpaid pre-order was detected. You can go directly to pending orders to continue payment.',
     goPay: 'Pay now',
     confirmOrder: 'Confirm Order',
     orderDataMissing: 'Order data is missing',
@@ -757,7 +771,8 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     delete: 'Delete',
     addShippingAddress: 'Add Shipping Address',
     deleteAddress: 'Delete Address',
-    deleteAddressConfirm: 'Are you sure you want to delete this shipping address?',
+    deleteAddressConfirm:
+      'Are you sure you want to delete this shipping address?',
     deleteConfirm: 'Delete',
     recipient: 'Recipient',
     enterRecipient: 'Enter recipient name',
@@ -795,7 +810,8 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     balancePayment: 'Balance Payment',
     chainPayment: 'On-chain Payment',
     fetchPaymentInfoFailed: 'Failed to fetch payment info',
-    paymentSuccessOnchain: 'Payment succeeded, waiting for on-chain confirmation',
+    paymentSuccessOnchain:
+      'Payment succeeded, waiting for on-chain confirmation',
     paymentFailed: 'Payment failed',
     missingOrderNo: 'Missing order number for on-chain payment',
     missingWallet: 'No wallet detected. Please install or open an EVM wallet',
@@ -808,39 +824,50 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     paymentTxFailed: 'Payment transaction failed. Please try again later',
     cancelOrderFailed: 'Failed to cancel order',
     noPendingOrders: 'No pending orders',
-    pendingOrdersHint: 'New pre-orders will be shown here and can be completed with on-chain payment later.',
+    pendingOrdersHint:
+      'New pre-orders will be shown here and can be completed with on-chain payment later.',
     switchNetworkFailed: 'Failed to switch network',
     cancelOrderTitle: 'Cancel Order',
-    cancelOrderConfirm: 'Are you sure you want to cancel this order? This cannot be undone.',
+    cancelOrderConfirm:
+      'Are you sure you want to cancel this order? This cannot be undone.',
     confirmCancel: 'Confirm Cancel',
     thinkAgain: 'Keep It',
     processingPayment: 'Processing payment...',
     rechargeAddressLoadFailed: 'Failed to load address',
     rechargeAddressFetchFailed: 'Failed to fetch recharge address',
     copyFailed: 'Copy failed',
-    copyAddressUnsupported: 'Copy is not supported in this environment. Please copy manually',
+    copyAddressUnsupported:
+      'Copy is not supported in this environment. Please copy manually',
     availableNetworks: 'Available Networks',
     rechargeAddressLoading: 'Loading recharge address...',
-    scanRechargeHint: 'Use a wallet or exchange to scan and recharge to this address',
+    scanRechargeHint:
+      'Use a wallet or exchange to scan and recharge to this address',
     copyAddress: 'Copy Address',
     noRechargeAddress: 'No recharge address available',
-    noRechargeAddressHint: 'If the API does not return a USDT chain address, no QR code or address will be shown here.',
+    noRechargeAddressHint:
+      'If the API does not return a USDT chain address, no QR code or address will be shown here.',
     rechargeInstructions: 'Recharge Instructions',
-    rechargeInstruction1: '1. Only recharge to the USDT address of the currently selected chain.',
-    rechargeInstruction2: '2. Check the chain type and address before transferring to avoid asset loss.',
-    rechargeInstruction3: '3. Arrival time depends on on-chain confirmation speed. Assets update automatically after success.',
+    rechargeInstruction1:
+      '1. Only recharge to the USDT address of the currently selected chain.',
+    rechargeInstruction2:
+      '2. Check the chain type and address before transferring to avoid asset loss.',
+    rechargeInstruction3:
+      '3. Arrival time depends on on-chain confirmation speed. Assets update automatically after success.',
+    rechargeInstruction4: '4. Minimum recharge starts from 1 USDT.',
     usdtMiningLabel: 'USDT Mining',
     usdtWithdrawSubtitle: 'Enter an amount and submit directly',
     usdtMiningWithdrawSubtitle: 'Convert by price into AUS and release daily',
     withdrawStatusCompleted: 'Completed',
     withdrawStatusRefunded: 'Refunded',
     withdrawStatusProcessing: 'Processing',
-    withdrawConfigAndUserLoadFailed: 'Failed to load user info and withdrawal settings',
+    withdrawConfigAndUserLoadFailed:
+      'Failed to load user info and withdrawal settings',
     withdrawConfigLoadFailed: 'Failed to load withdrawal settings',
     withdrawUserLoadFailed: 'Failed to load user info',
     withdrawRecordsLoadFailed: 'Failed to load withdrawal records',
     withdrawDetailLoadFailed: 'Failed to load arrival details',
-    withdrawConfigLoadingRetry: 'Withdrawal settings are loading, please try again later',
+    withdrawConfigLoadingRetry:
+      'Withdrawal settings are loading, please try again later',
     withdrawDisabled: 'This token is currently unavailable for withdrawal',
     invalidWithdrawAmount: 'Enter a valid withdrawal amount',
     minWithdrawMessage: 'Minimum withdrawal {{amount}} {{coin}}',
@@ -848,7 +875,8 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     withdrawExceedsBalance: 'Withdrawal amount exceeds available balance',
     selectArrivalDays: 'Select arrival days',
     withdrawSubmitted: 'USDT withdrawal request submitted',
-    withdrawMiningSubmitted: 'USDT Mining withdrawal request submitted. You can view the staged arrival details in records.',
+    withdrawMiningSubmitted:
+      'USDT Mining withdrawal request submitted. You can view the staged arrival details in records.',
     viewRecords: 'View Records',
     withdrawSubmitFailed: 'Failed to submit withdrawal',
     withdrawPageDesc: 'USDT / AUS withdraw and staged release',
@@ -907,7 +935,8 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     amountToPay: '결제 필요',
     systemBalance: '시스템 잔액',
     onChainPayment: '온체인 결제',
-    networkMismatch: '현재 지갑 네트워크가 일치하지 않습니다. {{network}}(으)로 전환하세요',
+    networkMismatch:
+      '현재 지갑 네트워크가 일치하지 않습니다. {{network}}(으)로 전환하세요',
     insufficientBalance: '잔액이 부족합니다. 사용 가능 {{amount}}',
     availableBalance: '사용 가능 잔액: {{amount}}',
     switchChainRequired: '체인 전환 필요',
@@ -923,7 +952,8 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     livePreview: '실시간 미리보기',
     quickAccess: '빠른 진입',
     quickAction: '빠른 작업',
-    destroyMiningDescription: 'USDT 금액을 입력하면 결제 토큰이 자동 환산되며, 미결제 주문 생성 후 온체인 또는 잔액 결제를 완료할 수 있습니다.',
+    destroyMiningDescription:
+      'USDT 금액을 입력하면 결제 토큰이 자동 환산되며, 미결제 주문 생성 후 온체인 또는 잔액 결제를 완료할 수 있습니다.',
     createOrderLoading: '주문 생성 중...',
     choosePaymentMethod: '결제 방식 선택',
     orderCreated: '주문이 생성되었습니다. 미결제 주문에서 결제를 완료하세요.',
@@ -986,7 +1016,8 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     purchaseAgreement: '구매 약관',
     agreeAndBuy: '동의 후 구매',
     pendingPaymentOrderExists: '미결제 주문이 있습니다',
-    unpaidOrderHint: '미완료된 예약 주문이 감지되었습니다. 미결제 주문으로 바로 이동해 결제를 계속할 수 있습니다.',
+    unpaidOrderHint:
+      '미완료된 예약 주문이 감지되었습니다. 미결제 주문으로 바로 이동해 결제를 계속할 수 있습니다.',
     goPay: '결제하러 가기',
     confirmOrder: '주문 확인',
     orderDataMissing: '주문 데이터가 없습니다',
@@ -1099,30 +1130,38 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     paymentTxFailed: '결제 트랜잭션 실패, 나중에 다시 시도하세요',
     cancelOrderFailed: '주문 취소 실패',
     noPendingOrders: '미결제 주문 없음',
-    pendingOrdersHint: '새로 생성된 예약 주문이 여기에 표시되며 나중에 온체인 결제를 완료할 수 있습니다.',
+    pendingOrdersHint:
+      '새로 생성된 예약 주문이 여기에 표시되며 나중에 온체인 결제를 완료할 수 있습니다.',
     switchNetworkFailed: '네트워크 전환 실패',
     cancelOrderTitle: '주문 취소',
-    cancelOrderConfirm: '이 주문을 취소하시겠습니까? 취소 후 복구할 수 없습니다.',
+    cancelOrderConfirm:
+      '이 주문을 취소하시겠습니까? 취소 후 복구할 수 없습니다.',
     confirmCancel: '취소 확인',
     thinkAgain: '다시 생각하기',
     processingPayment: '결제 처리 중...',
     rechargeAddressLoadFailed: '주소 로드 실패',
     rechargeAddressFetchFailed: '충전 주소 불러오기 실패',
     copyFailed: '복사 실패',
-    copyAddressUnsupported: '현재 환경에서는 복사가 지원되지 않습니다. 수동으로 복사하세요',
+    copyAddressUnsupported:
+      '현재 환경에서는 복사가 지원되지 않습니다. 수동으로 복사하세요',
     availableNetworks: '사용 가능한 네트워크',
     rechargeAddressLoading: '충전 주소 로딩 중...',
     scanRechargeHint: '지갑 또는 거래소로 QR을 스캔하여 이 주소로 충전하세요',
     copyAddress: '주소 복사',
     noRechargeAddress: '사용 가능한 충전 주소가 없습니다',
-    noRechargeAddressHint: 'API가 USDT 체인 주소를 반환하지 않으면 QR 코드와 주소 정보가 표시되지 않습니다.',
+    noRechargeAddressHint:
+      'API가 USDT 체인 주소를 반환하지 않으면 QR 코드와 주소 정보가 표시되지 않습니다.',
     rechargeInstructions: '충전 안내',
     rechargeInstruction1: '1. 현재 선택한 체인의 USDT 주소로만 충전하세요.',
-    rechargeInstruction2: '2. 송금 전 체인 유형과 주소를 확인하여 자산 손실을 방지하세요.',
-    rechargeInstruction3: '3. 입금 시간은 온체인 확인 속도에 따라 달라지며, 성공 후 자산이 자동 업데이트됩니다.',
+    rechargeInstruction2:
+      '2. 송금 전 체인 유형과 주소를 확인하여 자산 손실을 방지하세요.',
+    rechargeInstruction3:
+      '3. 입금 시간은 온체인 확인 속도에 따라 달라지며, 성공 후 자산이 자동 업데이트됩니다.',
+    rechargeInstruction4: '4. 최소 충전 금액은 1 USDT입니다.',
     usdtMiningLabel: 'USDT 채굴',
     usdtWithdrawSubtitle: '수량을 입력하고 바로 출금을 제출하세요',
-    usdtMiningWithdrawSubtitle: '가격 기준으로 AUS로 전환되어 매일 분할 지급됩니다',
+    usdtMiningWithdrawSubtitle:
+      '가격 기준으로 AUS로 전환되어 매일 분할 지급됩니다',
     withdrawStatusCompleted: '완료됨',
     withdrawStatusRefunded: '환불됨',
     withdrawStatusProcessing: '출금 중',
@@ -1131,7 +1170,8 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     withdrawUserLoadFailed: '사용자 정보 로드 실패',
     withdrawRecordsLoadFailed: '출금 기록 로드 실패',
     withdrawDetailLoadFailed: '입금 상세 로드 실패',
-    withdrawConfigLoadingRetry: '출금 설정 로딩 중입니다. 잠시 후 다시 시도하세요',
+    withdrawConfigLoadingRetry:
+      '출금 설정 로딩 중입니다. 잠시 후 다시 시도하세요',
     withdrawDisabled: '현재 이 코인은 출금할 수 없습니다',
     invalidWithdrawAmount: '올바른 출금 수량을 입력하세요',
     minWithdrawMessage: '최소 출금 {{amount}} {{coin}}',
@@ -1139,7 +1179,8 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     withdrawExceedsBalance: '출금 수량이 사용 가능 잔액을 초과합니다',
     selectArrivalDays: '입금 일수를 선택하세요',
     withdrawSubmitted: 'USDT 출금 신청이 제출되었습니다',
-    withdrawMiningSubmitted: 'USDT 채굴 출금 신청이 제출되었습니다. 기록에서 일별 입금 상세를 확인할 수 있습니다.',
+    withdrawMiningSubmitted:
+      'USDT 채굴 출금 신청이 제출되었습니다. 기록에서 일별 입금 상세를 확인할 수 있습니다.',
     viewRecords: '기록 보기',
     withdrawSubmitFailed: '출금 제출 실패',
     withdrawPageDesc: 'USDT / AUS 출금 및 일별 분할 지급',
@@ -1198,13 +1239,15 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     amountToPay: '支払額',
     systemBalance: 'システム残高',
     onChainPayment: 'オンチェーン支払い',
-    networkMismatch: '現在のウォレットネットワークが一致しません。{{network}} に切り替えてください',
+    networkMismatch:
+      '現在のウォレットネットワークが一致しません。{{network}} に切り替えてください',
     insufficientBalance: '残高不足です。利用可能 {{amount}}',
     availableBalance: '利用可能残高: {{amount}}',
     switchChainRequired: 'チェーン切替が必要',
     payable: '支払い可能',
     serverBalancePaymentHint: 'サーバーがシステム残高の差し引きを完了します。',
-    walletPaymentHint: '確認後、ウォレットが起動しオンチェーン支払いを行います。',
+    walletPaymentHint:
+      '確認後、ウォレットが起動しオンチェーン支払いを行います。',
     switchToNetwork: '{{network}} に切り替える',
     miningCenter: 'マイニングセンター',
     cumulativePower: '累計算力 (T)',
@@ -1214,10 +1257,12 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     livePreview: 'ライブプレビュー',
     quickAccess: 'クイックアクセス',
     quickAction: 'クイック操作',
-    destroyMiningDescription: 'USDT 金額を入力すると支払いトークンが自動換算され、未払い注文作成後にオンチェーンまたは残高支払いを完了できます。',
+    destroyMiningDescription:
+      'USDT 金額を入力すると支払いトークンが自動換算され、未払い注文作成後にオンチェーンまたは残高支払いを完了できます。',
     createOrderLoading: '注文作成中...',
     choosePaymentMethod: '支払方法を選択',
-    orderCreated: '注文が作成されました。未払い注文で支払いを完了してください。',
+    orderCreated:
+      '注文が作成されました。未払い注文で支払いを完了してください。',
     goToOrders: '注文へ移動',
     noPaymentMethods: '利用可能な支払方法がありません',
     fetchPaymentMethodsFailed: '支払方法の取得に失敗しました',
@@ -1277,7 +1322,8 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     purchaseAgreement: '購入規約',
     agreeAndBuy: '同意して購入',
     pendingPaymentOrderExists: '未払い注文があります',
-    unpaidOrderHint: '未完了の予約注文が見つかりました。未払い注文へ移動して支払いを続けられます。',
+    unpaidOrderHint:
+      '未完了の予約注文が見つかりました。未払い注文へ移動して支払いを続けられます。',
     goPay: '支払いへ',
     confirmOrder: '注文確認',
     orderDataMissing: '注文データがありません',
@@ -1380,49 +1426,64 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     paymentSuccessOnchain: '支払い成功、オンチェーン確認待ちです',
     paymentFailed: '支払い失敗',
     missingOrderNo: 'オンチェーン支払いの注文番号がありません',
-    missingWallet: 'ウォレットが検出されません。EVMウォレットをインストールまたは起動してください',
+    missingWallet:
+      'ウォレットが検出されません。EVMウォレットをインストールまたは起動してください',
     missingTokenContract: 'トークンコントラクトアドレスがありません',
     missingSpenderContract: '受取コントラクトアドレスがありません',
     missingTxData: 'オンチェーン支払いの tx_data がありません',
     missingAmountWei: 'オンチェーン支払いの amount_wei がありません',
     missingWalletAddress: 'ウォレットがアカウントアドレスを返しませんでした',
-    approveFailed: '承認トランザクションに失敗しました。後ほど再試行してください',
-    paymentTxFailed: '支払いトランザクションに失敗しました。後ほど再試行してください',
+    approveFailed:
+      '承認トランザクションに失敗しました。後ほど再試行してください',
+    paymentTxFailed:
+      '支払いトランザクションに失敗しました。後ほど再試行してください',
     cancelOrderFailed: '注文キャンセルに失敗しました',
     noPendingOrders: '未払い注文はありません',
-    pendingOrdersHint: '新しく作成された予約注文はここに表示され、後でオンチェーン支払いを完了できます。',
+    pendingOrdersHint:
+      '新しく作成された予約注文はここに表示され、後でオンチェーン支払いを完了できます。',
     switchNetworkFailed: 'ネットワーク切替に失敗しました',
     cancelOrderTitle: '注文キャンセル',
-    cancelOrderConfirm: 'この注文をキャンセルしますか？キャンセル後は元に戻せません。',
+    cancelOrderConfirm:
+      'この注文をキャンセルしますか？キャンセル後は元に戻せません。',
     confirmCancel: 'キャンセル確認',
     thinkAgain: 'やめておく',
     processingPayment: '支払い処理中...',
     rechargeAddressLoadFailed: 'アドレスの読み込みに失敗しました',
     rechargeAddressFetchFailed: '入金アドレスの取得に失敗しました',
     copyFailed: 'コピーに失敗しました',
-    copyAddressUnsupported: 'この環境ではコピーがサポートされていません。手動でコピーしてください',
+    copyAddressUnsupported:
+      'この環境ではコピーがサポートされていません。手動でコピーしてください',
     availableNetworks: '利用可能ネットワーク',
     rechargeAddressLoading: '入金アドレス読み込み中...',
-    scanRechargeHint: 'ウォレットまたは取引所でQRをスキャンしてこのアドレスへ入金してください',
+    scanRechargeHint:
+      'ウォレットまたは取引所でQRをスキャンしてこのアドレスへ入金してください',
     copyAddress: 'アドレスをコピー',
     noRechargeAddress: '利用可能な入金アドレスがありません',
-    noRechargeAddressHint: 'API が USDT チェーンアドレスを返さない場合、QR コードとアドレス情報は表示されません。',
+    noRechargeAddressHint:
+      'API が USDT チェーンアドレスを返さない場合、QR コードとアドレス情報は表示されません。',
     rechargeInstructions: '入金案内',
-    rechargeInstruction1: '1. 現在選択中のチェーンの USDT アドレスにのみ入金してください。',
-    rechargeInstruction2: '2. 送金前にチェーン種別とアドレスを確認し、資産損失を防いでください。',
-    rechargeInstruction3: '3. 着金時間はオンチェーン確認速度によります。成功後、資産は自動更新されます。',
+    rechargeInstruction1:
+      '1. 現在選択中のチェーンの USDT アドレスにのみ入金してください。',
+    rechargeInstruction2:
+      '2. 送金前にチェーン種別とアドレスを確認し、資産損失を防いでください。',
+    rechargeInstruction3:
+      '3. 着金時間はオンチェーン確認速度によります。成功後、資産は自動更新されます。',
+    rechargeInstruction4: '4. 最低入金額は 1 USDT からです。',
     usdtMiningLabel: 'USDT マイニング',
     usdtWithdrawSubtitle: '数量を入力して直接出金申請を送信します',
-    usdtMiningWithdrawSubtitle: '価格に応じて AUS に換算され、日ごとに分割解放されます',
+    usdtMiningWithdrawSubtitle:
+      '価格に応じて AUS に換算され、日ごとに分割解放されます',
     withdrawStatusCompleted: '完了',
     withdrawStatusRefunded: '返金済み',
     withdrawStatusProcessing: '出金中',
-    withdrawConfigAndUserLoadFailed: 'ユーザー情報と出金設定の読み込みに失敗しました',
+    withdrawConfigAndUserLoadFailed:
+      'ユーザー情報と出金設定の読み込みに失敗しました',
     withdrawConfigLoadFailed: '出金設定の読み込みに失敗しました',
     withdrawUserLoadFailed: 'ユーザー情報の読み込みに失敗しました',
     withdrawRecordsLoadFailed: '出金履歴の読み込みに失敗しました',
     withdrawDetailLoadFailed: '着金詳細の読み込みに失敗しました',
-    withdrawConfigLoadingRetry: '出金設定を読み込み中です。しばらくしてから再度お試しください',
+    withdrawConfigLoadingRetry:
+      '出金設定を読み込み中です。しばらくしてから再度お試しください',
     withdrawDisabled: '現在この通貨は出金できません',
     invalidWithdrawAmount: '正しい出金数量を入力してください',
     minWithdrawMessage: '最小出金 {{amount}} {{coin}}',
@@ -1430,7 +1491,8 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     withdrawExceedsBalance: '出金数量が利用可能残高を超えています',
     selectArrivalDays: '着金日数を選択してください',
     withdrawSubmitted: 'USDT 出金申請が送信されました',
-    withdrawMiningSubmitted: 'USDT マイニング出金申請が送信されました。履歴で日別着金詳細を確認できます。',
+    withdrawMiningSubmitted:
+      'USDT マイニング出金申請が送信されました。履歴で日別着金詳細を確認できます。',
     viewRecords: '履歴を見る',
     withdrawSubmitFailed: '出金送信に失敗しました',
     withdrawPageDesc: 'USDT / AUS の出金と日別段階解放',
@@ -1489,7 +1551,8 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     amountToPay: 'จำนวนที่ต้องจ่าย',
     systemBalance: 'ยอดคงเหลือระบบ',
     onChainPayment: 'ชำระบนเชน',
-    networkMismatch: 'เครือข่ายกระเป๋าปัจจุบันไม่ตรง กรุณาสลับไปที่ {{network}}',
+    networkMismatch:
+      'เครือข่ายกระเป๋าปัจจุบันไม่ตรง กรุณาสลับไปที่ {{network}}',
     insufficientBalance: 'ยอดคงเหลือไม่พอ ใช้งานได้ {{amount}}',
     availableBalance: 'ยอดคงเหลือที่ใช้ได้: {{amount}}',
     switchChainRequired: 'ต้องสลับเชน',
@@ -1505,7 +1568,8 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     livePreview: 'พรีวิวแบบเรียลไทม์',
     quickAccess: 'ทางเข้าด่วน',
     quickAction: 'การทำงานด่วน',
-    destroyMiningDescription: 'กรอกจำนวน USDT แล้วระบบจะคำนวณโทเค็นที่ต้องชำระอัตโนมัติ จากนั้นสร้างคำสั่งซื้อค้างชำระเพื่อไปชำระบนเชนหรือด้วยยอดคงเหลือ',
+    destroyMiningDescription:
+      'กรอกจำนวน USDT แล้วระบบจะคำนวณโทเค็นที่ต้องชำระอัตโนมัติ จากนั้นสร้างคำสั่งซื้อค้างชำระเพื่อไปชำระบนเชนหรือด้วยยอดคงเหลือ',
     createOrderLoading: 'กำลังสร้างคำสั่งซื้อ...',
     choosePaymentMethod: 'เลือกวิธีชำระเงิน',
     orderCreated: 'สร้างคำสั่งซื้อแล้ว กรุณาไปชำระในคำสั่งซื้อค้างชำระ',
@@ -1568,7 +1632,8 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     purchaseAgreement: 'ข้อตกลงการซื้อ',
     agreeAndBuy: 'ยอมรับและซื้อ',
     pendingPaymentOrderExists: 'มีคำสั่งซื้อค้างชำระอยู่',
-    unpaidOrderHint: 'ตรวจพบคำสั่งซื้อพรีออเดอร์ที่ยังไม่ได้ชำระ คุณสามารถไปที่คำสั่งซื้อค้างชำระเพื่อชำระต่อได้ทันที',
+    unpaidOrderHint:
+      'ตรวจพบคำสั่งซื้อพรีออเดอร์ที่ยังไม่ได้ชำระ คุณสามารถไปที่คำสั่งซื้อค้างชำระเพื่อชำระต่อได้ทันที',
     goPay: 'ไปชำระ',
     confirmOrder: 'ยืนยันคำสั่งซื้อ',
     orderDataMissing: 'ไม่พบข้อมูลคำสั่งซื้อ',
@@ -1681,27 +1746,36 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     paymentTxFailed: 'ธุรกรรมการชำระเงินล้มเหลว กรุณาลองใหม่ภายหลัง',
     cancelOrderFailed: 'ยกเลิกคำสั่งซื้อล้มเหลว',
     noPendingOrders: 'ไม่มีคำสั่งซื้อค้างชำระ',
-    pendingOrdersHint: 'คำสั่งซื้อพรีออเดอร์ที่สร้างใหม่จะแสดงที่นี่ และสามารถกลับมาชำระบนเชนได้ภายหลัง',
+    pendingOrdersHint:
+      'คำสั่งซื้อพรีออเดอร์ที่สร้างใหม่จะแสดงที่นี่ และสามารถกลับมาชำระบนเชนได้ภายหลัง',
     switchNetworkFailed: 'สลับเครือข่ายล้มเหลว',
     cancelOrderTitle: 'ยกเลิกคำสั่งซื้อ',
-    cancelOrderConfirm: 'คุณแน่ใจหรือไม่ว่าต้องการยกเลิกคำสั่งซื้อนี้ เมื่อยกเลิกแล้วไม่สามารถกู้คืนได้',
+    cancelOrderConfirm:
+      'คุณแน่ใจหรือไม่ว่าต้องการยกเลิกคำสั่งซื้อนี้ เมื่อยกเลิกแล้วไม่สามารถกู้คืนได้',
     confirmCancel: 'ยืนยันการยกเลิก',
     thinkAgain: 'คิดอีกครั้ง',
     processingPayment: 'กำลังประมวลผลการชำระเงิน...',
     rechargeAddressLoadFailed: 'โหลดที่อยู่ล้มเหลว',
     rechargeAddressFetchFailed: 'ดึงที่อยู่เติมเงินล้มเหลว',
     copyFailed: 'คัดลอกล้มเหลว',
-    copyAddressUnsupported: 'สภาพแวดล้อมปัจจุบันไม่รองรับการคัดลอก กรุณาคัดลอกด้วยตนเอง',
+    copyAddressUnsupported:
+      'สภาพแวดล้อมปัจจุบันไม่รองรับการคัดลอก กรุณาคัดลอกด้วยตนเอง',
     availableNetworks: 'เครือข่ายที่ใช้ได้',
     rechargeAddressLoading: 'กำลังโหลดที่อยู่เติมเงิน...',
-    scanRechargeHint: 'ใช้กระเป๋าหรือเว็บเทรดสแกน QR เพื่อเติมเงินไปยังที่อยู่นี้',
+    scanRechargeHint:
+      'ใช้กระเป๋าหรือเว็บเทรดสแกน QR เพื่อเติมเงินไปยังที่อยู่นี้',
     copyAddress: 'คัดลอกที่อยู่',
     noRechargeAddress: 'ไม่มีที่อยู่เติมเงินที่ใช้ได้',
-    noRechargeAddressHint: 'หาก API ไม่ส่งคืนที่อยู่เชน USDT ระบบจะไม่แสดง QR code และข้อมูลที่อยู่ที่นี่',
+    noRechargeAddressHint:
+      'หาก API ไม่ส่งคืนที่อยู่เชน USDT ระบบจะไม่แสดง QR code และข้อมูลที่อยู่ที่นี่',
     rechargeInstructions: 'คำแนะนำการเติมเงิน',
-    rechargeInstruction1: '1. เติมเงินเฉพาะไปยังที่อยู่ USDT ของเชนที่เลือกอยู่ในขณะนี้เท่านั้น',
-    rechargeInstruction2: '2. ตรวจสอบประเภทเชนและที่อยู่ก่อนโอนเพื่อหลีกเลี่ยงการสูญเสียสินทรัพย์',
-    rechargeInstruction3: '3. เวลาที่เงินเข้าขึ้นอยู่กับความเร็วการยืนยันบนเชน หลังสำเร็จสินทรัพย์จะอัปเดตอัตโนมัติ',
+    rechargeInstruction1:
+      '1. เติมเงินเฉพาะไปยังที่อยู่ USDT ของเชนที่เลือกอยู่ในขณะนี้เท่านั้น',
+    rechargeInstruction2:
+      '2. ตรวจสอบประเภทเชนและที่อยู่ก่อนโอนเพื่อหลีกเลี่ยงการสูญเสียสินทรัพย์',
+    rechargeInstruction3:
+      '3. เวลาที่เงินเข้าขึ้นอยู่กับความเร็วการยืนยันบนเชน หลังสำเร็จสินทรัพย์จะอัปเดตอัตโนมัติ',
+    rechargeInstruction4: '4. ยอดเติมขั้นต่ำเริ่มต้นที่ 1 USDT',
     usdtMiningLabel: 'USDT Mining',
     usdtWithdrawSubtitle: 'กรอกจำนวนและส่งคำขอถอนโดยตรง',
     usdtMiningWithdrawSubtitle: 'แปลงเป็น AUS ตามราคาและทยอยปล่อยรายวัน',
@@ -1721,7 +1795,8 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     withdrawExceedsBalance: 'จำนวนถอนเกินยอดคงเหลือที่ใช้ได้',
     selectArrivalDays: 'เลือกจำนวนวันรับเงิน',
     withdrawSubmitted: 'ส่งคำขอถอน USDT แล้ว',
-    withdrawMiningSubmitted: 'ส่งคำขอถอน USDT Mining แล้ว สามารถดูรายละเอียดการรับเงินรายวันได้ในประวัติ',
+    withdrawMiningSubmitted:
+      'ส่งคำขอถอน USDT Mining แล้ว สามารถดูรายละเอียดการรับเงินรายวันได้ในประวัติ',
     viewRecords: 'ดูประวัติ',
     withdrawSubmitFailed: 'ส่งคำขอถอนล้มเหลว',
     withdrawPageDesc: 'ถอน USDT / AUS และปล่อยแบบแบ่งรายวัน',
@@ -1780,13 +1855,15 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     amountToPay: 'Perlu dibayar',
     systemBalance: 'Baki sistem',
     onChainPayment: 'Bayaran on-chain',
-    networkMismatch: 'Rangkaian dompet semasa tidak sepadan. Tukar ke {{network}}',
+    networkMismatch:
+      'Rangkaian dompet semasa tidak sepadan. Tukar ke {{network}}',
     insufficientBalance: 'Baki tidak mencukupi. Tersedia {{amount}}',
     availableBalance: 'Baki tersedia: {{amount}}',
     switchChainRequired: 'Perlu tukar rangkaian',
     payable: 'Boleh dibayar',
     serverBalancePaymentHint: 'Pelayan akan melengkapkan potongan baki sistem.',
-    walletPaymentHint: 'Selepas pengesahan, dompet akan dibuka untuk bayaran on-chain.',
+    walletPaymentHint:
+      'Selepas pengesahan, dompet akan dibuka untuk bayaran on-chain.',
     switchToNetwork: 'Tukar ke {{network}}',
     miningCenter: 'Pusat Perlombongan',
     cumulativePower: 'Kuasa Terkumpul (T)',
@@ -1796,17 +1873,20 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     livePreview: 'Pratonton Langsung',
     quickAccess: 'Akses Pantas',
     quickAction: 'Tindakan Pantas',
-    destroyMiningDescription: 'Masukkan jumlah USDT dan token bayaran akan ditukar secara automatik, kemudian cipta pesanan belum bayar untuk diselesaikan melalui on-chain atau baki.',
+    destroyMiningDescription:
+      'Masukkan jumlah USDT dan token bayaran akan ditukar secara automatik, kemudian cipta pesanan belum bayar untuk diselesaikan melalui on-chain atau baki.',
     createOrderLoading: 'Sedang mencipta pesanan...',
     choosePaymentMethod: 'Pilih kaedah pembayaran',
-    orderCreated: 'Pesanan berjaya dicipta. Sila selesaikan bayaran di pesanan belum bayar.',
+    orderCreated:
+      'Pesanan berjaya dicipta. Sila selesaikan bayaran di pesanan belum bayar.',
     goToOrders: 'Pergi ke pesanan',
     noPaymentMethods: 'Tiada kaedah pembayaran tersedia',
     fetchPaymentMethodsFailed: 'Gagal mendapatkan kaedah pembayaran',
     createDestroyOrderFailed: 'Gagal mencipta pesanan pembakaran',
     myMiningMachines: 'Mesin Lombong Saya',
     deviceList: 'Senarai Peranti',
-    deviceListDescription: 'Lihat hasil perlombongan dan status semasa mengikut jenis peranti',
+    deviceListDescription:
+      'Lihat hasil perlombongan dan status semasa mengikut jenis peranti',
     deviceActivated: 'Peranti Diaktifkan',
     destroyedMiner: 'Mesin Bakar',
     unionMiner: 'Mesin Kesatuan',
@@ -1848,7 +1928,8 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     laborFee: 'Upah kerja',
     buyNow: 'Beli sekarang',
     goToPendingOrders: 'Pergi ke pesanan belum bayar',
-    continuePendingOrders: 'Semak dan teruskan bayaran pesanan belum bayar dengan cepat',
+    continuePendingOrders:
+      'Semak dan teruskan bayaran pesanan belum bayar dengan cepat',
     noOrders: 'Tiada pesanan',
     weight: 'Berat',
     confirmReceipt: 'Sahkan penerimaan',
@@ -1859,7 +1940,8 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     purchaseAgreement: 'Perjanjian Pembelian',
     agreeAndBuy: 'Setuju dan beli',
     pendingPaymentOrderExists: 'Terdapat pesanan belum dibayar',
-    unpaidOrderHint: 'Pesanan pra-tempah yang belum dibayar dikesan. Anda boleh terus ke pesanan belum bayar untuk meneruskan bayaran.',
+    unpaidOrderHint:
+      'Pesanan pra-tempah yang belum dibayar dikesan. Anda boleh terus ke pesanan belum bayar untuk meneruskan bayaran.',
     goPay: 'Pergi bayar',
     confirmOrder: 'Sahkan pesanan',
     orderDataMissing: 'Data pesanan tiada',
@@ -1921,7 +2003,8 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     delete: 'Padam',
     addShippingAddress: 'Tambah alamat penghantaran',
     deleteAddress: 'Padam alamat',
-    deleteAddressConfirm: 'Adakah anda pasti mahu memadam alamat penghantaran ini?',
+    deleteAddressConfirm:
+      'Adakah anda pasti mahu memadam alamat penghantaran ini?',
     deleteConfirm: 'Padam',
     recipient: 'Penerima',
     enterRecipient: 'Masukkan nama penerima',
@@ -1972,50 +2055,67 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     paymentTxFailed: 'Transaksi bayaran gagal. Sila cuba lagi kemudian',
     cancelOrderFailed: 'Gagal membatalkan pesanan',
     noPendingOrders: 'Tiada pesanan belum bayar',
-    pendingOrdersHint: 'Pesanan pra-tempah baharu akan dipaparkan di sini dan boleh diselesaikan melalui bayaran on-chain kemudian.',
+    pendingOrdersHint:
+      'Pesanan pra-tempah baharu akan dipaparkan di sini dan boleh diselesaikan melalui bayaran on-chain kemudian.',
     switchNetworkFailed: 'Gagal menukar rangkaian',
     cancelOrderTitle: 'Batalkan Pesanan',
-    cancelOrderConfirm: 'Adakah anda pasti mahu membatalkan pesanan ini? Tindakan ini tidak boleh dipulihkan.',
+    cancelOrderConfirm:
+      'Adakah anda pasti mahu membatalkan pesanan ini? Tindakan ini tidak boleh dipulihkan.',
     confirmCancel: 'Sahkan Pembatalan',
     thinkAgain: 'Fikir Semula',
     processingPayment: 'Sedang memproses bayaran...',
     rechargeAddressLoadFailed: 'Gagal memuatkan alamat',
     rechargeAddressFetchFailed: 'Gagal mendapatkan alamat tambah nilai',
     copyFailed: 'Gagal menyalin',
-    copyAddressUnsupported: 'Salinan tidak disokong dalam persekitaran ini. Sila salin secara manual',
+    copyAddressUnsupported:
+      'Salinan tidak disokong dalam persekitaran ini. Sila salin secara manual',
     availableNetworks: 'Rangkaian Tersedia',
     rechargeAddressLoading: 'Alamat tambah nilai sedang dimuatkan...',
-    scanRechargeHint: 'Gunakan dompet atau bursa untuk mengimbas dan tambah nilai ke alamat ini',
+    scanRechargeHint:
+      'Gunakan dompet atau bursa untuk mengimbas dan tambah nilai ke alamat ini',
     copyAddress: 'Salin Alamat',
     noRechargeAddress: 'Tiada alamat tambah nilai tersedia',
-    noRechargeAddressHint: 'Jika API tidak memulangkan alamat rantaian USDT, kod QR dan maklumat alamat tidak akan dipaparkan di sini.',
+    noRechargeAddressHint:
+      'Jika API tidak memulangkan alamat rantaian USDT, kod QR dan maklumat alamat tidak akan dipaparkan di sini.',
     rechargeInstructions: 'Arahan Tambah Nilai',
-    rechargeInstruction1: '1. Hanya tambah nilai ke alamat USDT bagi rantaian yang sedang dipilih.',
-    rechargeInstruction2: '2. Sila semak jenis rantaian dan alamat sebelum memindahkan untuk mengelakkan kehilangan aset.',
-    rechargeInstruction3: '3. Masa ketibaan bergantung pada kelajuan pengesahan on-chain. Aset akan dikemas kini secara automatik selepas berjaya.',
+    rechargeInstruction1:
+      '1. Hanya tambah nilai ke alamat USDT bagi rantaian yang sedang dipilih.',
+    rechargeInstruction2:
+      '2. Sila semak jenis rantaian dan alamat sebelum memindahkan untuk mengelakkan kehilangan aset.',
+    rechargeInstruction3:
+      '3. Masa ketibaan bergantung pada kelajuan pengesahan on-chain. Aset akan dikemas kini secara automatik selepas berjaya.',
+    rechargeInstruction4: '4. Tambah nilai minimum bermula daripada 1 USDT.',
     usdtMiningLabel: 'USDT Mining',
-    usdtWithdrawSubtitle: 'Masukkan jumlah dan hantar permohonan pengeluaran terus',
-    usdtMiningWithdrawSubtitle: 'Tukar kepada AUS mengikut harga dan lepaskan secara berperingkat setiap hari',
+    usdtWithdrawSubtitle:
+      'Masukkan jumlah dan hantar permohonan pengeluaran terus',
+    usdtMiningWithdrawSubtitle:
+      'Tukar kepada AUS mengikut harga dan lepaskan secara berperingkat setiap hari',
     withdrawStatusCompleted: 'Selesai',
     withdrawStatusRefunded: 'Dikembalikan',
     withdrawStatusProcessing: 'Sedang diproses',
-    withdrawConfigAndUserLoadFailed: 'Gagal memuatkan maklumat pengguna dan tetapan pengeluaran',
+    withdrawConfigAndUserLoadFailed:
+      'Gagal memuatkan maklumat pengguna dan tetapan pengeluaran',
     withdrawConfigLoadFailed: 'Gagal memuatkan tetapan pengeluaran',
     withdrawUserLoadFailed: 'Gagal memuatkan maklumat pengguna',
     withdrawRecordsLoadFailed: 'Gagal memuatkan rekod pengeluaran',
     withdrawDetailLoadFailed: 'Gagal memuatkan butiran ketibaan',
-    withdrawConfigLoadingRetry: 'Tetapan pengeluaran sedang dimuatkan, sila cuba lagi sebentar lagi',
-    withdrawDisabled: 'Token ini tidak tersedia untuk pengeluaran buat masa ini',
+    withdrawConfigLoadingRetry:
+      'Tetapan pengeluaran sedang dimuatkan, sila cuba lagi sebentar lagi',
+    withdrawDisabled:
+      'Token ini tidak tersedia untuk pengeluaran buat masa ini',
     invalidWithdrawAmount: 'Masukkan jumlah pengeluaran yang sah',
     minWithdrawMessage: 'Pengeluaran minimum {{amount}} {{coin}}',
-    maxWithdrawMessage: 'Pengeluaran maksimum setiap permohonan {{amount}} {{coin}}',
+    maxWithdrawMessage:
+      'Pengeluaran maksimum setiap permohonan {{amount}} {{coin}}',
     withdrawExceedsBalance: 'Jumlah pengeluaran melebihi baki tersedia',
     selectArrivalDays: 'Pilih hari ketibaan',
     withdrawSubmitted: 'Permohonan pengeluaran USDT telah dihantar',
-    withdrawMiningSubmitted: 'Permohonan pengeluaran USDT Mining telah dihantar. Anda boleh melihat butiran ketibaan berperingkat dalam rekod.',
+    withdrawMiningSubmitted:
+      'Permohonan pengeluaran USDT Mining telah dihantar. Anda boleh melihat butiran ketibaan berperingkat dalam rekod.',
     viewRecords: 'Lihat Rekod',
     withdrawSubmitFailed: 'Gagal menghantar pengeluaran',
-    withdrawPageDesc: 'Pengeluaran USDT / AUS dan pelepasan berperingkat harian',
+    withdrawPageDesc:
+      'Pengeluaran USDT / AUS dan pelepasan berperingkat harian',
     availableUsdt: 'USDT Tersedia',
     availableUsdtMining: 'USDT Mining Tersedia',
     withdrawToken: 'Token Pengeluaran',

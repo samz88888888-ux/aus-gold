@@ -185,9 +185,23 @@ export function RechargePage({ onNavigate }: RechargePageProps) {
                     <button
                       type="button"
                       onClick={handleCopy}
-                      className="cursor-pointer rounded-full bg-white px-3 py-1.5 text-[12px] font-semibold text-[#111827] transition duration-200 hover:bg-amber-50 active:scale-[0.98]"
+                      aria-label={copy.copyAddress}
+                      title={copy.copyAddress}
+                      className="flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-full border border-amber-200/45 bg-white text-[#111827] shadow-[0_8px_18px_rgba(0,0,0,0.18)] transition duration-200 hover:bg-amber-50 active:scale-[0.96]"
                     >
-                      {copy.copyAddress}
+                      <svg
+                        viewBox="0 0 24 24"
+                        className="h-5 w-5"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
+                      >
+                        <rect x="9" y="9" width="13" height="13" rx="2" />
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+                      </svg>
                     </button>
                   </div>
                   <p className="mt-3 break-all text-[12px] leading-5 text-white/68">{currentAddress}</p>
@@ -208,6 +222,7 @@ export function RechargePage({ onNavigate }: RechargePageProps) {
             <p>{copy.rechargeInstruction1}</p>
             <p>{copy.rechargeInstruction2}</p>
             <p>{copy.rechargeInstruction3}</p>
+            <p>{copy.rechargeInstruction4}</p>
           </div>
         </section>
       </div>

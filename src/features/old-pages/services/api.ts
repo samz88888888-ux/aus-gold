@@ -199,6 +199,90 @@ function normalizePreOrderList(data: PreOrderListResponse | PreOrderItem[]): Pre
   return Array.isArray(data.list) ? data.list : []
 }
 
+function normalizeGoldOrderItem(data: Partial<GoldOrderItem> & {
+  total_price?: number | string
+  ship_no?: string | null
+  detail?: {
+    product_name?: string
+    product_img?: string
+    product_count?: number | string
+    total_price?: number | string
+    price?: number | string
+    base_price?: number | string
+    handicraft_fee?: number | string
+    product_sku?: string
+    weight?: number | string
+  } | null
+}): GoldOrderItem {
+  const detail = data.detail ?? {}
+
+  return {
+    id: typeof data.id === 'number' ? data.id : Number(data.id ?? 0),
+    order_no: typeof data.order_no === 'string' ? data.order_no : '',
+    goods_name: typeof data.goods_name === 'string'
+      ? data.goods_name
+      : (typeof detail.product_name === 'string' ? detail.product_name : ''),
+    goods_image: typeof data.goods_image === 'string'
+      ? data.goods_image
+      : (typeof detail.product_img === 'string' ? detail.product_img : ''),
+    price: typeof data.price === 'string'
+      ? data.price
+      : String(data.price ?? detail.price ?? detail.base_price ?? '0'),
+    quantity: typeof data.quantity === 'number'
+      ? data.quantity
+      : Number(data.quantity ?? detail.product_count ?? 0),
+    total_amount: typeof data.total_amount === 'string'
+      ? data.total_amount
+      : String(data.total_amount ?? data.total_price ?? detail.total_price ?? '0'),
+    status: typeof data.status === 'number' ? data.status : Number(data.status ?? 0),
+    status_text: typeof data.status_text === 'string' ? data.status_text : '',
+    created_at: typeof data.created_at === 'string' ? data.created_at : '',
+    shipped_at: typeof data.shipped_at === 'string' || data.shipped_at === null ? data.shipped_at : null,
+    logistics_no: typeof data.logistics_no === 'string'
+      ? data.logistics_no
+      : (typeof data.ship_no === 'string' ? data.ship_no : null),
+    weight: typeof data.weight === 'string'
+      ? data.weight
+      : String(data.weight ?? detail.weight ?? detail.product_sku ?? ''),
+  }
+}
+
+function normalizeGoldOrderList(data: PagedList<Partial<GoldOrderItem> & {
+  total_price?: number | string
+  ship_no?: string | null
+  detail?: {
+    product_name?: string
+    product_img?: string
+    product_count?: number | string
+    total_price?: number | string
+    price?: number | string
+    base_price?: number | string
+    handicraft_fee?: number | string
+    product_sku?: string
+    weight?: number | string
+  } | null
+}> | Array<Partial<GoldOrderItem> & {
+  total_price?: number | string
+  ship_no?: string | null
+  detail?: {
+    product_name?: string
+    product_img?: string
+    product_count?: number | string
+    total_price?: number | string
+    price?: number | string
+    base_price?: number | string
+    handicraft_fee?: number | string
+    product_sku?: string
+    weight?: number | string
+  } | null
+}>): { list: GoldOrderItem[]; total: number } {
+  const normalized = normalizePagedList(data)
+  return {
+    list: normalized.list.map((item) => normalizeGoldOrderItem(item)),
+    total: normalized.total,
+  }
+}
+
 function normalizeWalletMoneyLogList(data: PagedList<WalletMoneyLogItem> | WalletMoneyLogItem[], currency: string): PagedList<WalletMoneyLogItem> {
   const normalized = normalizePagedList(data)
 
@@ -330,7 +414,38 @@ export async function fetchProductDetail(params: { id?: number; goods_id?: numbe
 
 export async function fetchGoldOrderList(params?: QueryParams): Promise<{ list: GoldOrderItem[]; total: number }> {
   return withMockFallback(
-    async () => (await apiGet<{ list: GoldOrderItem[]; total: number }>('/gold/orderList', params)).data,
+    async () => {
+      const data = (await apiGet<PagedList<Partial<GoldOrderItem> & {
+        total_price?: number | string
+        ship_no?: string | null
+        detail?: {
+          product_name?: string
+          product_img?: string
+          product_count?: number | string
+          total_price?: number | string
+          price?: number | string
+          base_price?: number | string
+          handicraft_fee?: number | string
+          product_sku?: string
+          weight?: number | string
+        } | null
+      }> | Array<Partial<GoldOrderItem> & {
+        total_price?: number | string
+        ship_no?: string | null
+        detail?: {
+          product_name?: string
+          product_img?: string
+          product_count?: number | string
+          total_price?: number | string
+          price?: number | string
+          base_price?: number | string
+          handicraft_fee?: number | string
+          product_sku?: string
+          weight?: number | string
+        } | null
+      }>>('/gold/orderList', params)).data
+      return normalizeGoldOrderList(data)
+    },
     () => ({ list: mock.goldOrderList, total: mock.goldOrderList.length }),
   )
 }
@@ -363,7 +478,10 @@ export async function fetchPreOrderList(params?: QueryParams): Promise<PreOrderI
 
 export async function fetchMachineOrderList(params?: QueryParams): Promise<{ list: GoldOrderItem[]; total: number }> {
   return withMockFallback(
-    async () => (await apiGet<{ list: GoldOrderItem[]; total: number }>('/machine/orderList', params)).data,
+    async () => {
+      const data = (await apiGet<PagedList<Partial<GoldOrderItem>> | Partial<GoldOrderItem>[]>('/machine/orderList', params)).data
+      return normalizeGoldOrderList(data)
+    },
     () => ({ list: mock.machineOrderList, total: mock.machineOrderList.length }),
   )
 }
