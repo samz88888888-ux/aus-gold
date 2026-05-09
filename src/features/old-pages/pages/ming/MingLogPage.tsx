@@ -211,7 +211,7 @@ function FilterSheet({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center">
-      <button type="button" className="absolute inset-0 bg-black/72 backdrop-blur-sm" onClick={onClose} aria-label="关闭" />
+      <button type="button" className="absolute inset-0 bg-black/72 backdrop-blur-sm" onClick={onClose} aria-label={title} />
 
       <div className="relative w-full max-w-[430px] overflow-hidden rounded-t-[26px] border border-white/10 bg-[#0f0f10] shadow-[0_-20px_50px_rgba(0,0,0,0.4)]">
         <div className="flex justify-center pt-3 pb-1">

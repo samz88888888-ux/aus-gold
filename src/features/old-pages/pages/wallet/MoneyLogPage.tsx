@@ -25,7 +25,7 @@ export function MoneyLogPage({ onNavigate }: MoneyLogPageProps) {
   const copy = useOldPagesCopy()
   const tabs: Array<{ key: LogTab; label: string }> = [
     { key: 'usdt', label: 'USDT' },
-    { key: 'usdtMine', label: 'USDT挖矿' },
+    { key: 'usdtMine', label: copy.usdtMiningLabel },
   ]
   const filters: Array<{ key: FundsFilter; label: string }> = [
     { key: 0, label: copy.all },
@@ -114,7 +114,7 @@ export function MoneyLogPage({ onNavigate }: MoneyLogPageProps) {
             className="inline-flex items-center gap-2 rounded-full border border-[#fbd005]/30 bg-[#1b1c25] px-3.5 py-1.5 text-xs text-white"
           >
             {currentFilterLabel}
-            <span className="text-[10px] text-white/65">筛选</span>
+            <span className="text-[10px] text-white/65">{copy.filterFundsType}</span>
           </button> */}
         </div>
 

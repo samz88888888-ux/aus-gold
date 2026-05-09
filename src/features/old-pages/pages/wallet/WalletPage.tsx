@@ -42,6 +42,7 @@ function shortAddress(addr: string) {
 const TOKEN_ICON = '/old-pages/wallet/usdt-coin.png'
 const AUS_TOKEN_ICON = '/old-pages/wallet/aus-coin.png'
 const BRIDGE_URL = 'https://bridge.pychain.co/bridge'
+const SWAP_URL = 'http://swap.pychain.co'
 
 export function WalletPage({ onNavigate }: WalletPageProps) {
   const copy = useOldPagesCopy()
@@ -142,7 +143,7 @@ export function WalletPage({ onNavigate }: WalletPageProps) {
           <button
             type="button"
             onClick={() => {
-              window.location.href = BRIDGE_URL
+              window.location.href = SWAP_URL
             }}
             className="flex flex-col items-center gap-1.5 rounded-xl bg-[#1b1c25] px-2 py-3 active:opacity-80"
           >

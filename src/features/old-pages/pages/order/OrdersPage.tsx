@@ -6,6 +6,7 @@ import { NoticePopup } from '../../components/NoticePopup'
 import { PendingOrderPaymentModal } from '../../components/payment/PendingOrderPaymentModal'
 import { PageContainer } from '../../components/PageContainer'
 import { PageNavBar } from '../../components/PageNavBar'
+import { useOldPagesCopy } from '../../i18n'
 import { useChainPayment } from '../../hooks/useChainPayment'
 import { getErc20Allowance, waitForReceipt, type SupportedChainId } from '../../services/evm'
 import { cancelPreOrder, fetchPreOrderList, fetchPreOrderPaymentInfo, payPreOrder } from '../../services/api'
@@ -69,34 +70,34 @@ function getCurrencyIconById(chainCurrencyId?: number) {
   return chainCurrencyId ? iconMap[chainCurrencyId] ?? '/old-pages/wallet/coin-img.png' : '/old-pages/wallet/coin-img.png'
 }
 
-function getOrderBusinessType(order: PreOrderItem) {
+function getOrderBusinessType(order: PreOrderItem, copy: ReturnType<typeof useOldPagesCopy>) {
   const type = String(order.order_type)
-  if (type === '5') return '商城购物'
-  if (type === '3' || type === 'destroy_machine') return '销毁挖矿'
-  if (type === '1') return '矿机订单'
-  if (type === '2') return '节点订单'
-  if (type === '4') return '联合订单'
-  return order.order_type_text || '待支付订单'
+  if (type === '5') return copy.mallShopping
+  if (type === '3' || type === 'destroy_machine') return copy.destroyMining
+  if (type === '1') return copy.miningOrder
+  if (type === '2') return copy.nodeOrder
+  if (type === '4') return copy.unionOrder
+  return order.order_type_text || copy.pendingOrders
 }
 
-function getOrderTypeWithSource(order: PreOrderItem) {
+function getOrderTypeWithSource(order: PreOrderItem, copy: ReturnType<typeof useOldPagesCopy>) {
   const orderType = Number(order.order_type)
   if (orderType === 1 && order.equipment_source?.title) return order.equipment_source.title
   if (orderType === 2 && order.node_source?.name) return order.node_source.name
   if (orderType === 5 && order.gold_source?.title) return order.gold_source.title
-  return getOrderBusinessType(order)
+  return getOrderBusinessType(order, copy)
 }
 
-function getPaymentStateLabel(order: PreOrderItem, payment: PreOrderPaymentItem) {
-  if (payment.status === 2 || order.status === 3) return '已支付'
-  if (payment.status === 3 || order.status === 4) return '已取消'
-  return '待支付'
+function getPaymentStateLabel(order: PreOrderItem, payment: PreOrderPaymentItem, copy: ReturnType<typeof useOldPagesCopy>) {
+  if (payment.status === 2 || order.status === 3) return copy.paid
+  if (payment.status === 3 || order.status === 4) return copy.cancelled
+  return copy.pendingPayment
 }
 
-function getPaymentStateClass(order: PreOrderItem, payment: PreOrderPaymentItem) {
-  const label = getPaymentStateLabel(order, payment)
-  if (label === '已支付') return 'bg-emerald-400/12 text-emerald-300 ring-1 ring-emerald-300/15'
-  if (label === '已取消') return 'bg-white/8 text-white/45 ring-1 ring-white/10'
+function getPaymentStateClass(order: PreOrderItem, payment: PreOrderPaymentItem, copy: ReturnType<typeof useOldPagesCopy>) {
+  const label = getPaymentStateLabel(order, payment, copy)
+  if (label === copy.paid) return 'bg-emerald-400/12 text-emerald-300 ring-1 ring-emerald-300/15'
+  if (label === copy.cancelled) return 'bg-white/8 text-white/45 ring-1 ring-white/10'
   return 'bg-sky-400/12 text-sky-200 ring-1 ring-sky-300/15'
 }
 
@@ -113,6 +114,7 @@ type OrderCardProps = {
 }
 
 function OrderCard({ order, onCancel, onPay }: OrderCardProps) {
+  const copy = useOldPagesCopy()
   const canAct = order.status === 1 || order.status === 2
   const payments = order.payment ?? []
   const total = Number(order.total_amount || order.amount || 0)
@@ -124,14 +126,14 @@ function OrderCard({ order, onCancel, onPay }: OrderCardProps) {
       <div className="relative flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
           <span className="inline-flex rounded-full border border-[#fbd005]/18 bg-[#fbd005]/10 px-4 py-1 text-[10px] font-semibold leading-none text-[#ffe08a]">
-            {getOrderTypeWithSource(order)}
+            {getOrderTypeWithSource(order, copy)}
           </span>
           {/* <h3 className="mt-2 truncate text-[15px] font-bold text-white">{formatOrderTitle(order)}</h3> */}
           <div className="mt-2 flex items-end gap-1.5">
             <span className="text-[22px] font-black leading-none text-white">{formatAmount(total, 4)}</span>
             <span className="pb-0.5 text-xs font-semibold text-white/58">USDT</span>
           </div>
-          <p className="mt-1 text-[11px] text-white/38">创建时间 {order.created_at}</p>
+          <p className="mt-1 text-[11px] text-white/38">{copy.createdAt} {order.created_at}</p>
         </div>
 
         {canAct ? (
@@ -141,7 +143,7 @@ function OrderCard({ order, onCancel, onPay }: OrderCardProps) {
             className="mt-0.5 flex shrink-0 items-center gap-1 rounded-full border border-red-500/25 bg-red-500/12 px-2 py-px text-[10px] font-medium leading-none text-red-300 active:opacity-70"
           >
             <svg width="8" height="8" viewBox="0 0 14 14" fill="none"><path d="M2 2L12 12M12 2L2 12" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" /></svg>
-            取消订单
+            {copy.cancelOrder}
           </button>
         ) : null}
       </div>
@@ -166,8 +168,8 @@ function OrderCard({ order, onCancel, onPay }: OrderCardProps) {
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
                       <span className="truncate text-[13px] font-semibold text-white">{getCurrencyByChainId(payment.system_currency_id)}</span>
-                      <span className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold ${getPaymentStateClass(order, payment)}`}>
-                        {getPaymentStateLabel(order, payment)}
+                      <span className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold ${getPaymentStateClass(order, payment, copy)}`}>
+                        {getPaymentStateLabel(order, payment, copy)}
                       </span>
                     </div>
                     <div className="mt-1 text-[13px] font-bold leading-none text-white">
@@ -183,7 +185,7 @@ function OrderCard({ order, onCancel, onPay }: OrderCardProps) {
                     onClick={() => onPay(order, payment)}
                     className={`h-8 shrink-0 rounded-full px-3.5 text-[11px] font-bold leading-none transition ${disabled ? 'bg-white/8 text-white/28' : 'bg-gradient-to-r from-[#fff2a2] to-[#f0ae24] text-[#171200]'}`}
                   >
-                    {disabled ? (payment.status === 2 || order.status === 3 ? '已支付' : '已取消') : '立即支付'}
+                    {disabled ? (payment.status === 2 || order.status === 3 ? copy.paid : copy.cancelled) : copy.payNowShort}
                   </button>
                 </div>
               </div>
@@ -200,6 +202,7 @@ type OrdersPageProps = {
 }
 
 export function OrdersPage({ onNavigate }: OrdersPageProps) {
+  const copy = useOldPagesCopy()
   const [orders, setOrders] = useState<PreOrderItem[]>([])
   const [loading, setLoading] = useState(true)
   const [cancelTarget, setCancelTarget] = useState<PreOrderItem | null>(null)
@@ -230,7 +233,7 @@ export function OrdersPage({ onNavigate }: OrdersPageProps) {
     try {
       setOrders(await fetchPreOrderList({ page: 1, page_size: 10 }))
     } catch (error) {
-      const message = error instanceof Error ? error.message : '获取待支付订单失败'
+      const message = error instanceof Error ? error.message : copy.fetchPendingOrdersFailed
       setNotice({ message })
     } finally {
       setLoading(false)
@@ -254,7 +257,7 @@ export function OrdersPage({ onNavigate }: OrdersPageProps) {
         id: 1,
         type: 1,
         system_currency_id: info.system_currency_id,
-        name: info.system_currency_id === 2 ? '余额混合支付' : '余额支付',
+        name: info.system_currency_id === 2 ? copy.mixedBalancePayment : copy.balancePayment,
         currency: getCurrencyByChainId(info.system_currency_id),
         icon: getCurrencyIconById(info.system_currency_id),
         balance: Number(info.systemAmount || 0),
@@ -273,7 +276,7 @@ export function OrdersPage({ onNavigate }: OrdersPageProps) {
         id: 2,
         type: 2,
         system_currency_id: info.system_currency_id,
-        name: '链上支付',
+        name: copy.chainPayment,
         currency: info.chainCurrency.name || getCurrencyByChainId(info.system_currency_id),
         icon: getCurrencyIconById(info.system_currency_id),
         balance,
@@ -307,7 +310,7 @@ export function OrdersPage({ onNavigate }: OrdersPageProps) {
       setPaymentMethods(nextMethods)
       setShowPaymentPopup(true)
     } catch (error) {
-      const message = error instanceof Error ? error.message : '获取支付信息失败'
+      const message = error instanceof Error ? error.message : copy.fetchPaymentInfoFailed
       setNotice({ message })
     } finally {
       setSubmitting(false)
@@ -335,9 +338,9 @@ export function OrdersPage({ onNavigate }: OrdersPageProps) {
       setPaymentInfo(null)
       setPaymentMethods([])
       await loadOrders()
-      setNotice({ message: '支付成功,区块上链中' })
+      setNotice({ message: copy.paymentSuccessOnchain })
     } catch (error) {
-      const message = error instanceof Error ? error.message : '支付失败'
+      const message = error instanceof Error ? error.message : copy.paymentFailed
       setNotice({ message })
     } finally {
       setSubmitting(false)
@@ -346,11 +349,11 @@ export function OrdersPage({ onNavigate }: OrdersPageProps) {
 
   const handleChainPayment = async (result: PreOrderPayResponse) => {
     if (!result.order_no) {
-      throw new Error('链上支付缺少订单号')
+      throw new Error(copy.missingOrderNo)
     }
 
     if (!window.ethereum) {
-      throw new Error('未检测到钱包，请先安装或打开 EVM 钱包')
+      throw new Error(copy.missingWallet)
     }
 
     const currency = result.currency ?? paymentInfo?.currency ?? paymentInfo?.chainCurrency ?? null
@@ -360,16 +363,16 @@ export function OrdersPage({ onNavigate }: OrdersPageProps) {
     const amountWei = result.web3?.amount_wei || result.amount_wei
 
     if (!tokenAddress) {
-      throw new Error('链上支付缺少代币合约地址')
+      throw new Error(copy.missingTokenContract)
     }
     if (!spenderAddress) {
-      throw new Error('链上支付缺少收款合约地址')
+      throw new Error(copy.missingSpenderContract)
     }
     if (!txData) {
-      throw new Error('链上支付缺少交易数据 tx_data')
+      throw new Error(copy.missingTxData)
     }
     if (!amountWei) {
-      throw new Error('链上支付缺少授权金额 amount_wei')
+      throw new Error(copy.missingAmountWei)
     }
 
     const walletAddress = await window.ethereum.request({
@@ -377,7 +380,7 @@ export function OrdersPage({ onNavigate }: OrdersPageProps) {
     }).then((accounts) => Array.isArray(accounts) ? String(accounts[0] || '') : '')
 
     if (!walletAddress) {
-      throw new Error('钱包未返回账户地址')
+      throw new Error(copy.missingWalletAddress)
     }
 
     setNotice(null)
@@ -400,7 +403,7 @@ export function OrdersPage({ onNavigate }: OrdersPageProps) {
 
       const approveReceipt = await waitForReceipt(approveTxHash)
       if (!approveReceipt || (approveReceipt as { status?: string }).status === '0x0') {
-        throw new Error('授权交易失败，请稍后重试')
+        throw new Error(copy.approveFailed)
       }
     }
 
@@ -416,7 +419,7 @@ export function OrdersPage({ onNavigate }: OrdersPageProps) {
 
     const payReceipt = await waitForReceipt(payTxHash)
     if (!payReceipt || (payReceipt as { status?: string }).status === '0x0') {
-      throw new Error('支付交易失败，请稍后重试')
+      throw new Error(copy.paymentTxFailed)
     }
   }
 
@@ -428,7 +431,7 @@ export function OrdersPage({ onNavigate }: OrdersPageProps) {
       setCancelTarget(null)
       await loadOrders()
     } catch (error) {
-      const message = error instanceof Error ? error.message : '取消订单失败'
+      const message = error instanceof Error ? error.message : copy.cancelOrderFailed
       setNotice({ message })
     }
   }
@@ -441,7 +444,7 @@ export function OrdersPage({ onNavigate }: OrdersPageProps) {
 
   return (
     <PageContainer bgClass="bg-[#050506]">
-      <PageNavBar title="待支付订单" onBack={() => onNavigate('home')} />
+      <PageNavBar title={copy.pendingOrders} onBack={() => onNavigate('home')} />
 {/* 
       <div className="px-4 pt-4">
         <div className="overflow-hidden rounded-[24px] border border-white/8">
@@ -453,7 +456,7 @@ export function OrdersPage({ onNavigate }: OrdersPageProps) {
         {loading ? (
           <div className="flex flex-col items-center gap-2 py-20">
             <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/30 border-t-amber-400" />
-            <span className="text-sm text-white/40">加载中...</span>
+            <span className="text-sm text-white/40">{copy.loading}</span>
           </div>
         ) : orders.length === 0 ? (
           <div className="rounded-[24px] border border-white/8 bg-white/[0.03] px-6 py-16 text-center shadow-[0_18px_40px_rgba(0,0,0,0.2)]">
@@ -463,8 +466,8 @@ export function OrdersPage({ onNavigate }: OrdersPageProps) {
                 <path d="M5 4.75H19C20.1046 4.75 21 5.64543 21 6.75V17.25C21 18.3546 20.1046 19.25 19 19.25H5C3.89543 19.25 3 18.3546 3 17.25V6.75C3 5.64543 3.89543 4.75 5 4.75Z" stroke="currentColor" strokeWidth="1.7" />
               </svg>
             </div>
-            <p className="mt-5 text-base font-semibold text-white/72">暂无待支付订单</p>
-            <p className="mt-2 text-sm text-white/35">新创建的预订单会在这里展示，并支持后续链上支付。</p>
+            <p className="mt-5 text-base font-semibold text-white/72">{copy.noPendingOrders}</p>
+            <p className="mt-2 text-sm text-white/35">{copy.pendingOrdersHint}</p>
           </div>
         ) : (
           orders.map((order) => (
@@ -492,7 +495,7 @@ export function OrdersPage({ onNavigate }: OrdersPageProps) {
               setPaymentMethods(await buildPaymentMethods(paymentInfo))
             }
           } catch (error) {
-            const message = error instanceof Error ? error.message : '切换网络失败'
+            const message = error instanceof Error ? error.message : copy.switchNetworkFailed
             setNotice({ message })
           }
         }}
@@ -502,17 +505,17 @@ export function OrdersPage({ onNavigate }: OrdersPageProps) {
         visible={cancelTarget !== null}
         onClose={() => setCancelTarget(null)}
         onConfirm={handleConfirmCancel}
-        title="取消订单"
-        message="确定要取消该订单吗？取消后不可恢复。"
-        confirmText="确认取消"
-        cancelText="再想想"
+        title={copy.cancelOrderTitle}
+        message={copy.cancelOrderConfirm}
+        confirmText={copy.confirmCancel}
+        cancelText={copy.thinkAgain}
       />
 
       {(submitting || chainPaying) ? (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/60 px-6">
           <div className="w-full max-w-[320px] rounded-2xl border border-white/10 bg-[#121212] px-6 py-5 text-center shadow-2xl">
             <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-white/20 border-t-[#fbd005]" />
-            <p className="mt-4 text-sm font-semibold text-white">{statusText || '正在处理支付...'}</p>
+            <p className="mt-4 text-sm font-semibold text-white">{statusText || copy.processingPayment}</p>
           </div>
         </div>
       ) : null}

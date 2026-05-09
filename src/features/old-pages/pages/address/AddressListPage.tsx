@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { PageContainer } from '../../components/PageContainer'
 import { PageNavBar } from '../../components/PageNavBar'
 import { ConfirmPopup } from '../../components/ConfirmPopup'
+import { useOldPagesCopy } from '../../i18n'
 import { fetchAddressList, deleteAddress, setDefaultAddress } from '../../services/api'
 import type { AddressItem } from '../../services/types'
 import type { AppPage, PageParams } from '../../../figma/types'
@@ -12,6 +13,7 @@ type AddressListPageProps = {
 }
 
 export function AddressListPage({ from, onNavigate }: AddressListPageProps) {
+  const copy = useOldPagesCopy()
   const [list, setList] = useState<AddressItem[]>([])
   const [loading, setLoading] = useState(true)
   const [deleteTarget, setDeleteTarget] = useState<number | null>(null)
@@ -46,12 +48,12 @@ export function AddressListPage({ from, onNavigate }: AddressListPageProps) {
 
   return (
     <PageContainer>
-      <PageNavBar title="收货地址" onBack={() => onNavigate(from === 'shopOrderConfirm' ? 'shopOrderConfirm' : 'shop')} />
+      <PageNavBar title={copy.shippingAddress} onBack={() => onNavigate(from === 'shopOrderConfirm' ? 'shopOrderConfirm' : 'shop')} />
       <div className="px-4 py-4 pb-[calc(156px+env(safe-area-inset-bottom))]">
         {loading ? (
-          <p className="py-20 text-center text-sm text-white/40">加载中...</p>
+          <p className="py-20 text-center text-sm text-white/40">{copy.loading}</p>
         ) : list.length === 0 ? (
-          <p className="py-20 text-center text-sm text-white/40">暂无收货地址</p>
+          <p className="py-20 text-center text-sm text-white/40">{copy.noShippingAddress}</p>
         ) : (
           <div className="space-y-3">
             {list.map(item => (
@@ -62,7 +64,7 @@ export function AddressListPage({ from, onNavigate }: AddressListPageProps) {
                       <span className="text-sm font-medium text-white">{item.real_name}</span>
                       <span className="text-xs text-white/50">{item.phone}</span>
                       {item.is_default === 1 && (
-                        <span className="rounded bg-amber-500/20 px-1.5 py-0.5 text-[10px] font-medium text-amber-300">默认</span>
+                        <span className="rounded bg-amber-500/20 px-1.5 py-0.5 text-[10px] font-medium text-amber-300">{copy.defaultAddress}</span>
                       )}
                     </div>
                     <p className="mt-1.5 text-xs leading-5 text-white/50">
@@ -86,13 +88,13 @@ export function AddressListPage({ from, onNavigate }: AddressListPageProps) {
                         }`}
                       />
                     </span>
-                    设为默认
+                    {copy.setDefaultAddress}
                   </button>
                   <div className="flex gap-3">
                     <button type="button" onClick={(e) => { e.stopPropagation(); onNavigate('addressEdit', { id: item.id, from }) }}
-                      className="text-xs text-white/50 hover:text-white">编辑</button>
+                      className="text-xs text-white/50 hover:text-white">{copy.edit}</button>
                     <button type="button" onClick={(e) => { e.stopPropagation(); setDeleteTarget(item.id) }}
-                      className="text-xs text-red-400/70 hover:text-red-400">删除</button>
+                      className="text-xs text-red-400/70 hover:text-red-400">{copy.delete}</button>
                   </div>
                 </div>
               </div>
@@ -104,12 +106,12 @@ export function AddressListPage({ from, onNavigate }: AddressListPageProps) {
       <div className="fixed bottom-[76px] left-1/2 z-40 w-full max-w-[430px] -translate-x-1/2 border-t border-white/10 bg-[#0a0a1a]/95 px-4 py-3 pb-[calc(12px+env(safe-area-inset-bottom))] backdrop-blur">
         <button type="button" onClick={() => onNavigate('addressAdd', { from })}
           className="w-full rounded-xl bg-gradient-to-r from-yellow-300 to-amber-500 py-3 text-sm font-bold text-black">
-          新增收货地址
+          {copy.addShippingAddress}
         </button>
       </div>
 
       <ConfirmPopup visible={deleteTarget !== null} onClose={() => setDeleteTarget(null)} onConfirm={handleDelete}
-        title="删除地址" message="确定要删除该收货地址吗？" confirmText="删除" cancelText="取消" />
+        title={copy.deleteAddress} message={copy.deleteAddressConfirm} confirmText={copy.deleteConfirm} cancelText={copy.cancel} />
     </PageContainer>
   )
 }

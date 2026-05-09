@@ -5,7 +5,7 @@ import { BottomPopup } from '../../components/BottomPopup'
 import { NoticePopup } from '../../components/NoticePopup'
 import { PageContainer } from '../../components/PageContainer'
 import { PageNavBar } from '../../components/PageNavBar'
-import { useOldPagesCopy } from '../../i18n'
+import { fillTemplate, useOldPagesCopy } from '../../i18n'
 import {
   applyWithdraw,
   fetchUserInfoOld,
@@ -56,18 +56,18 @@ function getErrorMessage(error: unknown, fallback: string) {
   return fallback
 }
 
-function getRecordTypeLabel(coinType: number) {
-  return coinType === 2 ? 'USDT挖矿' : 'USDT'
+function getRecordTypeLabel(coinType: number, usdtMiningLabel: string) {
+  return coinType === 2 ? usdtMiningLabel : 'USDT'
 }
 
-function getRecordStatusMeta(status: number) {
+function getRecordStatusMeta(status: number, copy: ReturnType<typeof useOldPagesCopy>) {
   if (status === 1) {
-    return { label: '已完成', className: 'border-emerald-400/20 bg-emerald-400/10 text-emerald-200' }
+    return { label: copy.withdrawStatusCompleted, className: 'border-emerald-400/20 bg-emerald-400/10 text-emerald-200' }
   }
   if (status === 2) {
-    return { label: '已退款', className: 'border-rose-400/20 bg-rose-400/10 text-rose-200' }
+    return { label: copy.withdrawStatusRefunded, className: 'border-rose-400/20 bg-rose-400/10 text-rose-200' }
   }
-  return { label: '提现中', className: 'border-sky-400/20 bg-sky-400/10 text-sky-200' }
+  return { label: copy.withdrawStatusProcessing, className: 'border-sky-400/20 bg-sky-400/10 text-sky-200' }
 }
 
 function getRealCurrencyName(realCoinId: number) {
@@ -91,13 +91,13 @@ function buildNotice(message: string, onClose: () => void): NoticeState {
 export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
   const copy = useOldPagesCopy()
   const coins: Array<{ key: CurrencyType; label: string; subtitle: string }> = [
-    { key: 'USDT', label: 'USDT', subtitle: 'Enter an amount and submit directly' },
-    { key: 'USDT_MINE', label: 'USDT挖矿', subtitle: 'Convert by price into AUS and release daily' },
+    { key: 'USDT', label: 'USDT', subtitle: copy.usdtWithdrawSubtitle },
+    { key: 'USDT_MINE', label: copy.usdtMiningLabel, subtitle: copy.usdtMiningWithdrawSubtitle },
   ]
   const recordFilters: Array<{ key: RecordFilter; label: string }> = [
     { key: 'all', label: copy.all },
     { key: 'USDT', label: 'USDT' },
-    { key: 'USDT_MINE', label: 'USDT挖矿' },
+    { key: 'USDT_MINE', label: copy.usdtMiningLabel },
   ]
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null)
   const [config, setConfig] = useState<WithdrawConfigData | null>(null)
@@ -147,14 +147,14 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
       initLoadedRef.current = true
 
       if (userResult.status === 'rejected' && withdrawConfigResult.status === 'rejected') {
-        setNotice(buildNotice('用户信息与提现配置加载失败', () => setNotice(null)))
+        setNotice(buildNotice(copy.withdrawConfigAndUserLoadFailed, () => setNotice(null)))
         return
       }
 
       if (withdrawConfigResult.status === 'rejected') {
-        setNotice(buildNotice(getErrorMessage(withdrawConfigResult.reason, '提现配置加载失败'), () => setNotice(null)))
+        setNotice(buildNotice(getErrorMessage(withdrawConfigResult.reason, copy.withdrawConfigLoadFailed), () => setNotice(null)))
       } else if (userResult.status === 'rejected') {
-        setNotice(buildNotice(getErrorMessage(userResult.reason, '用户信息加载失败'), () => setNotice(null)))
+        setNotice(buildNotice(getErrorMessage(userResult.reason, copy.withdrawUserLoadFailed), () => setNotice(null)))
       }
     } finally {
       pageRequestingRef.current = false
@@ -175,7 +175,7 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
     } catch (error) {
       if (reset) setRecordList([])
       setRecordFinished(true)
-      setNotice(buildNotice(getErrorMessage(error, '提现记录加载失败'), () => setNotice(null)))
+      setNotice(buildNotice(getErrorMessage(error, copy.withdrawRecordsLoadFailed), () => setNotice(null)))
     } finally {
       setRecordLoading(false)
     }
@@ -188,7 +188,7 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
       setDetailList(res.list ?? [])
     } catch (error) {
       setDetailList([])
-      setNotice(buildNotice(getErrorMessage(error, '到账明细加载失败'), () => setNotice(null)))
+      setNotice(buildNotice(getErrorMessage(error, copy.withdrawDetailLoadFailed), () => setNotice(null)))
     } finally {
       setDetailLoading(false)
     }
@@ -259,37 +259,37 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
 
   const handleSubmit = async () => {
     if (!selectedConfig) {
-      setNotice(buildNotice('提现配置加载中，请稍后再试', () => setNotice(null)))
+      setNotice(buildNotice(copy.withdrawConfigLoadingRetry, () => setNotice(null)))
       return
     }
 
     if (Number(selectedConfig.withdraw_enable) !== 1) {
-      setNotice(buildNotice('当前币种暂不可提现', () => setNotice(null)))
+      setNotice(buildNotice(copy.withdrawDisabled, () => setNotice(null)))
       return
     }
 
     if (!amount.trim() || Number.isNaN(amountNumber) || amountNumber <= 0) {
-      setNotice(buildNotice('请输入正确的提现数量', () => setNotice(null)))
+      setNotice(buildNotice(copy.invalidWithdrawAmount, () => setNotice(null)))
       return
     }
 
     if (amountNumber < minWithdraw) {
-      setNotice(buildNotice(`最少提现 ${fmt(minWithdraw)} ${selectedCoinMeta.label}`, () => setNotice(null)))
+      setNotice(buildNotice(fillTemplate(copy.minWithdrawMessage, { amount: fmt(minWithdraw), coin: selectedCoinMeta.label }), () => setNotice(null)))
       return
     }
 
     if (maxWithdraw > 0 && amountNumber > maxWithdraw) {
-      setNotice(buildNotice(`单次最多提现 ${fmt(maxWithdraw)} ${selectedCoinMeta.label}`, () => setNotice(null)))
+      setNotice(buildNotice(fillTemplate(copy.maxWithdrawMessage, { amount: fmt(maxWithdraw), coin: selectedCoinMeta.label }), () => setNotice(null)))
       return
     }
 
     if (amountNumber > available) {
-      setNotice(buildNotice('提现数量超过可用余额', () => setNotice(null)))
+      setNotice(buildNotice(copy.withdrawExceedsBalance, () => setNotice(null)))
       return
     }
 
     if (selectedCurrency === 'USDT_MINE' && !selectedDay) {
-      setNotice(buildNotice('请选择到账天数', () => setNotice(null)))
+      setNotice(buildNotice(copy.selectArrivalDays, () => setNotice(null)))
       return
     }
 
@@ -307,16 +307,16 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
       }
       setNotice({
         message: selectedCurrency === 'USDT'
-          ? 'USDT 提现申请已提交'
-          : 'USDT挖矿提现申请已提交，可在记录中查看分天到账明细',
-        confirmText: '查看记录',
+          ? copy.withdrawSubmitted
+          : copy.withdrawMiningSubmitted,
+        confirmText: copy.viewRecords,
         onConfirm: () => {
           setNotice(null)
           setShowRecords(true)
         },
       })
     } catch (error) {
-      setNotice(buildNotice(getErrorMessage(error, '提现提交失败'), () => setNotice(null)))
+      setNotice(buildNotice(getErrorMessage(error, copy.withdrawSubmitFailed), () => setNotice(null)))
     } finally {
       setSubmitting(false)
     }
@@ -324,7 +324,7 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
 
   return (
     <PageContainer bgClass="bg-[#05060a]">
-      <PageNavBar title="提现" onBack={() => onNavigate('wallet')} />
+      <PageNavBar title={copy.withdraw} onBack={() => onNavigate('wallet')} />
 
       <div className="min-h-[calc(100vh-48px)] overflow-hidden bg-[radial-gradient(circle_at_top,rgba(251,208,5,0.14),transparent_30%),linear-gradient(180deg,#08090d_0%,#05060a_100%)] px-4 pb-8 pt-4">
         <div className="flex min-h-full flex-col">
@@ -351,7 +351,7 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
                   {copy.withdraw}
                 </h2>
                 <p className="mt-3 max-w-[280px] text-[11px] leading-5 text-white/55">
-                  USDT / AUS withdraw and staged release
+                  {copy.withdrawPageDesc}
                 </p>
               </div>
             </div>
@@ -364,7 +364,7 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
               />
               <MetricCard
                 label={
-                  selectedCurrency === 'USDT' ? 'Available USDT' : 'Available USDT Mining'
+                  selectedCurrency === 'USDT' ? copy.availableUsdt : copy.availableUsdtMining
                 }
                 value={fmt(available)}
               />
@@ -380,7 +380,7 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
               <div className="flex h-full flex-col">
                 <div className="space-y-4">
                   <div>
-                    <p className="text-[12px] text-white/48">Withdraw Token</p>
+                    <p className="text-[12px] text-white/48">{copy.withdrawToken}</p>
                     <button
                       type="button"
                       onClick={() => setShowCurrencyPicker(true)}
@@ -407,16 +407,19 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
                           </span>
                         </span>
                       </span>
-                      <span className="text-[11px] text-[#ffe08a]">Switch</span>
+                      <span className="text-[11px] text-[#ffe08a]">{copy.switchAction}</span>
                     </button>
                   </div>
 
                   <div>
                     <div className="flex items-center justify-between">
-                      <p className="text-[12px] text-white/48">Withdraw Amount</p>
+                      <p className="text-[12px] text-white/48">{copy.withdrawAmount}</p>
                       <span className="text-[11px] text-white/38">
-                        Limit {fmt(minWithdraw)} - {fmt(maxWithdraw)}{' '}
-                        {selectedCoinMeta.label}
+                        {fillTemplate(copy.withdrawLimit, {
+                          min: fmt(minWithdraw),
+                          max: fmt(maxWithdraw),
+                          coin: selectedCoinMeta.label,
+                        })}
                       </span>
                     </div>
                     <div className="mt-2 rounded-[24px] border border-white/10 bg-white/4 px-4 py-4">
@@ -428,8 +431,8 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
                           }
                           placeholder={
                             selectedCurrency === 'USDT'
-                              ? 'Enter USDT amount'
-                              : 'Enter USDT Mining amount'
+                              ? copy.enterUsdtAmount
+                              : copy.enterUsdtMiningAmount
                           }
                           inputMode="decimal"
                           className="w-full bg-transparent text-[24px] font-black text-white outline-none placeholder:text-white/18"
@@ -439,16 +442,21 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
                           onClick={() => setAmount(String(available))}
                           className="shrink-0 rounded-full border border-[#fbd005]/28 px-3 py-1 text-[11px] font-semibold text-[#ffe08a]"
                         >
-                          All
+                          {copy.allCaps}
                         </button>
                       </div>
                       <div className="mt-3 flex items-center justify-between text-[11px] text-white/40">
                         <span>
-                          Available {fmt(available)} {selectedCoinMeta.label}
+                          {fillTemplate(copy.availableAmount, {
+                            amount: fmt(available),
+                            coin: selectedCoinMeta.label,
+                          })}
                         </span>
                         <span>
-                          Daily limit{' '}
-                          {selectedConfig?.daily_max_withdraw ?? '--'} 次
+                          {fillTemplate(copy.dailyLimit, {
+                            count: String(selectedConfig?.daily_max_withdraw ?? '--'),
+                            unit: copy.timesUnit,
+                          })}
                         </span>
                       </div>
                     </div>
@@ -456,7 +464,7 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
 
                   {selectedCurrency === 'USDT_MINE' ? (
                     <div>
-                      <p className="text-[12px] text-white/48">Release Days</p>
+                      <p className="text-[12px] text-white/48">{copy.releaseDays}</p>
                       <div className="mt-2 grid grid-cols-3 gap-2">
                         {(config?.usdt_mine_config.day_list ?? []).map(
                           (item) => {
@@ -471,10 +479,10 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
                                 className={`rounded-2xl border px-3 py-3 text-left transition ${active ? 'border-[#fbd005]/55 bg-[#fbd005]/10 text-[#ffe08a]' : 'border-white/10 bg-white/4 text-white/78'}`}
                               >
                                 <span className="block text-[15px] font-bold">
-                                  {item.day} Days
+                                  {item.day} {copy.daysUnit}
                                 </span>
                                 <span className="mt-1 block text-[11px] text-inherit/75">
-                                  Fee {item.fee_rate}%
+                                  {copy.feeLabel} {item.fee_rate}%
                                 </span>
                               </button>
                             )
@@ -488,8 +496,8 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
                     <MetricCard
                       label={
                         selectedCurrency === 'USDT'
-                          ? 'Estimated USDT'
-                          : 'Estimated AUS Total'
+                          ? copy.estimatedUsdt
+                          : copy.estimatedAusTotal
                       }
                       value={fmt(
                         selectedCurrency === 'USDT'
@@ -500,8 +508,8 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
                     <MetricCard
                       label={
                         selectedCurrency === 'USDT'
-                          ? 'Fee'
-                          : 'Estimated Daily AUS'
+                          ? copy.feeLabel
+                          : copy.estimatedDailyAus
                       }
                       value={fmt(
                         selectedCurrency === 'USDT' ? feeAmount : dailyAusAmount
@@ -512,16 +520,16 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
 
                   <div className="rounded-[22px] border border-[#fbd005]/12 bg-[#0f1118] px-4 py-3">
                     <div className="flex items-center justify-between text-[12px] text-white/62">
-                      <span>Price</span>
+                      <span>{copy.priceLabel}</span>
                       <span>1 USDT = {fmt(coinPrice)} AUS</span>
                     </div>
                     <div className="mt-2 flex items-center justify-between text-[12px] text-white/45">
-                      <span>Fee Rate</span>
+                      <span>{copy.feeRateLabel}</span>
                       <span>{(feeRate * 100).toFixed(2)}%</span>
                     </div>
                     {selectedCurrency === 'USDT_MINE' ? (
                       <div className="mt-2 flex items-center justify-between text-[12px] text-white/45">
-                        <span>Converted AUS</span>
+                        <span>{copy.convertedAus}</span>
                         <span>{fmt(ausAmount)} AUS</span>
                       </div>
                     ) : null}
@@ -538,8 +546,8 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
                     {submitting
                       ? copy.submitting
                       : selectedCurrency === 'USDT'
-                        ? 'Submit USDT Withdraw'
-                        : 'Submit USDT Mining Withdraw'}
+                        ? copy.submitUsdtWithdraw
+                        : copy.submitUsdtMiningWithdraw}
                   </button>
                 </div>
               </div>
@@ -551,7 +559,7 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
       <BottomPopup
         visible={showCurrencyPicker}
         onClose={() => setShowCurrencyPicker(false)}
-        title="Select Withdraw Token"
+        title={copy.selectWithdrawToken}
       >
         <div className="space-y-2">
           {coins.map((coin) => {
@@ -615,7 +623,7 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
           <div className="max-h-[62vh] space-y-3 overflow-y-auto pr-1">
             {displayRecords.length === 0 && !recordLoading ? (
               <div className="rounded-2xl border border-white/8 bg-white/4 py-12 text-center text-sm text-white/45">
-                No withdraw records
+                {copy.noWithdrawRecords}
               </div>
             ) : null}
 
@@ -623,6 +631,7 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
               <RecordCard
                 key={item.id}
                 item={item}
+                copy={copy}
                 onViewDetail={() => setSelectedRecord(item)}
               />
             ))}
@@ -702,9 +711,9 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
                         </p>
                       </div>
                       <span
-                        className={`whitespace-nowrap rounded-full border px-2.5 py-1 text-[10px] font-semibold ${getRecordStatusMeta(item.status).className}`}
+                        className={`whitespace-nowrap rounded-full border px-2.5 py-1 text-[10px] font-semibold ${getRecordStatusMeta(item.status, copy).className}`}
                       >
-                        {getRecordStatusMeta(item.status).label}
+                        {getRecordStatusMeta(item.status, copy).label}
                       </span>
                     </div>
 
@@ -760,12 +769,14 @@ function DetailValue({ label, value }: { label: string; value: string }) {
 
 function RecordCard({
   item,
+  copy,
   onViewDetail,
 }: {
   item: WithdrawRecordItem
+  copy: ReturnType<typeof useOldPagesCopy>
   onViewDetail: () => void
 }) {
-  const status = getRecordStatusMeta(item.status)
+  const status = getRecordStatusMeta(item.status, copy)
   const realCurrency = getRealCurrencyName(item.real_coin_id)
 
   return (
@@ -774,7 +785,7 @@ function RecordCard({
         <div className="min-w-0">
           <div className="flex items-center gap-2">
             <span className="rounded-full bg-white/8 px-2.5 py-1 text-[10px] font-semibold text-white/78">
-              {getRecordTypeLabel(item.coin_type)}
+              {getRecordTypeLabel(item.coin_type, copy.usdtMiningLabel)}
             </span>
             <span className={`whitespace-nowrap rounded-full border px-2.5 py-1 text-[10px] font-semibold ${status.className}`}>
               {status.label}

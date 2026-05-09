@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { PageContainer } from '../../components/PageContainer'
 import { PageNavBar } from '../../components/PageNavBar'
+import { useOldPagesCopy } from '../../i18n'
 import { fetchAddressDetail, updateAddress } from '../../services/api'
 import type { AddressItem } from '../../services/types'
 import { AddressForm } from './AddressForm'
@@ -13,6 +14,7 @@ type AddressEditPageProps = {
 }
 
 export function AddressEditPage({ addressId, from, onNavigate }: AddressEditPageProps) {
+  const copy = useOldPagesCopy()
   const [address, setAddress] = useState<AddressItem | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -20,11 +22,11 @@ export function AddressEditPage({ addressId, from, onNavigate }: AddressEditPage
     fetchAddressDetail(Number(addressId)).then(data => { setAddress(data ?? null); setLoading(false) }).catch(() => setLoading(false))
   }, [addressId])
 
-  if (loading) return <PageContainer><PageNavBar title="编辑地址" onBack={() => onNavigate('address', { from })} /><p className="py-20 text-center text-sm text-white/40">加载中...</p></PageContainer>
-  if (!address) return <PageContainer><PageNavBar title="编辑地址" onBack={() => onNavigate('address', { from })} /><p className="py-20 text-center text-sm text-white/40">地址不存在</p></PageContainer>
+  if (loading) return <PageContainer><PageNavBar title={copy.editAddress} onBack={() => onNavigate('address', { from })} /><p className="py-20 text-center text-sm text-white/40">{copy.loading}</p></PageContainer>
+  if (!address) return <PageContainer><PageNavBar title={copy.editAddress} onBack={() => onNavigate('address', { from })} /><p className="py-20 text-center text-sm text-white/40">{copy.addressNotFound}</p></PageContainer>
 
   return (
-    <AddressForm title="编辑地址" initial={address}
+    <AddressForm title={copy.editAddress} initial={address}
       from={from}
       onSubmit={data => updateAddress(address.id, data)} onNavigate={onNavigate} />
   )

@@ -6,6 +6,7 @@ import type { AppPage, PageParams } from '../../../figma/types'
 import { NoticePopup } from '../../components/NoticePopup'
 import { PageContainer } from '../../components/PageContainer'
 import { PageNavBar } from '../../components/PageNavBar'
+import { useOldPagesCopy } from '../../i18n'
 import { fetchRechargeAddress } from '../../services/api'
 import type { RechargeAddressData } from '../../services/types'
 
@@ -51,6 +52,7 @@ function getChainMeta(chain: string) {
 }
 
 export function RechargePage({ onNavigate }: RechargePageProps) {
+  const copy = useOldPagesCopy()
   const [loading, setLoading] = useState(true)
   const [addressData, setAddressData] = useState<RechargeAddressData | null>(null)
   const [selectedChain, setSelectedChain] = useState('')
@@ -69,8 +71,8 @@ export function RechargePage({ onNavigate }: RechargePageProps) {
       .catch((error) => {
         if (cancelled) return
         setNotice({
-          title: '地址加载失败',
-          message: getErrorMessage(error, '充值地址获取失败'),
+          title: copy.rechargeAddressLoadFailed,
+          message: getErrorMessage(error, copy.rechargeAddressFetchFailed),
         })
       })
       .finally(() => {
@@ -101,20 +103,20 @@ export function RechargePage({ onNavigate }: RechargePageProps) {
     try {
       await navigator.clipboard.writeText(currentAddress)
       setNotice({
-        title: '复制成功',
-        message: `${resolvedChain} 充值地址已复制`,
+        title: copy.copySuccess,
+        message: `${resolvedChain} ${copy.copyAddress}`,
       })
     } catch {
       setNotice({
-        title: '复制失败',
-        message: '当前环境不支持复制，请手动复制地址',
+        title: copy.copyFailed,
+        message: copy.copyAddressUnsupported,
       })
     }
   }
 
   return (
     <PageContainer bgClass="bg-[#05060a]">
-      <PageNavBar title="充值" onBack={() => onNavigate('wallet')} />
+      <PageNavBar title={copy.recharge} onBack={() => onNavigate('wallet')} />
 
       <div
         className="min-h-[calc(100vh-48px)] bg-top bg-no-repeat px-4 pb-24 pt-3"
@@ -128,7 +130,7 @@ export function RechargePage({ onNavigate }: RechargePageProps) {
         <section className="mt-4 rounded-[24px] border border-white/8 bg-[#151821]/92 p-4 shadow-[0_18px_50px_rgba(0,0,0,0.22)] backdrop-blur">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-[12px] text-white/56">可用网络</p>
+              <p className="text-[12px] text-white/56">{copy.availableNetworks}</p>
               <p className="mt-1 text-[18px] font-semibold text-white">USDT / {resolvedChain || '--'}</p>
             </div>
             <div className={`rounded-full bg-gradient-to-r px-3 py-1 text-[11px] font-semibold text-[#10223f] ${chainMeta.accentClass}`}>
@@ -158,7 +160,7 @@ export function RechargePage({ onNavigate }: RechargePageProps) {
 
           <div className="mt-5 rounded-[22px] border border-amber-200/20 bg-[linear-gradient(180deg,rgba(255,255,255,0.07),rgba(255,255,255,0.02))] p-4">
             {loading ? (
-              <div className="flex h-[260px] items-center justify-center text-sm text-white/52">充值地址加载中...</div>
+              <div className="flex h-[260px] items-center justify-center text-sm text-white/52">{copy.rechargeAddressLoading}</div>
             ) : currentAddress ? (
               <>
                 <div className="flex flex-col items-center">
@@ -171,7 +173,7 @@ export function RechargePage({ onNavigate }: RechargePageProps) {
                       bgColor="#ffffff"
                     />
                   </div>
-                  <p className="mt-4 text-[13px] font-medium text-white/78">使用钱包或交易所扫码，向该地址充值</p>
+                  <p className="mt-4 text-[13px] font-medium text-white/78">{copy.scanRechargeHint}</p>
                 </div>
 
                 <div className={`mt-5 rounded-[18px] border px-4 py-3 ${chainMeta.panelClass}`}>
@@ -185,7 +187,7 @@ export function RechargePage({ onNavigate }: RechargePageProps) {
                       onClick={handleCopy}
                       className="cursor-pointer rounded-full bg-white px-3 py-1.5 text-[12px] font-semibold text-[#111827] transition duration-200 hover:bg-amber-50 active:scale-[0.98]"
                     >
-                      复制地址
+                      {copy.copyAddress}
                     </button>
                   </div>
                   <p className="mt-3 break-all text-[12px] leading-5 text-white/68">{currentAddress}</p>
@@ -193,19 +195,19 @@ export function RechargePage({ onNavigate }: RechargePageProps) {
               </>
             ) : (
               <div className="flex h-[260px] flex-col items-center justify-center gap-2 text-center">
-                <p className="text-sm font-medium text-white/72">暂无可用充值地址</p>
-                <p className="text-[12px] leading-5 text-white/45">接口未返回 USDT 链地址时，这里不会展示二维码与地址信息。</p>
+                <p className="text-sm font-medium text-white/72">{copy.noRechargeAddress}</p>
+                <p className="text-[12px] leading-5 text-white/45">{copy.noRechargeAddressHint}</p>
               </div>
             )}
           </div>
         </section>
 
         <section className="mt-4 rounded-[22px] bg-[#171922]/90 p-4">
-          <p className="text-[14px] font-semibold text-white">充值说明</p>
+          <p className="text-[14px] font-semibold text-white">{copy.rechargeInstructions}</p>
           <div className="mt-3 space-y-2 text-[12px] leading-5 text-white/62">
-            <p>1. 仅支持向当前选中链的 USDT 地址充值。</p>
-            <p>2. 转账前请核对链类型与地址，避免因链不一致造成资产损失。</p>
-            <p>3. 到账时间以链上确认速度为准，充值成功后资产会自动更新。</p>
+            <p>{copy.rechargeInstruction1}</p>
+            <p>{copy.rechargeInstruction2}</p>
+            <p>{copy.rechargeInstruction3}</p>
           </div>
         </section>
       </div>
