@@ -36,7 +36,7 @@ export function PendingOrderPaymentModal({
   const canConfirm = Boolean(selectedMethod && !selectedMethod.needSwitchChain && (selectedMethod.available || selectedMethod.type === 2))
 
   const summaryRows = useMemo(() => ([
-    { label: copy.totalPayment, value: `${Number(orderValue || 0).toFixed(2)} USDT` },
+    { label: copy.totalPayment, value: `${Number(orderValue || 0).toFixed(2)} USDC` },
     { label: copy.unitPrice, value: `${Number(price || 0).toFixed(6)}` },
     { label: copy.amountToPay, value: `${Number(orderAmount || 0).toFixed(6)}` },
   ]), [copy.amountToPay, copy.totalPayment, copy.unitPrice, orderAmount, orderValue, price])
@@ -98,9 +98,9 @@ export function PendingOrderPaymentModal({
                   <span className={`mt-0.5 flex h-6 w-6 items-center justify-center rounded-full border text-[11px] ${selected ? 'border-[#fbd005] bg-[#fbd005] text-black' : 'border-white/20 text-transparent'}`}>
                     ✓
                   </span>
-                  <div className="mt-3 text-[10px] text-white/45 whitespace-nowrap">
+                  {/* <div className="mt-3 text-[10px] text-white/45 whitespace-nowrap">
                     {method.needSwitchChain ? copy.switchChainRequired : method.available || method.type === 2 ? copy.payable : copy.insufficientBalance}
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </button>

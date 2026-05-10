@@ -285,19 +285,21 @@ function normalizeGoldOrderList(data: PagedList<Partial<GoldOrderItem> & {
 
 function normalizeWalletMoneyLogList(data: PagedList<WalletMoneyLogItem> | WalletMoneyLogItem[], currency: string): PagedList<WalletMoneyLogItem> {
   const normalized = normalizePagedList(data)
+  const displayCurrency = currency.replaceAll('USDT', 'USDC')
 
   return {
     ...normalized,
     list: normalized.list.map((item) => {
       const totalValue = Number(item.total ?? item.amount ?? 0)
       const amountValue = item.amount ?? ((item.type === 2 ? -1 : 1) * totalValue)
+      const itemCurrency = item.currency || displayCurrency
 
       return {
         ...item,
         title: item.msg || item.title || item.type_text || '资金变动',
         type_text: item.msg || item.type_text,
         amount: amountValue,
-        currency: item.currency || currency,
+        currency: itemCurrency.replaceAll('USDT', 'USDC'),
         remark: item.content || item.remark || item.msg || '',
       }
     }),

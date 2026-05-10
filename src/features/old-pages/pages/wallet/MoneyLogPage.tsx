@@ -24,7 +24,7 @@ function formatAmount(value: number | string | undefined) {
 export function MoneyLogPage({ onNavigate }: MoneyLogPageProps) {
   const copy = useOldPagesCopy()
   const tabs: Array<{ key: LogTab; label: string }> = [
-    { key: 'usdt', label: 'USDT' },
+    { key: 'usdt', label: 'USDC' },
     { key: 'usdtMine', label: copy.usdtMiningLabel },
   ]
   const filters: Array<{ key: FundsFilter; label: string }> = [
@@ -76,7 +76,7 @@ export function MoneyLogPage({ onNavigate }: MoneyLogPageProps) {
   }, [selectedTab, selectedFilter])
 
   const currentTabLabel = useMemo(
-    () => tabs.find((item) => item.key === selectedTab)?.label ?? 'USDT',
+    () => tabs.find((item) => item.key === selectedTab)?.label ?? 'USDC',
     [selectedTab, tabs],
   )
 

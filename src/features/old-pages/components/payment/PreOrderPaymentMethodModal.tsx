@@ -36,7 +36,7 @@ export function PreOrderPaymentMethodModal({
     <BottomPopup visible={visible} onClose={onClose} title={title ?? copy.paymentMethod}>
       <div className="rounded-2xl border border-[#fbd005]/20 bg-[#fff7d6]/8 px-4 py-3 text-center">
         <div className="text-xs text-white/50">{copy.orderAmount}</div>
-        <div className="mt-1 text-2xl font-black text-[#fbd005]">{Number(orderAmount || 0).toFixed(2)} USDT</div>
+        <div className="mt-1 text-2xl font-black text-[#fbd005]">{Number(orderAmount || 0).toFixed(3)} USDC</div>
       </div>
 
       <div className="mt-4 space-y-3">

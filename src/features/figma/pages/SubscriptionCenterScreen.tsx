@@ -462,7 +462,7 @@ function SubscribeConfirmSheet({
   const [statusText, setStatusText] = useState('')
   const [switchingChain, setSwitchingChain] = useState(false)
 
-  const paymentCurrencyName = plan?.currency?.name || 'USDT'
+  const paymentCurrencyName = plan?.currency?.name || 'USDC'
   const paymentChainId = plan?.currency?.chainId ?? 9777
   const paymentChainConfig = getChainConfig(paymentChainId as 56 | 399 | 9777)
   const paymentTokenDecimals = plan?.currency?.decimals ?? 18
@@ -503,7 +503,7 @@ function SubscribeConfirmSheet({
       const currentAllowance = await getErc20Allowance(order.usdt_contract, walletAddress, order.recharge_contract)
 
       if (currentAllowance < requiredAllowance) {
-        setStatusText('授權 USDT…')
+        setStatusText('授權 USDC…')
         const approveData = `${APPROVE_SELECTOR}${order.recharge_contract.slice(2).toLowerCase().padStart(64, '0')}${MAX_UINT256}`
         const approveTxHash = await window.ethereum.request({
           method: 'eth_sendTransaction',
@@ -605,7 +605,7 @@ function SubscribeConfirmSheet({
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">
                   <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#26a17b]/10">
-                    <img src={usdtCoinIcon} alt="USDT" className="h-7 w-7 object-contain" />
+                    <img src={usdtCoinIcon} alt="USDC" className="h-7 w-7 object-contain" />
                   </div>
                   <div>
                     <p className="text-[14px] font-semibold text-black">{paymentCurrencyName}</p>

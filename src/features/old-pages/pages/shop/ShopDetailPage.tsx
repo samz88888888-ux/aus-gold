@@ -267,7 +267,7 @@ function BottomBar({
           <p className="text-[11px] uppercase tracking-[0.14em] text-yellow-400/70">{copy.orderSummary}</p>
           <p className="mt-1 text-[15px] font-bold text-yellow-400">
             {totalPrice}
-            <span className="ml-1 text-[11px] font-medium text-yellow-200/75">USDT</span>
+            <span className="ml-1 text-[11px] font-medium text-yellow-200/75">USDC</span>
           </p>
         </div>
         <div className="text-right text-[11px] leading-5 text-white/50">

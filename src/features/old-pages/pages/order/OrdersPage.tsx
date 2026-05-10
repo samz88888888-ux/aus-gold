@@ -30,7 +30,7 @@ function formatAmount(value: number | string | undefined, digits = 2) {
 
 function getCurrencyByChainId(chainCurrencyId?: number) {
   const currencyMap: Record<number, string> = {
-    1: 'USDT',
+    1: 'USDC',
     2: 'PYTHIA',
     3: 'AUS',
     5: 'MCG',
@@ -131,7 +131,7 @@ function OrderCard({ order, onCancel, onPay }: OrderCardProps) {
           {/* <h3 className="mt-2 truncate text-[15px] font-bold text-white">{formatOrderTitle(order)}</h3> */}
           <div className="mt-2 flex items-end gap-1.5">
             <span className="text-[22px] font-black leading-none text-white">{formatAmount(total, 4)}</span>
-            <span className="pb-0.5 text-xs font-semibold text-white/58">USDT</span>
+            <span className="pb-0.5 text-xs font-semibold text-white/58">USDC</span>
           </div>
           <p className="mt-1 text-[11px] text-white/38">{copy.createdAt} {order.created_at}</p>
         </div>

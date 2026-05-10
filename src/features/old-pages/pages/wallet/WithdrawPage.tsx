@@ -35,7 +35,7 @@ type NoticeState = {
   onConfirm?: () => void
 }
 
-const TOKEN_ICON = '/old-pages/wallet/usdt-coin.png'
+const TOKEN_ICON = '/old-pages/wallet/usdc-coin.png'
 const AUS_ICON = '/old-pages/wallet/mcg-coin.png'
 
 function fmt(value: number | string | undefined, digits = 6) {
@@ -57,7 +57,7 @@ function getErrorMessage(error: unknown, fallback: string) {
 }
 
 function getRecordTypeLabel(coinType: number, usdtMiningLabel: string) {
-  return coinType === 2 ? usdtMiningLabel : 'USDT'
+  return coinType === 2 ? usdtMiningLabel : 'USDC'
 }
 
 function getRecordStatusMeta(status: number, copy: ReturnType<typeof useOldPagesCopy>) {
@@ -71,7 +71,7 @@ function getRecordStatusMeta(status: number, copy: ReturnType<typeof useOldPages
 }
 
 function getRealCurrencyName(realCoinId: number) {
-  if (realCoinId === 1) return 'USDT'
+  if (realCoinId === 1) return 'USDC'
   if (realCoinId === 2) return 'PYTHIA'
   if (realCoinId === 3 || realCoinId === 5) return 'AUS'
   return '--'
@@ -91,12 +91,12 @@ function buildNotice(message: string, onClose: () => void): NoticeState {
 export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
   const copy = useOldPagesCopy()
   const coins: Array<{ key: CurrencyType; label: string; subtitle: string }> = [
-    { key: 'USDT', label: 'USDT', subtitle: copy.usdtWithdrawSubtitle },
+    { key: 'USDT', label: 'USDC', subtitle: copy.usdtWithdrawSubtitle },
     { key: 'USDT_MINE', label: copy.usdtMiningLabel, subtitle: copy.usdtMiningWithdrawSubtitle },
   ]
   const recordFilters: Array<{ key: RecordFilter; label: string }> = [
     { key: 'all', label: copy.all },
-    { key: 'USDT', label: 'USDT' },
+    { key: 'USDT', label: 'USDC' },
     { key: 'USDT_MINE', label: copy.usdtMiningLabel },
   ]
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null)
@@ -521,7 +521,7 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
                   <div className="rounded-[22px] border border-[#fbd005]/12 bg-[#0f1118] px-4 py-3">
                     <div className="flex items-center justify-between text-[12px] text-white/62">
                       <span>{copy.priceLabel}</span>
-                      <span>1 USDT = {fmt(coinPrice)} AUS</span>
+                      <span>1 USDC = {fmt(coinPrice)} AUS</span>
                     </div>
                     <div className="mt-2 flex items-center justify-between text-[12px] text-white/45">
                       <span>{copy.feeRateLabel}</span>
@@ -676,7 +676,7 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <MetricCard
-                label="USDT Mining"
+                label={copy.usdtMiningLabel}
                 value={fmt(selectedRecord.num)}
               />
               <MetricCard
@@ -718,7 +718,7 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
                     </div>
 
                     <div className="mt-3 grid grid-cols-2 gap-2">
-                      <DetailValue label="USDT Amount" value={fmt(item.num)} />
+                      <DetailValue label="USDC Amount" value={fmt(item.num)} />
                       <DetailValue
                         label="AUS Received"
                         value={fmt(item.real_ac_amount)}

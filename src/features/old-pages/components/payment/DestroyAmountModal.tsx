@@ -83,7 +83,7 @@ export function DestroyAmountModal({
   }, [visible, currentPrice, lastInputType, tokenValue, usdtValue])
 
   const helperRows = useMemo(() => ([
-    { label: copy.destroyMinAmount, value: `${Number(minAmount || 0).toFixed(2)} USDT` },
+    { label: copy.destroyMinAmount, value: `${Number(minAmount || 0).toFixed(2)} USDC` },
     { label: copy.currentPrice, value: `1U ≈ ${Number(currentPrice || 0).toFixed(6)} ${activeCurrency}` },
   ]), [activeCurrency, copy.currentPrice, copy.destroyMinAmount, currentPrice, minAmount])
 
@@ -99,7 +99,7 @@ export function DestroyAmountModal({
       <div className="space-y-3">
         <AmountInput
           label={copy.inputDestroyAmount}
-          suffix="USDT"
+          suffix="USDC"
           value={usdtValue}
           onChange={(value) => {
             setLastInputType('usdt')
@@ -129,7 +129,7 @@ export function DestroyAmountModal({
       </div>
 
       {!isValid && usdtValue ? (
-        <p className="mt-3 text-xs text-red-300">{copy.destroyMinAmount} {Number(minAmount || 0).toFixed(2)} USDT</p>
+        <p className="mt-3 text-xs text-red-300">{copy.destroyMinAmount} {Number(minAmount || 0).toFixed(2)} USDC</p>
       ) : null}
 
       <button

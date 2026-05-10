@@ -145,7 +145,7 @@ export function ShopOrderConfirmPage({ pageState, addressId, onNavigate }: ShopO
       <div className="fixed bottom-[62px] left-1/2 z-40 flex w-full max-w-[430px] -translate-x-1/2 items-center justify-between border-t border-white/10 bg-[#0a0a1a]/95 px-4 py-3 shadow-[0_-4px_12px_rgba(0,0,0,0.4)] backdrop-blur">
         <div>
           <div className="text-xs text-white/60">{copy.productAmount}</div>
-          <div className="text-xl font-bold text-yellow-400">{draft.totalPrice} <span className="text-xs font-medium">USDT</span></div>
+          <div className="text-xl font-bold text-yellow-400">{draft.totalPrice} <span className="text-xs font-medium">USDC</span></div>
         </div>
         <button
           type="button"
@@ -223,7 +223,7 @@ function ProductCard({ draft }: { draft: ShopOrderDraft }) {
         <div className="text-sm font-semibold text-white">{draft.product.name}</div>
         <div className="text-xs text-white/55">{draft.selectedSkuValue || copy.defaultSpec}</div>
         <div className="flex items-center justify-between">
-          <span className="text-base font-bold text-yellow-400">{Number(draft.price).toFixed(2)} <span className="text-xs font-medium">USDT</span></span>
+          <span className="text-base font-bold text-yellow-400">{Number(draft.price).toFixed(2)} <span className="text-xs font-medium">USDC</span></span>
           <div className="text-sm text-white/60">x{draft.quantity}</div>
         </div>
       </div>

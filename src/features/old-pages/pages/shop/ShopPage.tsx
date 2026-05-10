@@ -153,7 +153,7 @@ function ProductGrid({ copy, products, onTap }: { copy: ReturnType<typeof useOld
           <div className="p-3">
             <div className="truncate text-sm font-semibold text-white">{p.name}</div>
             <div className="mt-1 text-xs text-white/60">{copy.inventory} {p.stock} · {p.weight}</div>
-            <div className="mt-1.5 text-base font-bold text-yellow-400">{p.price} <span className="text-xs font-medium">USDT</span></div>
+            <div className="mt-1.5 text-base font-bold text-yellow-400">{p.price} <span className="text-xs font-medium">USDC</span></div>
           </div>
         </button>
       ))}

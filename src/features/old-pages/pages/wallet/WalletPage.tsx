@@ -39,7 +39,7 @@ function shortAddress(addr: string) {
   return `${addr.slice(0, 6)}...${addr.slice(-6)}`
 }
 
-const TOKEN_ICON = '/old-pages/wallet/usdt-coin.png'
+const TOKEN_ICON = '/old-pages/wallet/usdc-coin.png'
 const AUS_TOKEN_ICON = '/old-pages/wallet/aus-coin.png'
 const BRIDGE_URL = 'https://bridge.pychain.co/bridge'
 const SWAP_URL = 'http://swap.pychain.co'
@@ -176,7 +176,7 @@ export function WalletPage({ onNavigate }: WalletPageProps) {
             ) : null}
           </div>
           <div className="space-y-3">
-            <TokenRow name="USDT" amount={fmt(usdt)} />
+            <TokenRow name="USDC" amount={fmt(usdt)} />
             <TokenRow name={copy.equityPowerValue} amount={fmt(usdtMine)} icon={AUS_TOKEN_ICON} />
           </div>
         </section>

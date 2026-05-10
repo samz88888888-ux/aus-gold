@@ -75,7 +75,7 @@ export function MingPage({ onNavigate }: MingPageProps) {
 
       if (Number(payload.amount) < Number(latestInfo.min_amount)) {
         setNotice({
-          message: `${copy.destroyMinAmount} ${Number(latestInfo.min_amount).toFixed(2)} USDT`,
+          message: `${copy.destroyMinAmount} ${Number(latestInfo.min_amount).toFixed(2)} USDC`,
         })
         return
       }
@@ -218,7 +218,7 @@ export function MingPage({ onNavigate }: MingPageProps) {
                 {copy.destroyMinAmount}
               </span>
               <span className="shrink-0 text-[15px] font-black text-white">
-                {fmt(destoryInfo?.min_amount)} USDT
+                {fmt(destoryInfo?.min_amount)} USDC
               </span>
             </div>
             <div className="pt-3">
@@ -231,7 +231,7 @@ export function MingPage({ onNavigate }: MingPageProps) {
                 <span className="min-w-0 flex-1 text-right text-[28px] font-black leading-none text-white tracking-[-0.03em]">
                   {fmtPrice(destoryInfo?.aus_price)}
                 </span>
-                <span className="shrink-0 pb-0.5 text-[12px] font-bold leading-none text-white/72">USDT</span>
+                <span className="shrink-0 pb-0.5 text-[12px] font-bold leading-none text-white/72">USDC</span>
               </div>
             </div>
           </div>
@@ -262,7 +262,7 @@ export function MingPage({ onNavigate }: MingPageProps) {
               icon={<ArrowBadgeIcon />}
               label={copy.destroyMining}
               description={copy.destroyMiningDescription}
-              badge={`${copy.destroyMinAmount} ${fmt(destoryInfo?.min_amount)} USDT`}
+              badge={`${copy.destroyMinAmount} ${fmt(destoryInfo?.min_amount)} USDC`}
               actionText={copy.confirmDestroy}
               onClick={() => setShowAmountModal(true)}
             />
