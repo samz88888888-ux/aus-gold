@@ -46,6 +46,7 @@ export type MachineItem = {
 export type DestoryInfo = {
   min_amount: number
   price: number
+  aus_price: number
   naau_price: number
   payment: PaymentMethod[]
   naau_payment: PaymentMethod[]

@@ -21,6 +21,7 @@ export const machineList: MachineItem[] = [
 export const destoryInfo: DestoryInfo = {
   min_amount: 100,
   price: 0.85,
+  aus_price: 1.1765,
   naau_price: 1.2,
   currency: { name: 'AUS' },
   payment: [

@@ -17,6 +17,14 @@ function fmt(value: number | string | undefined) {
   })
 }
 
+function fmtPrice(value: number | string | undefined) {
+  if (!value && value !== 0) return '0.0000'
+  return Number(value).toLocaleString('en-US', {
+    minimumFractionDigits: 6,
+    maximumFractionDigits: 6,
+  })
+}
+
 type MingPageProps = {
   onNavigate: (page: AppPage, params?: PageParams) => void
 }
@@ -204,15 +212,28 @@ export function MingPage({ onNavigate }: MingPageProps) {
             </div>
           </div>
 
-          <div className="mt-4 grid grid-cols-2 gap-3">
-            <InfoTile
-              label={copy.destroyMinAmount}
-              value={`${fmt(destoryInfo?.min_amount)} USDT`}
-            />
-            <InfoTile
-              label={`${destoryInfo?.currency?.name || 'MCG'} ${copy.currentPrice}`}
-              value={`${fmt(destoryInfo?.price)} USDT`}
-            />
+          <div className="mt-4 rounded-[20px] border border-[#f8cf48]/14 bg-[linear-gradient(145deg,rgba(248,207,72,0.09),rgba(255,255,255,0.025)_42%,rgba(255,255,255,0.04))] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
+            <div className="flex items-center justify-between gap-3 border-b border-white/8 pb-3">
+              <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/38">
+                {copy.destroyMinAmount}
+              </span>
+              <span className="shrink-0 text-[15px] font-black text-white">
+                {fmt(destoryInfo?.min_amount)} USDT
+              </span>
+            </div>
+            <div className="pt-3">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#f8cf48]/75">
+                {copy.currentPrice}
+              </p>
+              <div className="mt-2 flex items-end justify-between gap-3">
+                <span className="shrink-0 text-[18px] font-black leading-none text-white">1 AUS</span>
+                <span className="text-[16px] font-black leading-none text-[#f8cf48]">≈</span>
+                <span className="min-w-0 flex-1 text-right text-[28px] font-black leading-none text-white tracking-[-0.03em]">
+                  {fmtPrice(destoryInfo?.aus_price)}
+                </span>
+                <span className="shrink-0 pb-0.5 text-[12px] font-bold leading-none text-white/72">USDT</span>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -341,15 +362,6 @@ function ActionButton({
         </div>
       </div>
     </button>
-  )
-}
-
-function InfoTile({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="rounded-[18px] border border-white/8 bg-white/[0.03] px-4 py-3">
-      <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/35">{label}</p>
-      <p className="mt-2 text-[16px] font-black text-white">{value}</p>
-    </div>
   )
 }
 
