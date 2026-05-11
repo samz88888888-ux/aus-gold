@@ -519,10 +519,12 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
                   </div>
 
                   <div className="rounded-[22px] border border-[#fbd005]/12 bg-[#0f1118] px-4 py-3">
-                    <div className="flex items-center justify-between text-[12px] text-white/62">
-                      <span>{copy.priceLabel}</span>
-                      <span>1 USDC = {fmt(coinPrice)} AUS</span>
-                    </div>
+                    {selectedCurrency === 'USDT_MINE' ? (
+                      <div className="flex items-center justify-between text-[12px] text-white/62">
+                        <span>{copy.priceLabel}</span>
+                        <span>1 USDC = {fmt(coinPrice)} AUS</span>
+                      </div>
+                    ) : null}
                     <div className="mt-2 flex items-center justify-between text-[12px] text-white/45">
                       <span>{copy.feeRateLabel}</span>
                       <span>{(feeRate * 100).toFixed(2)}%</span>

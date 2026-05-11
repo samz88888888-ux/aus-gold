@@ -83,7 +83,7 @@ export function ShopOrderListPage({ groupId, onNavigate }: ShopOrderListPageProp
                 <p className="mt-1 text-xs text-white/50">{copy.weight}: {o.weight} × {o.quantity}</p>
                 <div className="mt-1 flex items-center justify-between">
                   <span className="text-xs text-white/50">{o.created_at}</span>
-                  <span className="text-sm font-bold text-amber-400">¥{o.total_amount}</span>
+                  <span className="text-sm font-bold text-amber-400">${o.total_amount}</span>
                 </div>
               </div>
             </div>
