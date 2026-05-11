@@ -267,6 +267,7 @@ type OldPagesCopy = {
   withdrawSubmitted: string
   withdrawMiningSubmitted: string
   viewRecords: string
+  viewAusDetails: string
   withdrawSubmitFailed: string
   withdrawPageDesc: string
   availableUsdt: string
@@ -567,6 +568,7 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     withdrawMiningSubmitted:
       '股權算力提現申請已提交，可在記錄中查看分天到賬明細',
     viewRecords: '查看記錄',
+    viewAusDetails: '查看 AUS 明細',
     withdrawSubmitFailed: '提現提交失敗',
     withdrawPageDesc: 'USDC / AUS 提現與分天釋放',
     availableUsdt: '可用 USDC',
@@ -878,6 +880,7 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     withdrawMiningSubmitted:
       'USDC Mining withdrawal request submitted. You can view the staged arrival details in records.',
     viewRecords: 'View Records',
+    viewAusDetails: 'View AUS Details',
     withdrawSubmitFailed: 'Failed to submit withdrawal',
     withdrawPageDesc: 'USDC / AUS withdraw and staged release',
     availableUsdt: 'Available USDC',
@@ -1182,6 +1185,7 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     withdrawMiningSubmitted:
       'USDC 채굴 출금 신청이 제출되었습니다. 기록에서 일별 입금 상세를 확인할 수 있습니다.',
     viewRecords: '기록 보기',
+    viewAusDetails: 'AUS 상세 보기',
     withdrawSubmitFailed: '출금 제출 실패',
     withdrawPageDesc: 'USDC / AUS 출금 및 일별 분할 지급',
     availableUsdt: '사용 가능 USDC',
@@ -1494,6 +1498,7 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     withdrawMiningSubmitted:
       'USDC マイニング出金申請が送信されました。履歴で日別着金詳細を確認できます。',
     viewRecords: '履歴を見る',
+    viewAusDetails: 'AUS 明細を見る',
     withdrawSubmitFailed: '出金送信に失敗しました',
     withdrawPageDesc: 'USDC / AUS の出金と日別段階解放',
     availableUsdt: '利用可能 USDC',
@@ -1798,6 +1803,7 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     withdrawMiningSubmitted:
       'ส่งคำขอถอน USDC Mining แล้ว สามารถดูรายละเอียดการรับเงินรายวันได้ในประวัติ',
     viewRecords: 'ดูประวัติ',
+    viewAusDetails: 'ดูรายละเอียด AUS',
     withdrawSubmitFailed: 'ส่งคำขอถอนล้มเหลว',
     withdrawPageDesc: 'ถอน USDC / AUS และปล่อยแบบแบ่งรายวัน',
     availableUsdt: 'USDC ที่ใช้ได้',
@@ -2113,6 +2119,7 @@ const oldPagesCopyByLanguage: Record<LanguageCode, OldPagesCopy> = {
     withdrawMiningSubmitted:
       'Permohonan pengeluaran USDC Mining telah dihantar. Anda boleh melihat butiran ketibaan berperingkat dalam rekod.',
     viewRecords: 'Lihat Rekod',
+    viewAusDetails: 'Lihat Butiran AUS',
     withdrawSubmitFailed: 'Gagal menghantar pengeluaran',
     withdrawPageDesc:
       'Pengeluaran USDC / AUS dan pelepasan berperingkat harian',

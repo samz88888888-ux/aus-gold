@@ -816,7 +816,7 @@ function RecordCard({
           onClick={onViewDetail}
           className="mt-3 w-full rounded-2xl border border-[#fbd005]/25 bg-[#fbd005]/10 py-2.5 text-sm font-semibold text-[#ffe08a]"
         >
-          View AUS Details
+          {copy.viewAusDetails}
         </button>
       ) : null}
     </div>
