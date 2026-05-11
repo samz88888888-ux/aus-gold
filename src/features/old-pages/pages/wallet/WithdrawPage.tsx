@@ -334,7 +334,7 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
               <div className="flex items-center justify-between gap-3">
                 <div className="inline-flex items-center rounded-full border border-[#fbd005]/18 bg-[linear-gradient(180deg,rgba(251,208,5,0.14),rgba(251,208,5,0.06))] px-3 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
                   <span className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#ffe08a]/84">
-                    Withdraw
+                    {copy.withdrawBadge}
                   </span>
                 </div>
                 <button
@@ -653,21 +653,21 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
       <BottomPopup
         visible={selectedRecord !== null}
         onClose={() => setSelectedRecord(null)}
-        title={selectedRecord?.coin_type === 2 ? 'AUS Release Details' : 'Withdraw Details'}
+        title={selectedRecord?.coin_type === 2 ? copy.ausReleaseDetails : copy.withdrawDetails}
       >
         {!selectedRecord ? null : selectedRecord.coin_type !== 2 ? (
           <div className="space-y-3">
             <MetricCard
-              label="Order No."
+              label={copy.orderNo}
               value={selectedRecord.no}
               highlight={false}
             />
             <MetricCard
-              label="Actual Received"
+              label={copy.actualReceived}
               value={`${fmt(selectedRecord.real_ac_amount)} ${getRealCurrencyName(selectedRecord.real_coin_id)}`}
             />
             <MetricCard
-              label="Created At"
+              label={copy.createdAt}
               value={selectedRecord.created_at}
               highlight={false}
             />
@@ -680,7 +680,7 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
                 value={fmt(selectedRecord.num)}
               />
               <MetricCard
-                label="AUS Total"
+                label={copy.ausTotal}
                 value={fmt(selectedRecord.real_ac_amount)}
                 highlight
               />
@@ -693,7 +693,7 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
                 </div>
               ) : detailList.length === 0 ? (
                 <div className="rounded-2xl border border-white/8 bg-white/4 py-12 text-center text-sm text-white/45">
-                  No release details
+                  {copy.noReleaseDetails}
                 </div>
               ) : (
                 detailList.map((item, index) => (
@@ -704,7 +704,7 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
                     <div className="flex items-start justify-between gap-3">
                       <div>
                         <p className="text-[14px] font-semibold text-white">
-                          Auto release #{index + 1}
+                          {fillTemplate(copy.autoReleaseLabel, { index: String(index + 1) })}
                         </p>
                         <p className="mt-1 text-[11px] text-white/42">
                           {item.push_time || '--'}
@@ -718,16 +718,16 @@ export function WithdrawPage({ onNavigate }: WithdrawPageProps) {
                     </div>
 
                     <div className="mt-3 grid grid-cols-2 gap-2">
-                      <DetailValue label="USDC Amount" value={fmt(item.num)} />
+                      <DetailValue label={copy.usdcAmount} value={fmt(item.num)} />
                       <DetailValue
-                        label="AUS Received"
+                        label={copy.ausReceived}
                         value={fmt(item.real_ac_amount)}
                       />
                       <DetailValue
-                        label="AUS Fee"
+                        label={copy.ausFee}
                         value={fmt(item.real_fee_amount)}
                       />
-                      <DetailValue label="Order No." value={item.ordernum} />
+                      <DetailValue label={copy.orderNo} value={item.ordernum} />
                     </div>
                   </div>
                 ))
@@ -796,17 +796,17 @@ function RecordCard({
         </div>
 
         <div className="text-right">
-          <p className="text-[11px] text-white/42">Requested</p>
+          <p className="text-[11px] text-white/42">{copy.requested}</p>
           <p className="mt-1 text-[18px] font-black text-white">{fmt(item.num)}</p>
         </div>
       </div>
 
       <div className="mt-4 grid grid-cols-2 gap-2">
-        <DetailValue label="Received Token" value={realCurrency} />
-        <DetailValue label="Actual Received" value={fmt(item.real_ac_amount)} />
-        <DetailValue label="Fee" value={fmt(item.fee_amount)} />
+        <DetailValue label={copy.receivedToken} value={realCurrency} />
+        <DetailValue label={copy.actualReceived} value={fmt(item.real_ac_amount)} />
+        <DetailValue label={copy.feeLabel} value={fmt(item.fee_amount)} />
         {item.coin_type === 2 ? (
-          <DetailValue label="Remaining Days" value={String(item.wait_day)} />
+          <DetailValue label={copy.remainingDays} value={String(item.wait_day)} />
         ) : null}
       </div>
 
